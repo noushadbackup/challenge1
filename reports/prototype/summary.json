@@ -1,0 +1,77 @@
+{
+ "physics": {
+  "n_features": 25,
+  "train_oof_rank_f1": 0.8471,
+  "postproc(thr,smooth,min_dur,gap)": [
+   0.4,
+   5,
+   0.8,
+   0.2
+  ],
+  "val_rank_f1": 0.7903,
+  "val_f1@0.1/0.3/0.5/0.7": [
+   0.855,
+   0.79,
+   0.726,
+   0.468
+  ],
+  "val_tp_fp_fn@0.3": [
+   49,
+   8,
+   18
+  ],
+  "val_fa_per_hour@0.3": 3.9,
+  "val_start_err_median@0.3": 0.24,
+  "val_mean_tiou@0.3": 0.728
+ },
+ "structure": {
+  "n_features": 32,
+  "train_oof_rank_f1": 0.8569,
+  "postproc(thr,smooth,min_dur,gap)": [
+   0.3,
+   3,
+   0.8,
+   0.6
+  ],
+  "val_rank_f1": 0.8759,
+  "val_f1@0.1/0.3/0.5/0.7": [
+   0.949,
+   0.92,
+   0.759,
+   0.496
+  ],
+  "val_tp_fp_fn@0.3": [
+   63,
+   7,
+   4
+  ],
+  "val_fa_per_hour@0.3": 3.42,
+  "val_start_err_median@0.3": 0.34,
+  "val_mean_tiou@0.3": 0.682
+ },
+ "full": {
+  "n_features": 64,
+  "train_oof_rank_f1": 0.9009,
+  "postproc(thr,smooth,min_dur,gap)": [
+   0.4,
+   3,
+   0.8,
+   0.6
+  ],
+  "val_rank_f1": 0.884,
+  "val_f1@0.1/0.3/0.5/0.7": [
+   0.948,
+   0.919,
+   0.785,
+   0.504
+  ],
+  "val_tp_fp_fn@0.3": [
+   62,
+   6,
+   5
+  ],
+  "val_fa_per_hour@0.3": 2.93,
+  "val_start_err_median@0.3": 0.22,
+  "val_mean_tiou@0.3": 0.698
+ }
+}

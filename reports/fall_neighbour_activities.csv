@@ -1,0 +1,16 @@
+,before_fall,after_fall,all_adl_chunks,before_%,expected_%
+Boire,7,9,48,1.8,2.6
+Dormir,12,16,80,3.1,4.3
+Enfiler_une_veste,10,10,61,2.6,3.3
+Faire_menage,36,27,141,9.3,7.6
+Faire_pates,76,66,340,19.5,18.4
+Faire_the,44,42,199,11.3,10.8
+Faire_vaisselle,34,36,136,8.7,7.4
+Laver_dents,41,29,186,10.5,10.1
+Laver_mains,9,14,48,2.3,2.6
+Lire_livre,24,25,143,6.2,7.8
+Manger,22,32,140,5.7,7.6
+Marcher,11,12,54,2.8,2.9
+Mettre_des_chaussures,19,20,72,4.9,3.9
+Prendre_medicaments,13,13,50,3.3,2.7
+Utiliser_ordinateur,31,38,146,8.0,7.9
