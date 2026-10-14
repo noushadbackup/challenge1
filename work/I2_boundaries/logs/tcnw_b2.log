@@ -1,0 +1,26 @@
+[    1.5s rss=0.43GB] fit: 13 training streams, 359 events, config 7d70d3c15c0d40a8
+[   32.5s rss=1.08GB] labels: ignore_clips zero_weight on 973 blocks (0.874%)
+[   32.5s rss=1.08GB] design: X_proto (111342, 64) X_band (111342, 48) positives 3285
+[   32.5s rss=1.08GB] folds: {0: ['cv2_train_03', 'cv2_train_06', 'cv2_train_07'], 1: ['cv2_train_01', 'cv2_train_02', 'cv2_train_10', 'cv2_train_12'], 2: ['cv2_train_00', 'cv2_train_04', 'cv2_train_08'], 3: ['cv2_train_05', 'cv2_train_09', 'cv2_train_11']}
+[  344.6s rss=1.08GB] tcn: CV fold 0 done (312 s)
+[  671.0s rss=1.08GB] tcn: CV fold 1 done (638 s)
+[  980.3s rss=1.08GB] tcn: CV fold 2 done (948 s)
+[ 1321.8s rss=1.08GB] tcn: CV fold 3 done (1289 s)
+[ 1670.3s rss=1.08GB] tcn: CV + final bag done (1637.8 s)
+[ 1672.2s rss=1.08GB]   operating point (0.4, 1, 0.8, 0.6) OOF rank F1 0.9275
+[ 1672.3s rss=1.08GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9275, "f1@0.1/0.3/0.5/0.7": [0.974, 0.959, 0.85, 0.601], "tp_fp_fn@0.3": [185, 11, 5], "fa_per_h@0.3": 1.78, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.726}}
+[ 1672.4s rss=1.08GB] fit done in 1670.8 s -> /home/user/data_raw/I2/runs/tcnW_bag0/fold_2
+[tcnW_bag0] 2 done in 1683s
+[    0.0s rss=1.08GB] fit: 13 training streams, 358 events, config 7d70d3c15c0d40a8
+[   27.3s rss=1.28GB] labels: ignore_clips zero_weight on 962 blocks (0.867%)
+[   27.3s rss=1.28GB] design: X_proto (110954, 64) X_band (110954, 48) positives 3364
+[   27.4s rss=1.28GB] folds: {0: ['cv3_train_01', 'cv3_train_07', 'cv3_train_08'], 1: ['cv3_train_05', 'cv3_train_10', 'cv3_train_11'], 2: ['cv3_train_00', 'cv3_train_03', 'cv3_train_09', 'cv3_train_12'], 3: ['cv3_train_02', 'cv3_train_04', 'cv3_train_06']}
+[  232.5s rss=1.28GB] tcn: CV fold 0 done (205 s)
+[  434.6s rss=1.28GB] tcn: CV fold 1 done (407 s)
+[  631.3s rss=1.28GB] tcn: CV fold 2 done (604 s)
+[  832.7s rss=1.28GB] tcn: CV fold 3 done (805 s)
+[ 1029.1s rss=1.28GB] tcn: CV + final bag done (1001.7 s)
+[ 1030.8s rss=1.28GB]   operating point (0.5, 3, 0.8, 0.6) OOF rank F1 0.9045
+[ 1030.9s rss=1.28GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9045, "f1@0.1/0.3/0.5/0.7": [0.941, 0.924, 0.849, 0.573], "tp_fp_fn@0.3": [171, 12, 16], "fa_per_h@0.3": 1.95, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.719}}
+[ 1030.9s rss=1.28GB] fit done in 1030.9 s -> /home/user/data_raw/I2/runs/tcnW_bag0/fold_3
+[tcnW_bag0] 3 done in 1042s

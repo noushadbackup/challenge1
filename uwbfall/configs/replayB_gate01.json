@@ -1,3 +1,5 @@
 {
+  "decode": {"one_event_per_clip": false},
+  "clip": {"segclf": {"enabled": false}, "gate": "none"},
   "boundary": {"gate": 0.1}
 }

@@ -1,0 +1,18 @@
+[    1.6s rss=0.43GB] fit: 13 training streams, 358 events, config 263ff3b4c0d76a4d
+[   31.8s rss=1.07GB] labels: ignore_clips zero_weight on 1302 blocks (1.173%)
+[   31.8s rss=1.07GB] design: X_proto (110981, 64) X_band (110981, 48) positives 3447
+[   31.8s rss=1.07GB] folds: {0: ['cv0_train_01', 'cv0_train_06', 'cv0_train_09'], 1: ['cv0_train_00', 'cv0_train_02', 'cv0_train_07', 'cv0_train_12'], 2: ['cv0_train_03', 'cv0_train_08', 'cv0_train_10'], 3: ['cv0_train_04', 'cv0_train_05', 'cv0_train_11']}
+[  311.2s rss=1.07GB] tcn: CV fold 0 done (279 s)
+[  490.0s rss=1.07GB] tcn: CV fold 1 done (458 s)
+[  674.2s rss=1.07GB] tcn: CV fold 2 done (642 s)
+[  954.0s rss=1.07GB] tcn: CV fold 3 done (922 s)
+[ 1293.0s rss=1.07GB] tcn: CV + final bag done (1261.2 s)
+[ 1294.8s rss=1.07GB]   operating point (0.4, 5, 0.8, 0.2) OOF rank F1 0.9417
+[ 1294.9s rss=1.07GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9417, "f1@0.1/0.3/0.5/0.7": [0.977, 0.966, 0.883, 0.574], "tp_fp_fn@0.3": [185, 7, 6], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.716}}
+[ 1294.9s rss=1.07GB] fit done in 1293.3 s -> /home/user/data_raw/I2/runs/tcnW_bag0/fold_0
+[tcnW_bag0] 0 done in 1307s
+[    0.0s rss=1.08GB] fit: 13 training streams, 359 events, config 263ff3b4c0d76a4d
+[   32.2s rss=1.28GB] labels: ignore_clips zero_weight on 1435 blocks (1.289%)
+[   32.2s rss=1.28GB] design: X_proto (111326, 64) X_band (111326, 48) positives 3475
+[   32.3s rss=1.28GB] folds: {0: ['cv1_train_04', 'cv1_train_06', 'cv1_train_07', 'cv1_train_12'], 1: ['cv1_train_05', 'cv1_train_09', 'cv1_train_10'], 2: ['cv1_train_00', 'cv1_train_01', 'cv1_train_02'], 3: ['cv1_train_03', 'cv1_train_08', 'cv1_train_11']}
+[  480.6s rss=1.28GB] tcn: CV fold 0 done (448 s)

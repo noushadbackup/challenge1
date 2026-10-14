@@ -1,0 +1,51 @@
+{
+ "free_rows": 574,
+ "free_removal_changes_score": 0,
+ "nms_suppressed_by_free": 0,
+ "nms_suppressed_hits": 9,
+ "dropped": {
+  "T0": {
+   "tp": 5,
+   "fp": 7,
+   "free": 9,
+   "other": 0
+  },
+  "HT": {
+   "tp": 1,
+   "fp": 11,
+   "free": 8,
+   "other": 0
+  },
+  "XT0": {
+   "tp": 14,
+   "fp": 18,
+   "free": 31,
+   "other": 1
+  },
+  "XHT": {
+   "tp": 5,
+   "fp": 14,
+   "free": 29,
+   "other": 0
+  },
+  "XHTF": {
+   "tp": 6,
+   "fp": 18,
+   "free": 31,
+   "other": 2
+  },
+  "XHTP": {
+   "tp": 6,
+   "fp": 21,
+   "free": 32,
+   "other": 0
+  },
+  "XHTPF": {
+   "tp": 5,
+   "fp": 21,
+   "free": 24,
+   "other": 1
+  }
+ },
+ "cells": 15
+}

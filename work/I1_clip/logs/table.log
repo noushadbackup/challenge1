@@ -1,0 +1,10 @@
+REF: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.8942 (sd 0.009164289987136948) folds [0.869, 0.8475, 0.8913, 0.97] val 0.9606 tp/fp/fn 238.0/35.7/15.0
+N4: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9080 (sd 0.005797525533748104) folds [0.8919, 0.8578, 0.9003, 0.9823] val 0.9606 tp/fp/fn 237.0/26.7/16.0
+NS: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9033 (sd 0.005880667839014462) folds [0.8854, 0.8529, 0.9003, 0.9745] val 0.9606 tp/fp/fn 233.7/25.3/19.3
+G5: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9126 (sd 0.0014767702546146467) folds [0.8878, 0.8987, 0.8976, 0.9649] val 0.9395 tp/fp/fn 239.7/27.0/13.3
+G7: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9069 (sd 0.003754218458441277) folds [0.8921, 0.8796, 0.893, 0.9629] val 0.9470 tp/fp/fn 240.3/30.3/12.7
+G5N4: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9266 (sd 0.0016787286142073807) folds [0.9175, 0.9103, 0.9044, 0.9722] val 0.9462 tp/fp/fn 238.0/17.7/15.0
+G7N4: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9221 (sd 0.0032917200375523837) folds [0.918, 0.8886, 0.9062, 0.9752] val 0.9517 tp/fp/fn 238.7/20.0/14.3
+G7NS: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9186 (sd 0.004637772800718884) folds [0.9106, 0.8842, 0.9062, 0.9726] val 0.9517 tp/fp/fn 235.7/18.7/17.3
+D: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.8904 (sd 0.01001312900633437) folds [0.8737, 0.8329, 0.8931, 0.965] val 0.9328 tp/fp/fn 238.3/38.0/14.7
+DN4: bags ['tcn_bag1', 'tcn_bag2', 'uwb_default'] pooled 0.9065 (sd 0.010174169415573978) folds [0.8988, 0.8493, 0.9021, 0.9772] val 0.9421 tp/fp/fn 237.3/27.7/15.7

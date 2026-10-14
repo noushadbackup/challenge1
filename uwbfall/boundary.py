@@ -124,6 +124,15 @@ def refine(D: pd.DataFrame, b: dict):
     S = np.vstack([D[f"{c}_s"].values for c in b["crops"]]).astype(float)
     E = np.vstack([D[f"{c}_e"].values for c in b["crops"]]).astype(float)
     ok = np.isfinite(S) & np.isfinite(E) & (E > S) & (tiou(S, E, s0, e0) >= b["gate"])
+    if b.get("fallback", "detector") == "contain":
+        # I2: a candidate whose crops all fail the tIoU gate (typically a detector interval much wider than the
+        # fall) uses the crops lying mostly inside the detector interval instead of the raw detector bounds
+        inter = np.maximum(0, np.minimum(E, e0) - np.maximum(S, s0))
+        inside = np.isfinite(S) & np.isfinite(E) & (E > S) & (inter >= b.get("contain_frac", 0.8) * (E - S))
+        none = ok.sum(0) == 0
+        ok = ok | (inside & none[None, :])
+    if b.get("agg", "median") == "cluster":
+        ok = ok & _largest_cluster(S, E, ok, b.get("cluster_iou", 0.8))
     Sm = np.where(ok, S, np.nan); Em = np.where(ok, E, np.nan)
     use = ok.sum(0) >= b.get("min_ok", 1)
     with np.errstate(all="ignore"):
@@ -137,6 +146,25 @@ def refine(D: pd.DataFrame, b: dict):
     return s, e, use
 
 
+def _largest_cluster(S, E, ok, thr):
+    """Mode-aware crop aggregation (I2, R2_EVAL open issue): among the agreeing crops of a candidate, keep the
+    largest group of crops whose replay has tIoU >= thr with a medoid crop (the medoid maximises the group size;
+    ties -> larger summed tIoU, then the earlier crop). A 3-vs-3 split of two bursts then no longer averages the
+    two modes; with a single mode it equals the plain median."""
+    keep = np.zeros_like(ok)
+    for i in range(S.shape[1]):
+        idx = np.flatnonzero(ok[:, i])
+        if len(idx) <= 1:
+            keep[idx, i] = True
+            continue
+        T = tiou(S[idx, i][:, None], E[idx, i][:, None], S[idx, i][None, :], E[idx, i][None, :])
+        A = T >= thr
+        key = [(A[j].sum(), T[j][A[j]].sum(), -j) for j in range(len(idx))]
+        j = max(range(len(idx)), key=lambda q: key[q])
+        keep[idx[A[j]], i] = True
+    return keep
+
+
 def to_preds(D: pd.DataFrame, s, e, durations: dict[str, float]) -> pd.DataFrame:
     out = []
     for sid, a, bb, sc in zip(D.stream_id, s, e, D.score):
@@ -145,3 +173,106 @@ def to_preds(D: pd.DataFrame, s, e, durations: dict[str, float]) -> pd.DataFrame
             out.append({"stream_id": sid, "t_start": round(float(a), 3), "t_end": round(float(bb), 3),
                         "score": float(sc), "t_alarm": round(float(a), 3)})
     return pd.DataFrame(out, columns=["stream_id", "t_start", "t_end", "score", "t_alarm"])
+
+
+# ----------------------------------------------------------------------------- W4 hypothesis selector (I2)
+# Each candidate gets boundary hypotheses: the reference median of agreeing crops ("med", if any crop agrees),
+# every single crop replay, and the detector bounds ("det"); all with the duration floor. A LightGBM regressor
+# predicts each hypothesis's tIoU with the ground truth from replay internals (crop agreement, spread, anchor
+# radar, annotator quality flags, offsets to the detector and to junctions); the argmax replaces the median when
+# its predicted tIoU exceeds the median's by more than `margin`. Every hypothesis is an annotator output or the
+# detector, so no padding/shift is learned (start-error tie-break protected).
+
+SEL_FEATURES = ["is_med", "is_det", "crop_i", "t_det", "t_med", "support8", "mean_t_crops", "dur", "ds", "de",
+                "det_dur", "score", "n_ok", "spread_s", "spread_e", "lowq", "n_rev", "anchor", "onset_spread",
+                "to_jprev", "to_jnext", "use"]
+
+
+def hypotheses(D: pd.DataFrame, b: dict) -> pd.DataFrame:
+    """Long table (one row per candidate x hypothesis) with SEL_FEATURES and columns row (candidate index), hs, he."""
+    s_med, e_med, use = refine(D, b)
+    s0, e0 = D.t_start.values.astype(float), D.t_end.values.astype(float)
+    crops = b["crops"]
+    dmin = b.get("dmin", 0.0)
+    S = np.vstack([D[f"{c}_s"].values for c in crops]).astype(float)
+    E = np.vstack([D[f"{c}_e"].values for c in crops]).astype(float)
+    fin = np.isfinite(S) & np.isfinite(E) & (E > S)
+    E2 = np.where(fin, np.maximum(E, S + dmin), np.nan)
+    ok = fin & (tiou(S, E, s0, e0) >= b["gate"])
+    with np.errstate(all="ignore"):
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            sp_s, sp_e = np.nanstd(np.where(fin, S, np.nan), 0), np.nanstd(np.where(fin, E, np.nan), 0)
+    jp = D.jprev.values.astype(float) if "jprev" in D else np.full(len(D), np.nan)
+    jn = D.jnext.values.astype(float) if "jnext" in D else np.full(len(D), np.nan)
+    rows = []
+    for i in range(len(D)):
+        H = []
+        if use[i]:
+            H.append((s_med[i], e_med[i], 1, 0, -1))
+        for c in range(len(crops)):
+            if fin[c, i]:
+                H.append((S[c, i], E2[c, i], 0, 0, c))
+        H.append((s0[i], max(e0[i], s0[i] + dmin), 0, 1, -1))
+        hs = np.array([h[0] for h in H]); he = np.array([h[1] for h in H])
+        cs, ce = S[fin[:, i], i], E2[fin[:, i], i]
+        for (a, z, im, idt, ci) in H:
+            tc = tiou(cs, ce, a, z) if len(cs) else np.zeros(0)
+            nm = crops[ci] if ci >= 0 else None
+            rev = D[f"{nm}_rev"].iloc[i] if nm and f"{nm}_rev" in D else ""
+            rows.append(dict(row=i, hs=a, he=z, is_med=im, is_det=idt, crop_i=ci,
+                             t_det=float(tiou(a, z, s0[i], e0[i])),
+                             t_med=float(tiou(a, z, s_med[i], e_med[i])) if use[i] else np.nan,
+                             support8=int((tc >= 0.8).sum()), mean_t_crops=float(tc.mean()) if len(tc) else np.nan,
+                             dur=z - a, ds=a - s0[i], de=z - e0[i], det_dur=e0[i] - s0[i],
+                             score=float(D.score.iloc[i]) if "score" in D else np.nan, n_ok=int(ok[:, i].sum()),
+                             spread_s=sp_s[i], spread_e=sp_e[i],
+                             lowq=float(D[f"{nm}_lowq"].iloc[i]) if nm and f"{nm}_lowq" in D else np.nan,
+                             n_rev=float(len([x for x in str(rev).split(";") if x and x != "nan"])) if nm else np.nan,
+                             anchor=float(D[f"{nm}_anchor"].iloc[i]) if nm and f"{nm}_anchor" in D else np.nan,
+                             onset_spread=float(D[f"{nm}_spread"].iloc[i]) if nm and f"{nm}_spread" in D else np.nan,
+                             to_jprev=a - jp[i], to_jnext=jn[i] - z, use=int(use[i])))
+    return pd.DataFrame(rows)
+
+
+def selector_targets(H: pd.DataFrame, D: pd.DataFrame, gt: pd.DataFrame, min_iou: float = 0.1) -> np.ndarray:
+    """tIoU of each hypothesis with the candidate's ground-truth event (the evaluable GT event of the stream with
+    the largest tIoU over the candidate's hypotheses); NaN for candidates without a GT event >= min_iou."""
+    y = np.full(len(H), np.nan)
+    for i, g in H.groupby("row"):
+        sid = D.stream_id.iloc[i]
+        ev = gt[gt.stream_id == sid]
+        if not len(ev):
+            continue
+        T = np.stack([tiou(g.hs.values, g.he.values, a, z) for a, z in zip(ev.t_start.values, ev.t_end.values)])
+        j = int(np.argmax(T.max(1)))
+        if T[j].max() >= min_iou:
+            y[g.index.values] = T[j]
+    return y
+
+
+def fit_selector(H: pd.DataFrame, y: np.ndarray, seed: int = 0):
+    import lightgbm as lgb
+    m = np.isfinite(y)
+    return lgb.LGBMRegressor(n_estimators=300, learning_rate=0.03, num_leaves=15, min_child_samples=20,
+                             subsample=0.8, subsample_freq=1, colsample_bytree=0.8, random_state=seed,
+                             deterministic=True, force_row_wise=True, n_jobs=2, verbose=-1).fit(H.loc[m, SEL_FEATURES], y[m])
+
+
+def select(D: pd.DataFrame, b: dict, model, margin: float = 0.0, H: pd.DataFrame | None = None):
+    """Selector boundaries: (t_start, t_end, replaced-mask) like refine(). Falls back to refine() where the best
+    predicted hypothesis does not beat the reference hypothesis (med if used, else det) by more than margin."""
+    s, e, use = refine(D, b)
+    if H is None:
+        H = hypotheses(D, b)
+    if not len(H):
+        return s, e, use
+    H = H.assign(pred=model.predict(H[SEL_FEATURES]))
+    s, e = s.copy(), e.copy()
+    for i, g in H.groupby("row"):
+        ref = g[(g.is_med == 1)] if use[i] else g[g.is_det == 1]
+        j = g.pred.idxmax()
+        if g.pred[j] > ref.pred.iloc[0] + margin:
+            s[i], e[i] = g.hs[j], g.he[j]
+    return s, e, use

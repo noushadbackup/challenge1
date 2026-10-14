@@ -27,11 +27,12 @@ from sklearn.model_selection import GroupKFold
 
 from . import __version__
 from . import clip as CL
+from . import hitmodel as HM
 from .boundary import refine, replay_stream, to_preds
 from .config import check_implemented, config_hash, load_config
 from .decode import decode_streams, events_df, to_events, tune
 from .extract import EXTRACTOR_VERSION, get_features
-from .features import block_labels, design, fit_pca, stream_blocks
+from .features import block_labels, design, fit_pca, hgb_design, ignore_clip_mask, stream_blocks
 from .models import build_tcn, fit_hgb, predict_seq, seqs, setup_torch, standardise, train_tcn
 from .scoring import gt_records, score_inproc, summary
 from .sources import StreamSource, events_for
@@ -92,13 +93,17 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
     timings["features_s"] = round(time.time() - t_start, 1)
     pca = fit_pca([b["amp"] for b in blks], cfg)
     Xp, Xb, Y, SID, cols = [], [], [], [], None
-    need_comp = cfg["hgb"]["postfall_class"] or cfg["clip"]["segclf"]["enabled"]
+    ign = cfg["labels"]["ignore_clips"] == "zero_weight"
+    need_comp = cfg["hgb"]["postfall_class"] or cfg["clip"]["segclf"]["enabled"] or ign
     comps = {s.sid: CL.composition_of(s) for s in sources} if need_comp else {}
-    Y3, clip_in = [], []
+    Y3, clip_in, Xh, W = [], [], [], []
     for s, b in zip(sources, blks):
         xp, xb, cols = design(b, pca, cfg)
         y, _fl = block_labels(ev, s.sid, b["n"])
         Xp.append(xp); Xb.append(xb); Y.append(y.astype(np.int8)); SID.append(np.full(b["n"], s.sid))
+        Xh.append(hgb_design(b, xp, cfg))
+        if ign:
+            W.append(np.where(ignore_clip_mask(ev, comps[s.sid], s.sid, b["n"]), 0.0, 1.0))
         if cfg["hgb"]["postfall_class"]:
             pf = CL.postfall_labels(ev, comps[s.sid], s.sid, b["n"])
             Y3.append(np.where(y, 1, np.where(pf, 2, 0)).astype(np.int8))
@@ -107,6 +112,12 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
             clip_in.append((s, b["base"], xp[:, fpc]))
         b.pop("amp")
     Xp, Xb, y, sid = np.vstack(Xp), np.vstack(Xb), np.concatenate(Y), np.concatenate(SID)
+    Xh = np.vstack(Xh)
+    W = np.concatenate(W) if W else None
+    w_hgb = W if W is not None and "hgb" in cfg["labels"]["ignore_members"] else None
+    w_tcn = W if W is not None and "tcn" in cfg["labels"]["ignore_members"] else None
+    if W is not None:
+        log(f"labels: ignore_clips zero_weight on {int((W == 0).sum())} blocks ({(W == 0).mean():.3%})")
     y_hgb = np.concatenate(Y3) if Y3 else y
     del blks
     log(f"design: X_proto {Xp.shape} X_band {Xb.shape} positives {int(y.sum())}")
@@ -123,9 +134,9 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         t0 = time.time()
         oof_hgb = np.zeros(len(y))
         for k in range(K):
-            m = fit_hgb(Xp[fold != k], y_hgb[fold != k], cfg)
-            oof_hgb[fold == k] = m.predict_proba(Xp[fold == k])[:, 1]  # class 1 = fall (also with post-fall class 2)
-        hgb = fit_hgb(Xp, y_hgb, cfg)
+            m = fit_hgb(Xh[fold != k], y_hgb[fold != k], cfg, None if w_hgb is None else w_hgb[fold != k])
+            oof_hgb[fold == k] = m.predict_proba(Xh[fold == k])[:, 1]  # class 1 = fall (also with post-fall class 2)
+        hgb = fit_hgb(Xh, y_hgb, cfg, w_hgb)
         with open(out / "hgb.pkl", "wb") as f:
             pickle.dump(hgb, f)
         timings["hgb_s"] = round(time.time() - t0, 1)
@@ -143,7 +154,7 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         np.savez(out / "tcn_norm.npz", mu=mu, sd=sd)
         probs = np.zeros((tc["seeds"], len(y)), np.float32)
         for k in range(K):
-            tr = seqs(Xs, y, sid, fold != k)
+            tr = seqs(Xs, y, sid, fold != k, w_tcn)
             ho_ids = np.unique(sid[fold == k])
             for s in range(tc["seeds"]):
                 model = train_tcn(tr, cfg, seed=tc["cv_seed_base"] * s + k + tc["seed_offset"], epochs=tc["epochs"])
@@ -153,13 +164,23 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
             log(f"tcn: CV fold {k} done ({time.time() - t0:.0f} s)")
         oof_tcn = probs.mean(0)
         del probs
-        all_seqs = seqs(Xs, y, sid, np.ones(len(y), bool))
+        all_seqs = seqs(Xs, y, sid, np.ones(len(y), bool), w_tcn)
         for s in range(tc["seeds"]):
             model = train_tcn(all_seqs, cfg, seed=tc["final_seed_base"] + s + tc["seed_offset"], epochs=tc["epochs"])
             torch.save(model.state_dict(), out / f"tcn_{s}.pt")
         timings["tcn_s"] = round(time.time() - t0, 1)
         log(f"tcn: CV + final bag done ({timings['tcn_s']} s)")
 
+    base_meta = {"train_streams": [s.sid for s in sources], "content_keys": keys, "folds": folds,
+                 "proto_cols": cols, "n_blocks": int(len(y))}
+    return _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in, comps, pca, base_meta,
+                   timings, t_start)
+
+
+def _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in, comps, pca, base_meta, timings,
+            t_start) -> Path:
+    """Post-model stages shared by fit() and retune(): clip stage, blended (gated) OOF -> operating point,
+    OOF replay + final NMS, bundle metadata."""
     # clip stage (W3): junction threshold, segment classifier, subject-grouped OOF gate
     clip_state, gate_oof = None, None
     if clip_in:
@@ -168,7 +189,7 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         with open(out / "clip.pkl", "wb") as f:
             pickle.dump(clip_state, f)
         timings["clip_s"] = round(time.time() - t0, 1)
-    del clip_in
+    clip_in = None
 
     # operating point on the blended OOF
     t0 = time.time()
@@ -198,8 +219,7 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
 
     meta = {
         "uwbfall_version": __version__, "git_rev": _git_rev(), "extractor_version": EXTRACTOR_VERSION,
-        "config_hash": config_hash(cfg), "train_streams": [s.sid for s in sources], "content_keys": keys,
-        "folds": folds, "proto_cols": cols, "n_blocks": int(len(y)),
+        "config_hash": config_hash(cfg), **base_meta,
         "postproc": list(g), "oof_rank_f1_tuned": oof_rank, "oof": oof_report,
         "decode_grid_table": table,
         "clip": None if clip_state is None else {"junction_thr": clip_state["thr"], "junction_diag": clip_state["diag"],
@@ -263,6 +283,104 @@ def _fit_clip(clip_in, comps, cfg, log):
     return state, gate_oof
 
 
+RETUNE_SECTIONS = ("clip", "decode", "boundary", "report")
+MODEL_FILES = ("pca.pkl", "hgb.pkl", "tcn_norm.npz", "tcn_0.pt", "tcn_1.pt", "tcn_2.pt", "tcn_3.pt", "tcn_4.pt")
+
+
+def retune(bundle, train_sources: list[StreamSource], events: pd.DataFrame | None, overrides: dict, out_dir,
+           log=None) -> Path:
+    """Re-run the post-model stages of fit() on an existing bundle without retraining HGB / TCN: clip stage
+    (junction threshold + segment classifier), gated OOF -> operating point, OOF replay + final NMS.
+
+    `overrides` may only touch the sections in RETUNE_SECTIONS; the model sections stay those of the bundle.
+    The training sources must be the bundle's (checked by stream id and block count). The result equals what
+    fit() would produce with the merged config, given the same HGB / TCN OOF probabilities and final models."""
+    import shutil
+    src = Path(bundle)
+    bad = set(overrides) - set(RETUNE_SECTIONS)
+    if bad:
+        raise ValueError(f"retune can only change {RETUNE_SECTIONS}, not {sorted(bad)}")
+    raw = json.loads((src / "config.json").read_text())
+    if "clip" not in raw:
+        raw["clip"] = {"segclf": {"enabled": False}, "gate": "none"}
+    base = load_config(raw)
+    cfg = load_config(_deep(base, overrides))
+    check_implemented(cfg)
+    if cfg["hgb"]["postfall_class"] != base["hgb"]["postfall_class"]:
+        raise ValueError("hgb.postfall_class needs a refit")
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    log = log or _logger(out / "train.log")
+    _lim = setup_torch(cfg)  # noqa: F841
+    t_start = time.time()
+    for f in MODEL_FILES:
+        if (src / f).exists():
+            shutil.copy(src / f, out / f)
+    meta0 = json.loads((src / "meta.json").read_text())
+    with open(src / "pca.pkl", "rb") as f:
+        pca = pickle.load(f)
+    z = np.load(src / "oof.npz")
+    sid, y, fold = z["sid"], z["y"], z["fold"]
+    oof_hgb = z["oof_hgb"] if len(z["oof_hgb"]) else None
+    oof_tcn = z["oof_tcn"] if len(z["oof_tcn"]) else None
+    sources = sorted(train_sources, key=lambda s: s.sid)
+    if [s.sid for s in sources] != meta0["train_streams"]:
+        raise ValueError("retune: training sources differ from the bundle's")
+    ev = events_for(sources, events)
+    log(f"retune {src} -> {out}: overrides {json.dumps(overrides)}, config {config_hash(cfg)}")
+    need_clip = cfg["clip"]["segclf"]["enabled"] or cfg["decode"]["one_event_per_clip"] == "segment"
+    comps = {s.sid: CL.composition_of(s) for s in sources} if need_clip else {}
+    clip_in = []
+    if need_clip:
+        for s in sources:
+            F = get_features(s, cfg, log)
+            b = stream_blocks(F, cfg)
+            xp, _xb, cols = design(b, pca, cfg)
+            if b["n"] != int((sid == s.sid).sum()):
+                raise ValueError(f"retune: block count of {s.sid} differs from the bundle OOF")
+            fpc = [i for i, c in enumerate(cols) if c.startswith("fp") and not c.startswith("fpseg")]
+            clip_in.append((s, b["base"], xp[:, fpc]))
+            s.release()
+            del F
+    base_meta = {k: meta0[k] for k in ("train_streams", "content_keys", "folds", "proto_cols", "n_blocks")}
+    base_meta["retuned_from"] = {"path": str(src), "config_hash": meta0.get("config_hash"),
+                                 "git_rev": meta0.get("git_rev")}
+    timings = {k: v for k, v in meta0.get("timings", {}).items() if k in ("features_s", "hgb_s", "tcn_s")}
+    return _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in, comps, pca, base_meta,
+                   timings, t_start)
+
+
+def attach_hit(bundle, hit_state: dict, out_dir) -> Path:
+    """W5 (I3): copy a bundle and attach an event hit model. hit_state = {"model": hitmodel.HitModel,
+    "tau": float | None, "meta": {...}} (from hitmodel.fit_nested on SR-CV OOF candidate tables). Sets
+    score.hit_model="lgbm" and score.threshold=tau in the copied config.json."""
+    import shutil
+    src, out = Path(bundle), Path(out_dir)
+    if out.exists():
+        shutil.rmtree(out)
+    shutil.copytree(src, out)
+    raw = json.loads((out / "config.json").read_text())
+    cfg = load_config(raw if "clip" in raw else {**raw, "clip": {"segclf": {"enabled": False}, "gate": "none"}})
+    cfg["score"].update({"hit_model": "lgbm", "threshold": hit_state.get("tau"),
+                         **{k: v for k, v in hit_state["model"].cfg_s.items() if k in cfg["score"] and k not in
+                            ("hit_model", "threshold")}})
+    check_implemented(cfg)
+    (out / "config.json").write_text(json.dumps(cfg, indent=1))
+    with open(out / "hit.pkl", "wb") as f:
+        pickle.dump(hit_state, f)
+    meta = json.loads((out / "meta.json").read_text())
+    meta["hit_model"] = hit_state.get("meta", {})
+    (out / "meta.json").write_text(json.dumps(meta, indent=1, default=str))
+    return out
+
+
+def _deep(a: dict, b: dict) -> dict:
+    out = dict(a)
+    for k, v in b.items():
+        out[k] = _deep(a[k], v) if isinstance(v, dict) and isinstance(a.get(k), dict) and k != "grid" else v
+    return out
+
+
 def _nms(df: pd.DataFrame, cfg: dict, peaks: dict) -> pd.DataFrame:
     mode = cfg["decode"]["one_event_per_clip"]
     if mode == "time":
@@ -287,6 +405,10 @@ def load_bundle(path) -> dict:
     if cfg["hgb"]["enabled"]:
         with open(p / "hgb.pkl", "rb") as f:
             B["hgb"] = pickle.load(f)
+    B["hit"] = None
+    if cfg["score"]["hit_model"] is not None:
+        with open(p / "hit.pkl", "rb") as f:
+            B["hit"] = pickle.load(f)
     B["clip"] = None
     if (p / "clip.pkl").exists():
         with open(p / "clip.pkl", "rb") as f:
@@ -308,7 +430,7 @@ def stream_probs(B: dict, F: dict) -> tuple[np.ndarray, dict]:
     cfg = B["cfg"]
     blk = stream_blocks(F, cfg)
     xp, xb, cols = design(blk, B["pca"], cfg)
-    p_hgb = B["hgb"].predict_proba(xp)[:, 1] if B["hgb"] is not None else None
+    p_hgb = B["hgb"].predict_proba(hgb_design(blk, xp, cfg))[:, 1] if B["hgb"] is not None else None
     p_tcn = None
     if B["tcn"]:
         X = np.hstack([xp.astype(np.float32), xb]) if cfg["features"]["use_bands"] else xp.astype(np.float32)
@@ -359,7 +481,13 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
         if cfg["boundary"]["method"] == "replay" and len(c):
             D = replay_stream(s, F["prof_02"], c, cfg)
             a, e, use = refine(D, cfg["boundary"])
-            r = to_preds(D, a, e, durations)
+            if B.get("hit") is not None:   # W5 (I3): event hit model replaces the score before the final NMS
+                X = HM.candidate_features(D, cfg["boundary"], {s.sid: p}, {s.sid: parts},
+                                          {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {})
+                r = HM.final_rows(D, cfg["boundary"], durations,
+                                  score=np.round(B["hit"]["model"].predict(X), 6)).drop(columns="row")
+            else:
+                r = to_preds(D, a, e, durations)
             n_rep = int(use.sum())
         else:
             r = to_preds(c, c.t_start.values, c.t_end.values, durations) if len(c) else c
@@ -367,6 +495,8 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
         s.release()
         if len(r):
             r = _nms(r, cfg, {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {})
+        if len(r) and B.get("hit") is not None and cfg["score"]["threshold"] is not None:
+            r = r[r.score >= float(cfg["score"]["threshold"])].reset_index(drop=True)
         rows.append(r)
         cands.append(c)
         if return_debug:

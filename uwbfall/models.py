@@ -20,8 +20,13 @@ def hgb_params(cfg: dict) -> dict:
                 l2_regularization=h["l2_regularization"], random_state=h["random_state"], early_stopping=es)
 
 
-def fit_hgb(X: np.ndarray, y: np.ndarray, cfg: dict) -> HistGradientBoostingClassifier:
-    return HistGradientBoostingClassifier(**hgb_params(cfg)).fit(X, y)
+def fit_hgb(X: np.ndarray, y: np.ndarray, cfg: dict, w: np.ndarray | None = None) -> HistGradientBoostingClassifier:
+    """w: optional per-block loss weights (labels.ignore_clips); rows with w == 0 are dropped, which is the same
+    as zero sample weight for the loss and keeps the binning on the remaining rows."""
+    if w is None:
+        return HistGradientBoostingClassifier(**hgb_params(cfg)).fit(X, y)
+    k = w > 0
+    return HistGradientBoostingClassifier(**hgb_params(cfg)).fit(X[k], y[k])
 
 
 # ----------------------------------------------------------------------------- TCN
@@ -71,11 +76,13 @@ def build_tcn(cin: int, cfg: dict) -> MSTCN:
     return MSTCN(cin, t["hidden"], t["stages"], t["drop"], t["in_drop"], t["dilations"])
 
 
-def seqs(X, y, sid, keep):
+def seqs(X, y, sid, keep, w=None):
+    """Per-stream (X^T, y) tensors; with w (per-block loss weights) the tuples carry a third weight tensor."""
     out = []
     for s in np.unique(sid[keep]):
         m = sid == s
-        out.append((torch.from_numpy(X[m].T.copy()), torch.from_numpy(y[m].astype(np.float32))))
+        t = (torch.from_numpy(X[m].T.copy()), torch.from_numpy(y[m].astype(np.float32)))
+        out.append(t if w is None else t + (torch.from_numpy(w[m].astype(np.float32)),))
     return out
 
 
@@ -85,6 +92,15 @@ def _loss(outs, yb):
         loss = loss + F.binary_cross_entropy_with_logits(o, yb)
         lp = F.logsigmoid(o)
         loss = loss + 0.15 * torch.clamp((lp[:, 1:] - lp[:, :-1].detach()) ** 2, max=16).mean() if len(outs) > 1 else loss
+    return loss
+
+
+def _wloss(outs, yb, wb):
+    """BCE with per-block weights (single-stage TCN; weights 0 = ignore zone). Mean over weighted blocks."""
+    loss = 0.0
+    for o in outs:
+        b = F.binary_cross_entropy_with_logits(o, yb, reduction="none")
+        loss = loss + (b * wb).sum() / wb.sum().clamp(min=1.0)
     return loss
 
 
@@ -100,15 +116,22 @@ def train_tcn(tr_seqs, cfg: dict, seed: int, epochs: int) -> MSTCN:
         model.train()
         for _ in range(t["steps"]):
             idx = rng.choice(len(tr_seqs), t["batch"], p=lens / lens.sum())
-            xb, yb = [], []
+            xb, yb, wb = [], [], []
             for i in idx:
-                x, y = tr_seqs[i]
+                x, y = tr_seqs[i][:2]
                 a = rng.integers(0, y.shape[0] - t["win"])
                 xb.append(x[:, a : a + t["win"]])
                 yb.append(y[a : a + t["win"]])
+                if len(tr_seqs[i]) == 3:
+                    wb.append(tr_seqs[i][2][a : a + t["win"]])
             xb = torch.stack(xb)
             xb = xb + t["noise"] * torch.randn_like(xb)
-            loss = _loss(model(xb), torch.stack(yb))
+            if wb:
+                if len(model.stages) > 1:
+                    raise NotImplementedError("loss weights are implemented for the single-stage TCN only")
+                loss = _wloss(model(xb), torch.stack(yb), torch.stack(wb))
+            else:
+                loss = _loss(model(xb), torch.stack(yb))
             opt.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 1.0)

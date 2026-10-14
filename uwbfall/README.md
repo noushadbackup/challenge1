@@ -15,9 +15,22 @@ parity tests import from there. The package only reads the challenge package and
 - The train OOF probabilities of the HGB and of the TCN bag are bit-equal to E4's `probs_hgb.npz` and `probs_tcn_all.npz`.
 - Details are in the Verification section below.
 
-## Round-2 status (evaluation engineer)
+## Round-2 status
 
-**REFERENCE SYSTEM = `configs/reference.json` = `DEFAULT_CONFIG`.** It is the blend 0.75 TCN + 0.25 HGB plus replay with agreement gate **0.3**.
+**REFERENCE SYSTEM (after I1) = `configs/reference.json` = `DEFAULT_CONFIG`** (checked by `tests/check_configs.py`).
+It is C3G3 plus the W3 clip stage, promoted in `reports/round2/I1.md`:
+- the frame posteriors are gated by P(fall clip) of the block's junction-to-junction segment
+  (`clip.segclf.enabled`, `clip.gate = "mult"`, `clip.gate_floor = 0.7`);
+- after replay, a hard 1-D NMS keeps at most one row within 4 s of a higher-scored row
+  (`decode.one_event_per_clip = "time"`, `decode.nms_gap_s = 4`).
+- SR-CV pooled ranking F1 is 0.922 (3 TCN bags), against 0.894 for C3G3: P = 1.000, 4/4 folds.
+  Val 3-bag mean is 0.9517, against 0.9606 (bag 0: 0.9524, 64/2/3 @0.3, against 0.9646, 65/0/2).
+- The previous reference is pinned as `configs/C3G3.json`.
+- Bundles trained without the clip stage can be upgraded without retraining the HGB / TCN:
+  `python3 -m uwbfall retune --models <bundle> --train-splits <same splits> --out <new bundle>`.
+  This re-runs the clip stage, the operating-point search, the OOF replay and the NMS.
+
+**Previous status (evaluation engineer): C3G3** is the blend 0.75 TCN + 0.25 HGB plus replay with agreement gate **0.3**.
 - SR-CV pooled ranking F1 is 0.894 (3 TCN bags), against 0.886 for gate 0.1. The promotion rule gives P = 1.000 with 4/4 folds.
 - Val is 0.9646, 65/0/2 (bag 0).
 - Details are in `reports/round2/EVAL.md`.
@@ -44,6 +57,8 @@ Other commands:
 - `python3 -m uwbfall extract --sources train,val,test` warms the feature cache.
 - `--train-splits train,val` trains on train and val together, for the final test submission.
 - `python3 -m uwbfall predict ... --candidates cand.csv` also writes the detector candidates from before the replay.
+- `python3 -m uwbfall retune --models <bundle> [--config cfg.json] --train-splits train --out <dir>` re-runs only the post-model stages of fit: clip stage, operating point, OOF replay and NMS. Only the `clip / decode / boundary / report` sections of the config are used.
+- `python3 -m uwbfall predict ... --nms off|time [--nms-gap 4]` overrides only the final NMS.
 
 ### Python API
 
@@ -72,8 +87,9 @@ then come from the writer's own events.
 | `decode.py` | `to_events`, the 60-point operating-point grid, tuning on OOF with the official evaluator code. | prototype / `E4/lib.py` |
 | `boundary.py` | Annotator replay on distinct frames (`abc2027.annotate.propose_fall`), the crops `loc/det/detq L_R d`, refine (gate, median, floor) and clipping. | `E2/s2_replay.py`, `E2/s3_select.py` |
 | `scoring.py` | Thin wrappers over `abc2027.evaluate`: `load_ground_truth`, `validate_predictions`, `evaluate`, and the CLI subprocess. | package code |
-| `pipeline.py` | `fit`, `load_bundle`, `predict`. | INTEGRATION |
-| `cli.py` | `train / predict / score / extract`. | |
+| `clip.py` | W3 clip stage: variance-normalised junction statistic and threshold, junction-to-junction segment features, LightGBM segment classifier helpers, gate, time / segment NMS, post-fall labels. | `work/I1_clip` |
+| `pipeline.py` | `fit`, `retune`, `load_bundle`, `predict`. | INTEGRATION |
+| `cli.py` | `train / retune / predict / score / extract`. | |
 
 **Fit** runs these steps:
 1. Features are extracted one stream at a time and cached.
@@ -83,6 +99,12 @@ then come from the writer's own events.
 5. TCN: standardise on all train blocks (label-free). For each fold k and bag member s, train with seed `100·s+k` for 8 epochs. OOF is the seed mean. Then 3 final members are trained with seeds `1000+s`.
 6. The blend `0.75·TCN + 0.25·HGB` is formed on OOF. The operating point (thr, smooth, min_dur, gap) is the first maximum of the official ranking F1 over the grid on train OOF.
 7. With `report.oof_replay`, the boundary replay also runs on the OOF candidates and is saved as `oof_final.csv`. This is the pooled OOF a later SR-CV needs.
+
+With the clip stage on (reference), two steps change:
+- Before step 6, the junction threshold is set for 0.95 recall of fall-clip junctions on the training streams. The streams are cut into junction-to-junction segments, and a LightGBM classifier (adl / fall clip / autre-empty, 18 non-fingerprint features) is trained on the training composition. Its subject-grouped OOF P(fall clip) gates the blended OOF before the operating-point search.
+- After step 7, the final NMS runs on `oof_final.csv`.
+
+At predict time, the segment classifier gates the blend, and the NMS runs after the replay. Everything is computed within one stream.
 
 **Predict** handles one stream at a time:
 1. Features (cache), then HGB, then the TCN bag (mean of 3 members), then the blend.
@@ -116,7 +138,9 @@ then come from the writer's own events.
 | `features.proto_set` | "full" | physics, structure or full (prototype column sets) |
 | `features.pca_components`, `pca_stride` | 16, 5 | Train-only static-amplitude fingerprint |
 | `features.bands`, `use_bands` | E4 8 bands, true | Range-band channels (48). Set false for 64 channels. |
-| `labels.flagged` | "positive" | Flagged falls are positives (prototype/E4). Reserved for loss masking (W4). |
+| `features.zones`, `zones_for` | null, ["hgb"] | W4 D3 hedge (I2): per-radar range-zone features `[[radar, a, b), ...]` (e.g. `[[0,40,69],[1,5,22],[2,5,22]]`: 16 static-change/motion/jump features) appended to the HGB input only. Tested in I2, **not promoted** (SR-CV Δ −0.011). |
+| `labels.flagged` | "positive" | Flagged falls are positives (prototype/E4). |
+| `labels.ignore_clips`, `ignore_members` | "off", ["hgb","tcn"] | W4 (I2): `"zero_weight"` gives zero loss weight to whole fall clips that are generator ignore zones (flagged fall with onset < 0.25 s after the clip start, or a hard-cut clip). HGB drops those rows; TCN uses a weighted BCE (single-stage only). **Not promoted** (I2). |
 | `cv.n_folds` | 4 | GroupKFold by stream on the training sources, used for the operating-point OOF |
 | `hgb.*` | prototype params; **`early_stopping: false`** | `max_iter 300, lr 0.06, max_leaf_nodes 31, l2 1.0, random_state 0`. `"auto"` reproduces INTEGRATION (`configs/integration_repro.json`). |
 | `tcn.*` | E4 | `hidden 64, stages 1, dilations 1..64, drop 0.2, in_drop 0.1, noise 0.05, lr 1e-3, wd 1e-2, win 1000, batch 16, steps 20, epochs 8 (E*), seeds 3, cv_seed_base 100, final_seed_base 1000, clip_z 6` |
@@ -124,10 +148,18 @@ then come from the writer's own events.
 | `blend.w_tcn` | 0.75 | Weight of the TCN. One model can be disabled with `hgb.enabled` / `tcn.enabled`. |
 | `decode.grid` | 5×3×2×2 | thr, smooth, min_dur, gap |
 | `decode.fixed` | null | `[thr, smooth, min_dur, gap]` skips the OOF search |
-| `decode.one_event_per_clip` | false | **reserved** (W3). Raises NotImplementedError if enabled. |
+| `decode.one_event_per_clip` | **"time"** | Hard 1-D NMS on the final rows: false, "time" (drop a row within `nms_gap_s` of a higher-scored row) or "segment" (at most one row per junction-to-junction segment, `nms_max_span_s` 18.7). I1 promoted "time". |
+| `decode.nms_gap_s` | **4.0** | Gap for "time": the smallest gap that reaches the best pooled train-OOF ranking F1 |
+| `clip.junction_W`, `junction_recall`, `junction_min_sep_s` | 5, 0.95, 1.0 | Junction statistic window (blocks), recall target on train fall-clip junctions, minimum peak separation |
+| `clip.segclf.*` | **enabled**, LightGBM 200 trees, lr 0.05, 15 leaves, features "nofp", OOF groups "subject" | Segment classifier. The feature set was chosen on subject-grouped train OOF. |
+| `clip.gate`, `gate_floor` | **"mult", 0.7** | p · (floor + (1 − floor) · P(fall clip)). The floor was chosen on train OOF; "none" turns the gate off. |
+| `hgb.postfall_class` | false | 3-class HGB (other / fall / post-fall-in-clip). Tested in I1, not promoted. |
 | `boundary.method` | "replay" | replay or none |
 | `boundary.crops` | B's 6 crops | `loc2_3d, loc2_5d, det2_3d, det2_5d, detq2_3d, detq2_5d` (grammar `(loc\|det\|detq)L_R[d]`) |
 | `boundary.gate`, `min_ok`, `dmin` | **0.3**, 1, 1.0 | Agreement gate tIoU(crop replay, detector), minimum agreeing crops, duration floor (end-extension only). 0.3 promoted on SR-CV in round 2 (reports/round2/EVAL.md); 0.1 = E2 config B (`configs/replayB_gate01.json`, `integration_repro.json`) |
+| `boundary.agg`, `cluster_iou` | "median", 0.8 | I2: `"cluster"` = median of the largest cluster of agreeing crops (medoid tIoU ≥ `cluster_iou`) instead of the median of all agreeing crops. **Not promoted** (SR-CV Δ −0.007, 0/4 folds). |
+| `boundary.fallback`, `contain_frac` | "detector", 0.8 | I2: `"contain"` = when no crop passes the gate, use the median of the crops lying mostly inside the detector interval. Rejected on train OOF (not scored on SR-CV). |
+| `boundary.selector` | null | I2 boundary-hypothesis selector (`boundary.select`). Experiment-only (`work/I2_boundaries/sel.py`); fit/predict refuse it. Not promoted (P = 0.47). |
 | `boundary.ds/de/pds/pde` | 0 | Start/end offsets, for replayed and detector-bound rows |
 | `boundary.dedup` | true | (documentation; the `d` crop suffix controls it per crop) |
 | `boundary.junction_q`, `junction_q_recall` | 97, 95 | Junction percentile thresholds for `det` / `detq` crops |

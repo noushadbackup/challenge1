@@ -1,0 +1,6 @@
+1 test: 275 replayed rows (94s) | uwb_default G7N4 match=True | tcn_bag1 G7N4 match=True | tcn_bag2 G7N4 match=True
+2 test: 192 replayed rows (74s) | uwb_default G7N4 match=True | tcn_bag1 G7N4 match=True | tcn_bag2 G7N4 match=True
+3 test: 249 replayed rows (85s) | uwb_default G7N4 match=True | tcn_bag1 G7N4 match=True | tcn_bag2 G7N4 match=True
+official test: 189 replayed rows (46s) | uwb_default G7N4 match=True | tcn_bag1 G7N4 match=True | tcn_bag2 G7N4 match=True
+0 train: 850 replayed rows (244s)
+1 train: 857 replayed rows (284s)

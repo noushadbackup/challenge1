@@ -1,0 +1,7 @@
+[    1.5s rss=0.43GB] fit: 13 training streams, 359 events, config 7d70d3c15c0d40a8
+[   32.2s rss=1.08GB] labels: ignore_clips zero_weight on 973 blocks (0.874%)
+[   32.2s rss=1.08GB] design: X_proto (111342, 64) X_band (111342, 48) positives 3285
+[   32.2s rss=1.08GB] folds: {0: ['cv2_train_03', 'cv2_train_06', 'cv2_train_07'], 1: ['cv2_train_01', 'cv2_train_02', 'cv2_train_10', 'cv2_train_12'], 2: ['cv2_train_00', 'cv2_train_04', 'cv2_train_08'], 3: ['cv2_train_05', 'cv2_train_09', 'cv2_train_11']}
+[  328.8s rss=1.08GB] tcn: CV fold 0 done (297 s)
+[  679.5s rss=1.08GB] tcn: CV fold 1 done (647 s)
+[ 1128.9s rss=1.08GB] tcn: CV fold 2 done (1097 s)

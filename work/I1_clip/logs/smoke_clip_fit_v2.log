@@ -1,0 +1,16 @@
+[    2.3s rss=0.42GB] fit: 13 training streams, 359 events, config 2f791895687b32dd
+[   33.0s rss=1.05GB] design: X_proto (111268, 64) X_band (111268, 48) positives 3272
+[   33.0s rss=1.05GB] folds: {0: ['train_08', 'train_09', 'train_11'], 1: ['train_00', 'train_03', 'train_06'], 2: ['train_01', 'train_05', 'train_10'], 3: ['train_02', 'train_04', 'train_07', 'train_12']}
+[   88.8s rss=1.05GB] hgb: OOF + final done (55.8 s, n_iter final 300)
+[  116.5s rss=1.36GB] clip: junction threshold 1.0173, train diag {"recall_fall_junctions": 0.9489953632148377, "recall_all_junctions": 0.8607449856733524, "peak_precision": 0.9608723540731238, "peaks_per_min": 4.203364848833447}
+[  149.6s rss=1.36GB] clip: segment classifier on 1572 segments (18 features), subject-grouped OOF AUC fall-vs-rest 0.9719
+[  154.2s rss=1.36GB]   operating point (0.3, 3, 0.8, 0.6) OOF rank F1 0.8997
+[  254.0s rss=1.36GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.8997, "f1@0.1/0.3/0.5/0.7": [0.932, 0.921, 0.846, 0.596], "tp_fp_fn@0.3": [170, 13, 16], "fa_per_h@0.3": 2.1, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.739}, "final": {"rank_f1": 0.9286, "f1@0.1/0.3/0.5/0.7": [0.945, 0.94, 0.901, 0.747], "tp_fp_fn@0.3": [171, 7, 15], "fa_per_h@0.3": 1.13, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.836}}
+[  254.0s rss=1.36GB] fit done in 251.8 s -> /home/user/data_raw/I1/smoke/fit_hgb_clip_v2
+fit: {"postproc": [0.3, 3, 0.8, 0.6], "oof_rank_f1_tuned": 0.8997289972899729, "oof": {"detector": {"rank_f1": 0.8997, "f1@0.1/0.3/0.5/0.7": [0.932, 0.921, 0.846, 0.596], "tp_fp_fn@0.3": [170, 13, 16], "fa_per_h@0.3": 2.1, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.739}, "final": {"rank_f1": 0.9286, "f1@0.1/0.3/0.5/0.7": [0.945, 0.94, 0.901, 0.747], "tp_fp_fn@0.3": [171, 7, 15], "fa_per_h@0.3": 1.13, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.836}}}
+[   15.2s rss=1.36GB] predict val_00: 26 candidates, 24 replay-refined, 15.2 s
+[   29.6s rss=1.36GB] predict val_01: 24 candidates, 23 replay-refined, 14.5 s
+[   42.0s rss=1.36GB] predict val_02: 22 candidates, 20 replay-refined, 12.4 s
+[   53.2s rss=1.36GB] predict val_03: 11 candidates, 11 replay-refined, 11.2 s
+[   54.6s rss=1.36GB] predict val_04: 5 candidates, 5 replay-refined, 1.4 s
+val (official CLI): {"rank_f1": 0.9323, "f1@0.1/0.3/0.5/0.7": [0.962, 0.932, 0.902, 0.782], "tp_fp_fn@0.3": [62, 4, 5], "fa_per_h@0.3": 1.95, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.845}

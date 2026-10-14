@@ -7,13 +7,16 @@ NAME   ?= default_train13
 SPLITS ?= train
 PY      = PYTHONPATH=$(REPO) PYTHONDONTWRITEBYTECODE=1 python3
 
-.PHONY: extract train predict-val score-val predict-test parity verify-repro
+.PHONY: extract train retune predict-val score-val predict-test parity verify-repro
 
 extract:        ## fill the feature cache for train, val (and test when present)
 	$(PY) -m uwbfall extract --sources train,val
 
 train:          ## fit a bundle
 	$(PY) -m uwbfall train --config $(CONFIG) --train-splits $(SPLITS) --out $(MODELS)/$(NAME)
+
+retune:         ## upgrade bundle $(FROM) to $(CONFIG)'s clip/decode/boundary stages without refitting HGB/TCN
+	$(PY) -m uwbfall retune --models $(MODELS)/$(FROM) --config $(CONFIG) --train-splits $(SPLITS) --out $(MODELS)/$(NAME)
 
 predict-val:
 	$(PY) -m uwbfall predict --models $(MODELS)/$(NAME) --split val --out $(RUNS)/val_$(NAME).csv

@@ -1,0 +1,26 @@
+[    2.0s rss=0.43GB] fit: 13 training streams, 359 events, config 7d70d3c15c0d40a8
+[   32.4s rss=1.08GB] labels: ignore_clips zero_weight on 1435 blocks (1.289%)
+[   32.4s rss=1.08GB] design: X_proto (111326, 64) X_band (111326, 48) positives 3475
+[   32.5s rss=1.08GB] folds: {0: ['cv1_train_04', 'cv1_train_06', 'cv1_train_07', 'cv1_train_12'], 1: ['cv1_train_05', 'cv1_train_09', 'cv1_train_10'], 2: ['cv1_train_00', 'cv1_train_01', 'cv1_train_02'], 3: ['cv1_train_03', 'cv1_train_08', 'cv1_train_11']}
+[  344.6s rss=1.08GB] tcn: CV fold 0 done (312 s)
+[  671.5s rss=1.08GB] tcn: CV fold 1 done (639 s)
+[  964.1s rss=1.08GB] tcn: CV fold 2 done (932 s)
+[ 1297.8s rss=1.08GB] tcn: CV fold 3 done (1265 s)
+[ 1664.2s rss=1.08GB] tcn: CV + final bag done (1631.7 s)
+[ 1665.8s rss=1.08GB]   operating point (0.4, 3, 0.8, 0.6) OOF rank F1 0.9254
+[ 1665.9s rss=1.08GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9254, "f1@0.1/0.3/0.5/0.7": [0.956, 0.946, 0.874, 0.56], "tp_fp_fn@0.3": [184, 14, 7], "fa_per_h@0.3": 2.26, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.727}}
+[ 1665.9s rss=1.08GB] fit done in 1663.9 s -> /home/user/data_raw/I2/runs/tcnW_bag0/fold_1
+[tcnW_bag0] 1 done in 1676s
+[    0.0s rss=1.08GB] fit: 13 training streams, 359 events, config 7d70d3c15c0d40a8
+[   30.1s rss=1.26GB] labels: ignore_clips zero_weight on 1225 blocks (1.101%)
+[   30.1s rss=1.26GB] design: X_proto (111268, 64) X_band (111268, 48) positives 3272
+[   30.2s rss=1.26GB] folds: {0: ['train_08', 'train_09', 'train_11'], 1: ['train_00', 'train_03', 'train_06'], 2: ['train_01', 'train_05', 'train_10'], 3: ['train_02', 'train_04', 'train_07', 'train_12']}
+[  211.4s rss=1.26GB] tcn: CV fold 0 done (181 s)
+[  382.3s rss=1.26GB] tcn: CV fold 1 done (352 s)
+[  553.0s rss=1.26GB] tcn: CV fold 2 done (523 s)
+[  718.9s rss=1.26GB] tcn: CV fold 3 done (689 s)
+[  893.6s rss=1.26GB] tcn: CV + final bag done (863.5 s)
+[  895.1s rss=1.26GB]   operating point (0.6, 3, 0.8, 0.6) OOF rank F1 0.9355
+[  895.1s rss=1.26GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9355, "f1@0.1/0.3/0.5/0.7": [0.962, 0.946, 0.898, 0.624], "tp_fp_fn@0.3": [176, 10, 10], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.747}}
+[  895.2s rss=1.26GB] fit done in 895.1 s -> /home/user/data_raw/I2/runs/tcnW_bag0/official_train
+[tcnW_bag0] official done in 902s

@@ -109,8 +109,53 @@ def stream_blocks(F: dict, cfg: dict) -> dict:
     d = pd.DataFrame({**f, **s})
     d["_prev"], d["_next"] = prev, nxt
     bands, bnames = band_features(F, n, cfg["features"]["bands"])
-    return {"base": d, "amp": amp, "bands": bands, "band_names": bnames, "n": n,
-            "t": (np.arange(n) + 0.5) * STEP}
+    out = {"base": d, "amp": amp, "bands": bands, "band_names": bnames, "n": n,
+           "t": (np.arange(n) + 0.5) * STEP}
+    if cfg["features"].get("zones"):
+        out["zones"], out["zone_names"] = zone_features(F, n, cfg["features"]["zones"])
+    return out
+
+
+def zone_features(F: dict, n: int, zones) -> tuple[np.ndarray, list[str]]:
+    """Per-radar range-zone features (PLAN v2 W4 D3 hedge; data verdict F5/D-b: D3 falls are seen by R29171 at
+    far bins ~40-68, D1/D2 by R29444/R30722 at bins ~5-21). The whole-profile prototype features dilute a far-bin
+    change with the strong near-bin clutter, so each zone [radar, a, b) gets its own:
+      zs5/zs10 static change (past vs future k-block complex-profile mean, normalised by the zone's median norm),
+      zmot motion (mot_map zone mean), zjump frame-to-frame profile jump in the zone (log10, stream-median removed),
+    plus the max over zones of zs10 shifted by -2/-1/+1/+2 s. Per-stream only (no cross-stream information)."""
+    p = F["prof_02"][:, :n].astype(np.float32) / 1e3
+    z = p[..., :184] + 1j * p[..., 184:]  # (3, n, 184)
+    mm = F["mot_map"][:, :n].astype(np.float32)
+    cols, names, s10 = [], [], []
+    for r, a, b in zones:
+        zz = z[r][:, a:b].T  # (bins, n)
+        norm = np.median(np.linalg.norm(zz, axis=0)) + 1e-12
+        tag = f"z{r}_{a}"
+        for k in (5, 10):
+            m = rolling_mean(zz, k)
+            past = np.concatenate([np.repeat(m[..., :1], k, axis=-1), m], axis=-1)[..., :n]
+            fut = np.concatenate([m[..., 1:], np.repeat(m[..., -1:], k, axis=-1)], axis=-1)[..., :n]
+            v = np.log10(np.linalg.norm(fut - past, axis=0) / norm + 1e-6)
+            cols.append(v); names.append(f"zs{k}_{tag}")
+            if k == 10:
+                s10.append(v)
+        v = np.log10(mm[r, :, a:b].mean(1) + 1e-9)
+        cols.append(v - np.median(v)); names.append(f"zmot_{tag}")
+        j = np.linalg.norm(shift(zz, 1) - shift(zz, -1), axis=0) / norm
+        v = np.log10(j + 1e-6)
+        cols.append(v - np.median(v)); names.append(f"zjump_{tag}")
+    smax = np.max(s10, axis=0)
+    for k in (-10, -5, 5, 10):
+        cols.append(shift(smax, k)); names.append(f"zs10max@{k * STEP:+.0f}s")
+    return np.stack(cols, 1).astype(np.float64), names
+
+
+def hgb_design(blk: dict, xp: np.ndarray, cfg: dict) -> np.ndarray:
+    """HGB member input: the prototype design, plus the zone features when features.zones is set and
+    features.zones_for includes 'hgb'. The TCN input (prototype + bands) is not changed by the zones."""
+    if cfg["features"].get("zones") and "hgb" in cfg["features"]["zones_for"]:
+        return np.hstack([xp, blk["zones"]])
+    return xp
 
 
 def fit_pca(amps: list[np.ndarray], cfg: dict) -> PCA:
@@ -144,6 +189,27 @@ def design(blk: dict, pca: PCA, cfg: dict) -> tuple[np.ndarray, np.ndarray, list
     d = proto_frame(blk, pca)
     cols = cols_for(d, cfg["features"]["proto_set"])
     return d[cols].values.astype(np.float64), blk["bands"], cols
+
+
+def ignore_clip_mask(events: pd.DataFrame, comp: pd.DataFrame, sid: str, n: int, onset_s: float = 0.25,
+                     hard_cut_s: float = 0.05) -> np.ndarray:
+    """Block-centre mask of whole fall clips that are generator ignore zones (data verdict N5): the clip holds a
+    flagged fall (quality low or needs_review) whose onset is within `onset_s` of the clip start (junction-start
+    fall), or the clip starts with a hard cut (overlap with the previous segment < hard_cut_s, or stream start).
+    Unflagged (evaluable-type) falls are never masked, so their clip keeps its labels."""
+    t = (np.arange(n) + 0.5) * STEP
+    m = np.zeros(n, bool)
+    c = comp.sort_values("t_start").reset_index(drop=True)
+    for i in np.flatnonzero((c.kind == "fall").values):
+        a, b = float(c.t_start[i]), float(c.t_end[i])
+        ov = float(c.t_end[i - 1]) - a if i > 0 else 0.0
+        ev = events[(events.stream_id == sid) & (events.t_start.astype(float) >= a - 1e-6)
+                    & (events.t_end.astype(float) <= b + 1e-6)]
+        for r in ev.itertuples():
+            fl = str(r.quality) == "low" or str(r.needs_review).lower() == "true"
+            if fl and (float(r.t_start) - a < onset_s or ov < hard_cut_s):
+                m |= (t >= a) & (t < b)
+    return m
 
 
 def block_labels(events: pd.DataFrame, sid: str, n: int) -> tuple[np.ndarray, np.ndarray]:

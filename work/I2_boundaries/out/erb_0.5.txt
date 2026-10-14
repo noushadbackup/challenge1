@@ -1,0 +1,45 @@
+== failure modes at theta=0.5 (events x bags; 3 bags)
+mode       both_bad  det_miss  nms_drop  ...  replay_fallback_bad  replay_worse  All
+fall_type                                ...                                        
+Chute01           3         2         0  ...                    0             2  168
+Chute02           6         2         2  ...                    5             7  213
+Chute03           0         3         1  ...                    2             9  213
+Chute04           8        19         1  ...                    3             3  165
+All              17        26         4  ...                   10            21  759
+
+[5 rows x 7 columns]
+             bag    stream_id  t_start    t_end    subject  det_iou  final_iou  cand_s  cand_e       rs       re    use  n_ok  spread  score                 mode
+19   uwb_default  cv0_test_01   731.62   732.84  Test_P2_9     0.34       0.34   729.6   733.2   729.60   733.20  False     0    0.00   0.92  replay_fallback_bad
+49   uwb_default  cv0_test_03   872.76   873.82  Test_P1_5     0.00       0.00   114.0   116.6   114.02   116.82   True     5    0.59   0.94             det_miss
+52   uwb_default  cv0_test_03  1030.44  1032.62  Test_P2_9     0.37       0.36  1031.6  1033.2  1031.75  1032.84   True     6    0.01   0.83             both_bad
+111     tcn_bag1  cv0_test_03   872.76   873.82  Test_P1_5     0.00       0.00   113.6   117.0   114.80   117.58   True     6    0.39   0.94             det_miss
+114     tcn_bag1  cv0_test_03  1030.44  1032.62  Test_P2_9     0.32       0.00  1031.8  1033.0  1031.75  1032.86   True     6    0.01   0.46             both_bad
+143     tcn_bag2  cv0_test_01   731.62   732.84  Test_P2_9     0.31       0.31   729.4   733.4   729.40   733.40  False     0    0.01   0.91  replay_fallback_bad
+173     tcn_bag2  cv0_test_03   872.76   873.82  Test_P1_5     0.00       0.00   113.8   116.8   114.82   117.56   True     6    0.39   0.96             det_miss
+176     tcn_bag2  cv0_test_03  1030.44  1032.62  Test_P2_9     0.40       0.36  1031.6  1033.0  1031.75  1032.85   True     6    0.01   0.77             both_bad
+225  uwb_default  cv1_test_02  1378.94  1381.30  Test_P1_9     0.31       0.31  1376.0  1380.6  1376.00  1380.60  False     0    0.09   0.79  replay_fallback_bad
+232  uwb_default  cv1_test_03    14.76    17.48  Test_P2_5     0.10       0.00    17.0    19.6    18.20    20.20   True     3    1.60   0.58             det_miss
+294     tcn_bag1  cv1_test_03    14.76    17.48  Test_P2_5     0.10       0.00    17.0    19.6    18.20    20.20   True     3    1.60   0.63             det_miss
+322     tcn_bag2  cv1_test_00  1385.38  1387.04  Test_P2_3     0.00       0.00   228.2   231.2   228.45   231.28   True     6    0.23   0.68             det_miss
+356     tcn_bag2  cv1_test_03    14.76    17.48  Test_P2_5     0.06       0.00    17.2    19.6    18.40    20.53   True     6    0.04   0.67             det_miss
+358     tcn_bag2  cv1_test_03    80.40    82.40  Test_P1_9     0.00       0.00     1.2     3.0     1.20     2.20   True     6    0.06   0.66             det_miss
+383  uwb_default  cv2_test_00  1481.02  1483.02  Test_P2_7     0.83       0.34  1481.0  1483.4  1481.72  1484.88   True     6    0.34   0.61         replay_worse
+413  uwb_default  cv2_test_02  1333.48  1334.66  Test_P2_7     0.00       0.00     2.0     4.4     2.06     4.62   True     6    0.01   0.69             det_miss
+415  uwb_default  cv2_test_02  1452.02  1454.02  Test_P1_8     0.00       0.00     2.0     4.4     2.06     4.62   True     6    0.01   0.69             det_miss
+429  uwb_default  cv2_test_03  1326.36  1330.12  Test_P1_3     0.00       0.00    84.6    85.6    84.46    85.88   True     3    1.84   0.38             det_miss
+439     tcn_bag1  cv2_test_00   268.92   270.92  Test_P1_8     0.49       0.19   269.6   271.6   270.40   271.60   True     3    0.76   0.89             both_bad
+446     tcn_bag1  cv2_test_00  1481.02  1483.02  Test_P2_7     0.83       0.33  1481.2  1483.2  1481.74  1484.85   True     6    0.34   0.60         replay_worse
+476     tcn_bag1  cv2_test_02  1333.48  1334.66  Test_P2_7     0.00       0.00     2.0     4.0     2.06     4.62   True     6    0.01   0.71             det_miss
+478     tcn_bag1  cv2_test_02  1452.02  1454.02  Test_P1_8     0.00       0.00     2.0     4.0     2.06     4.62   True     6    0.01   0.71             det_miss
+492     tcn_bag1  cv2_test_03  1326.36  1330.12  Test_P1_3     0.00       0.00   212.4   214.0   212.86   213.86   True     6    0.00   0.99             det_miss
+502     tcn_bag2  cv2_test_00   268.92   270.92  Test_P1_8     0.49       0.19   269.6   271.6   270.40   271.60   True     3    0.76   0.89             both_bad
+509     tcn_bag2  cv2_test_00  1481.02  1483.02  Test_P2_7     0.83       0.34  1481.0  1483.4  1481.72  1484.88   True     6    0.34   0.60         replay_worse
+519     tcn_bag2  cv2_test_01   924.58   926.04  Test_P2_7     0.70       0.00   924.0   926.0   923.62   926.08   True     6    0.00   0.57             nms_drop
+539     tcn_bag2  cv2_test_02  1333.48  1334.66  Test_P2_7     0.00       0.00     2.0     4.4     2.06     4.62   True     6    0.01   0.76             det_miss
+541     tcn_bag2  cv2_test_02  1452.02  1454.02  Test_P1_8     0.00       0.00     2.0     4.4     2.06     4.62   True     6    0.01   0.76             det_miss
+605  uwb_default  cv3_test_03   248.54   250.54  Test_P2_2     0.37       0.33   249.4   251.6   249.54   251.58   True     3    1.27   0.68             both_bad
+614  uwb_default  cv3_test_03   784.66   786.48  Test_P3_3     0.00       0.00    43.6    45.4    43.99    44.99   True     6    0.01   0.98             det_miss
+618  uwb_default  cv3_test_03  1102.24  1106.92  Test_P1_1     0.38       0.34  1104.4  1106.2  1104.10  1105.71   True     6    0.00   0.64             both_bad
+737     tcn_bag2  cv3_test_03   248.54   250.54  Test_P2_2     0.38       0.42   249.6   251.0   249.44   251.14   True     4    1.26   0.68             both_bad
+746     tcn_bag2  cv3_test_03   784.66   786.48  Test_P3_3     0.00       0.00    43.6    45.4    43.99    44.99   True     6    0.01   0.97             det_miss
+756     tcn_bag2  cv3_test_03  1678.62  1680.56  Test_P1_1     0.00       0.00    43.6    45.4    43.99    44.99   True     6    0.01   0.97             det_miss

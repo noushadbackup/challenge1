@@ -1,0 +1,7 @@
+[tcn] unit-weight vs unweighted: loss diff 0.0e+00, trained-weight max diff 2.1e-06; zero weights: loss 0.0, max |grad| 0.0 -> OK
+[boundary] cluster / contain equal the median on a single-mode candidate: True
+[Z] fit() OOF HGB identical: True; val HGB identical: True -> OK
+[W] fit() OOF HGB identical: True; val HGB identical: True -> OK
+ALL OK
+[base] fit() OOF HGB identical: True; val HGB identical: True -> OK
+True

@@ -2,6 +2,8 @@
 
   python -m uwbfall train   --config cfg.json --train-splits train[,val] --out <model_dir>
   python -m uwbfall predict --models <model_dir> --split val|test --out <csv>
+  python -m uwbfall retune  --models <model_dir> --config cfg.json --train-splits train --out <new_model_dir>
+                            (post-model stages only: clip stage, operating point, NMS; no HGB/TCN refit)
   python -m uwbfall score   --pred <csv> --split val [--out <json>]
   python -m uwbfall extract --sources train,val,test          (warm the feature cache)
 
@@ -72,6 +74,21 @@ def _cmd_predict(a) -> int:
     return 0
 
 
+def _cmd_retune(a) -> int:
+    from .paths import PKG
+    from .pipeline import RETUNE_SECTIONS, retune
+    from .sources import parse_sources
+
+    over = json.loads(Path(a.config).read_text()) if Path(a.config).exists() else json.loads(a.config)
+    over = {k: v for k, v in over.items() if k in RETUNE_SECTIONS}
+    srcs = parse_sources(a.train_splits)
+    ev = pd.read_csv(a.events or PKG / "streams_events.csv", dtype=str)
+    t0 = time.time()
+    retune(a.models, srcs, ev, over, a.out)
+    print(json.dumps({"model_dir": str(Path(a.out).resolve()), "overrides": over, "wall_s": round(time.time() - t0, 1)}))
+    return 0
+
+
 def _cmd_score(a) -> int:
     from .scoring import official_cli, summary
 
@@ -100,7 +117,7 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     t = sub.add_parser("train", help="fit the pipeline and save a model bundle")
     t.add_argument("--config", default=str(Path(__file__).parent / "configs" / "reference.json"),
-                   help="JSON config (partial, merged over the defaults); default: configs/reference.json (= REFERENCE SYSTEM C3)")
+                   help="JSON config (partial, merged over the defaults); default: configs/reference.json (= REFERENCE SYSTEM, = DEFAULT_CONFIG)")
     t.add_argument("--train-splits", default="train", help="source spec, e.g. train or train,val")
     t.add_argument("--events", default=None, help="events CSV (default: package streams_events.csv)")
     t.add_argument("--out", required=True)
@@ -120,6 +137,15 @@ def main(argv=None) -> int:
                         "P(fall clip) gate need a bundle trained with the clip stage.")
     p.add_argument("--nms-gap", type=float, default=None, help="gap (s) for --nms time (default: config, 4.0)")
     p.set_defaults(fn=_cmd_predict)
+    r = sub.add_parser("retune", help="re-run the post-model stages (clip stage, operating point, NMS) of a bundle "
+                                      "with a new config, reusing its HGB / TCN models and OOF probabilities")
+    r.add_argument("--models", required=True, help="existing bundle (trained on --train-splits)")
+    r.add_argument("--config", default=str(Path(__file__).parent / "configs" / "reference.json"),
+                   help="JSON (file or inline); only its clip / decode / boundary / report sections are used")
+    r.add_argument("--train-splits", default="train")
+    r.add_argument("--events", default=None)
+    r.add_argument("--out", required=True)
+    r.set_defaults(fn=_cmd_retune)
     s = sub.add_parser("score", help="official evaluator CLI (--ignore-flagged)")
     s.add_argument("--pred", required=True)
     s.add_argument("--split", default="val")
