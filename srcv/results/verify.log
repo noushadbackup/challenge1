@@ -1,0 +1,8 @@
+V1 pool vs official _groups(): {"n": {"falls": 0, "adl": 0, "others": 0, "t_last_diff_frames": {"0": 478}, "n": {"falls": 478, "adl": 120, "others": 24}}, "n_minus_1": {"falls": 0, "adl": 0, "others": 0, "t_last_diff_frames": {"1": 478}, "n": {"falls": 478, "adl": 120, "others": 24}}}
+V2 public-seed replay of fall clip windows: {"n": {"train": {"n_falls": 359, "t0_mismatch": 0, "t1_mismatch": 5, "max_abs_t1_diff": 0.019999999999999574}, "val": {"n_falls": 119, "t0_mismatch": 0, "t1_mismatch": 4, "max_abs_t1_diff": 0.03999999999999915}}, "n_minus_1": {"train": {"n_falls": 359, "t0_mismatch": 0, "t1_mismatch": 0, "max_abs_t1_diff": 0.000498318004940046}, "val": {"n_falls": 119, "t0_mismatch": 0, "t1_mismatch": 1, "max_abs_t1_diff": 0.019999999999999574}}}
+V3 plan_stream on 18 published streams: all equal = True; events 478
+V6 score_val vs official CLI: {"sample_submission.csv": {"srcv": 0.3150912106135987, "cli": 0.3150912106135987, "identical": true}, "val_full.csv": {"srcv": 0.8839506172839506, "cli": 0.8839506172839506, "identical": true}, "val_physics.csv": {"srcv": 0.7903225806451614, "cli": 0.7903225806451614, "identical": true}, "val_structure.csv": {"srcv": 0.875912408759124, "cli": 0.875912408759124, "identical": true}}
+V5 regenerated cv0_test_04: {'T_equal': True, 'composition_equal': True, 'events_equal': True, 'n_events': 6, 'T': 20183}
+V4 val_04: cir bit-equal True; extractor vs team cache {'e_raw': True, 'e_mot': True, 'e_diff': True, 'mot_map': True, 'amp_1s': True, 'prof_1s': True, 'prof_02': True}
+V4 train_00: cir bit-equal True; extractor vs team cache {'e_raw': True, 'e_mot': True, 'e_diff': True, 'mot_map': True, 'amp_1s': True, 'prof_1s': True, 'prof_02': True}
+peak RSS 1.53 GB

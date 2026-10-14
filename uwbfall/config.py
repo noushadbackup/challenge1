@@ -63,6 +63,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "seeds": 3,
         "cv_seed_base": 100,        # CV fold k, bag member s -> seed cv_seed_base*s + k (E4)
         "final_seed_base": 1000,    # final model member s -> seed final_seed_base + s (E4)
+        "seed_offset": 0,           # added to every CV and final TCN seed (0 = E4 seeds). Re-seeds a whole bag;
+                                    # cv_seed_base alone cannot (member 0 of CV fold k always gets seed k).
         "clip_z": 6.0,
     },
     "blend": {

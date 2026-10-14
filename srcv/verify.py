@@ -219,11 +219,75 @@ def v7_bridge(sid: str = "cv0_test_04") -> dict:
     return res
 
 
+def _index_plan(src) -> list:
+    """Integer index arithmetic of a uwbfall source: (path, i0, i1, event index) per segment + T + events."""
+    from uwbfall import sources as US
+
+    out = []
+    for g in src.segments:
+        n = R.seg_len(g.path)
+        i0, i1 = US._slice_idx(n, g.source_t0, g.source_t1)
+        ev = None if g.event_t0 is None else (int(np.round(g.event_t0 / R.STEP_S)), int(np.round(g.event_t1 / R.STEP_S)))
+        out.append((g.path, i0, i1, ev, g.ignore, g.quality, g.needs_review))
+    return [src.n_frames, out, src.events().to_dict("records"), src.composition().to_dict("records")]
+
+
+def v8_spec() -> dict:
+    """uwbfall.parse_sources(bridge.spec(k, part)) == bridge.pipeline_sources(k, part) on integer indices, T,
+    events and composition, for all 8 fold parts (=> bit-identical cir)."""
+    from . import bridge
+    import uwbfall
+
+    res = {}
+    for k in range(4):
+        for part in C.PARTS:
+            a = bridge.pipeline_sources(k, part)
+            b = uwbfall.parse_sources(bridge.spec(k, part))
+            same = [x.sid for x in a] == [y.sid for y in b] and all(_index_plan(x) == _index_plan(y) for x, y in zip(a, b))
+            nkey = sum(x.content_key() == y.content_key() for x, y in zip(a, b))
+            res[f"{k}/{part}"] = {"n_streams": len(a), "index_plan_equal": bool(same), "content_keys_equal": nkey}
+    print("V8 uwbfall.parse_sources(spec) vs pipeline_sources:", json.dumps(res))
+    return res
+
+
+def v9_folds() -> dict:
+    """Fold integrity: every subject held out once; 2/2/2/2 per fold; no held-out subject (falls, Autre/Empty,
+    ADL) in the fold's train composition; train/test cover all 32 subjects; plans regenerate deterministically
+    (official prepare_split/finish_plan with the stored seeds -> identical CSV bytes)."""
+    import tempfile
+
+    t = C.subjects_table()
+    held = [s for f in C.folds() for g in f["test_subjects"].values() for s in g]
+    res = {"n_subjects": len(t), "each_held_out_once": sorted(held) == sorted(t.subject),
+           "shape_2_2_2_2": all({d: len(v) for d, v in f["test_subjects"].items()} == {"D1": 2, "D2": 2, "D3": 2, "ADL": 2}
+                               for f in C.folds()), "P3_3_fold": [f["fold"] for f in C.folds()
+                                                                  if "Test_P3_3" in f["test_subjects"]["D3"]]}
+    leaks, cover, regen = {}, {}, {}
+    for k in range(4):
+        tr = set(C.composition(k, "train").subject)
+        te = set(C.composition(k, "test").subject)
+        leaks[k] = sorted(tr & te)
+        cover[k] = len(tr | te) == len(t) and te == C.fold_subjects(k, "test")
+        for part in C.PARTS:
+            orig = C.fold_dir(k)
+            with tempfile.TemporaryDirectory() as d:
+                C.generate(k, part, out_dir=Path(d))
+                regen[f"{k}/{part}"] = all(
+                    (Path(d) / f"{part}_{x}.csv").read_bytes() == (orig / f"{part}_{x}.csv").read_bytes()
+                    for x in ("composition", "events"))
+    res.update({"train_test_subject_overlap": leaks, "subjects_covered": cover, "regenerates_identically": regen,
+                "ok": res["each_held_out_once"] and res["shape_2_2_2_2"] and not any(leaks.values())
+                and all(cover.values()) and all(regen.values())})
+    print("V9 folds:", json.dumps(res, default=str))
+    return res
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     args = sys.argv[1:]
     if "--only-bridge" in args:
-        (OUT / "verify_bridge.json").write_text(json.dumps(v7_bridge(), indent=1))
+        (OUT / "verify_bridge.json").write_text(json.dumps({"V7": v7_bridge(), "V8": v8_spec(), "V9": v9_folds()},
+                                                           indent=1, default=str))
         return
     bitexact = ["val_04", "train_00"]
     fold_stream = "cv0_test_04"

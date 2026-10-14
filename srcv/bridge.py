@@ -4,6 +4,7 @@
     tr = pipeline_sources(k, "train")      # list[uwbfall.VirtualSource], ids cv{k}_train_XX
     te = pipeline_sources(k, "test")
     seed_uwbfall_cache(k, "test")          # optional: copy srcv's cached features into uwbfall's cache
+    spec(k, "test")                        # 'comp:<csv>:<events.csv>@cv{k}_test_' for uwbfall.parse_sources / CLI
 
 ``pipeline_composition`` returns composition rows with FULL-PRECISION source_t0/source_t1 and the event columns
 (event_t0, event_t1, fall_type, quality, needs_review, ignore) that uwbfall.sources_from_composition reads,
@@ -12,6 +13,7 @@ so no half-frame nudging is needed (resolve_half_frames=False).
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -36,6 +38,27 @@ def pipeline_composition(fold: int, part: str) -> pd.DataFrame:
     return c[COMP_COLS]
 
 
+def pipeline_csv(fold: int, part: str) -> "Path":
+    """fold_k/{part}_pipeline_composition.csv: pipeline_composition() written with repr() floats (written once)."""
+    p = C.fold_dir(fold) / f"{part}_pipeline_composition.csv"
+    if not p.exists():
+        tmp = p.with_suffix(".tmp")
+        pipeline_composition(fold, part).to_csv(tmp, index=False, float_format=None)
+        tmp.replace(p)
+    return p
+
+
+def spec(fold: int, part: str) -> str:
+    """uwbfall source spec of a fold part, usable by uwbfall.parse_sources and `python3 -m uwbfall ... --sources`.
+
+    Note: uwbfall.parse_sources reads floats with pandas' default (fast) parser, which is off by 1 ulp on ~7 % of
+    the repr() times. verify.v8_spec shows this changes no frame index (same T, slices, events, composition), so
+    the streams are bit-identical to pipeline_sources(); only uwbfall's content-key (feature-cache key) differs,
+    i.e. features are cached once more under the spec's key. pipeline_sources() is the exact path.
+    """
+    return f"comp:{pipeline_csv(fold, part)}:{C.events_csv(fold, part)}@cv{fold}_{part}_"
+
+
 def pipeline_sources(fold: int, part: str) -> list:
     import uwbfall
 
@@ -47,13 +70,19 @@ def pipeline_sources(fold: int, part: str) -> list:
     return out
 
 
-def seed_uwbfall_cache(fold: int, part: str, cfg: dict | None = None) -> int:
-    """Write uwbfall's feature-cache files from srcv's cache (same extractor maths; subset of keys). Returns n."""
+def seed_uwbfall_cache(fold: int, part: str, cfg: dict | None = None, with_spec: bool = False) -> int:
+    """Write uwbfall's feature-cache files from srcv's cache (same extractor maths; subset of keys). Returns n.
+    with_spec: also seed the cache keys of uwbfall.parse_sources(spec(fold, part)) (same streams, verify V8;
+    ~28 MB per stream more disk, so off by default)."""
+    import uwbfall
     from uwbfall import extract as UX
 
     n = 0
     srcs = {s.stream_id: s for s in C.sources(fold, part)}
-    for ps in pipeline_sources(fold, part):
+    todo = pipeline_sources(fold, part)
+    if with_spec:
+        todo += uwbfall.parse_sources(spec(fold, part))
+    for ps in todo:
         p = UX.cache_path(ps, cfg)
         if p.exists():
             continue

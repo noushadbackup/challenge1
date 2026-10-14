@@ -2,4 +2,4 @@
 [full] fold 1: train OOF 0.8901 post=(0.5, 5, 0.8, 0.2) | TEST rank F1 0.8160 (F1 0.880/0.832/0.736/0.400; tp/fp/fn@0.3 52/11/10; start med 0.2400000000000091)
 [full] fold 2: train OOF 0.8860 post=(0.4, 5, 0.8, 0.2) | TEST rank F1 0.8667 (F1 0.900/0.883/0.817/0.583; tp/fp/fn@0.3 53/4/10; start med 0.2199999999997999)
 [full] fold 3: train OOF 0.8741 post=(0.5, 5, 0.8, 0.6) | TEST rank F1 0.7087 (F1 0.775/0.721/0.631/0.432; tp/fp/fn@0.3 40/5/26; start med 0.19000000000005457)
-[full] POOLED rank F1 0.8113 95% CI [0.7270, 0.8693] | fold mean 0.8088 +- 0.0699 | wall 449s peak RSS 0.97 GB
+[full] POOLED rank F1 0.8113 95% CI [0.7270, 0.8693] | fold mean 0.8088 +- 0.0699 | wall 776s peak RSS 0.90 GB

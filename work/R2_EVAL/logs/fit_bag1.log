@@ -1,0 +1,43 @@
+[    2.2s rss=0.43GB] fit: 13 training streams, 358 events, config 8451e7085102e2cd
+[   88.7s rss=1.07GB] design: X_proto (110981, 64) X_band (110981, 48) positives 3447
+[   88.8s rss=1.07GB] folds: {0: ['cv0_train_01', 'cv0_train_06', 'cv0_train_09'], 1: ['cv0_train_00', 'cv0_train_02', 'cv0_train_07', 'cv0_train_12'], 2: ['cv0_train_03', 'cv0_train_08', 'cv0_train_10'], 3: ['cv0_train_04', 'cv0_train_05', 'cv0_train_11']}
+[  321.5s rss=1.07GB] tcn: CV fold 0 done (233 s)
+[  507.7s rss=1.07GB] tcn: CV fold 1 done (419 s)
+[  700.3s rss=1.07GB] tcn: CV fold 2 done (611 s)
+[  916.9s rss=1.07GB] tcn: CV fold 3 done (828 s)
+[ 1193.4s rss=1.07GB] tcn: CV + final bag done (1104.7 s)
+[ 1195.0s rss=1.07GB]   operating point (0.4, 5, 0.8, 0.2) OOF rank F1 0.9434
+[ 1195.1s rss=1.07GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9434, "f1@0.1/0.3/0.5/0.7": [0.987, 0.95, 0.893, 0.564], "tp_fp_fn@0.3": [182, 10, 9], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.28, "mean_tiou@0.3": 0.719}}
+[ 1195.1s rss=1.07GB] fit done in 1193.0 s -> /home/user/data_raw/srcv/runs/tcn_bag1/fold_0
+[tcn_bag1] 0 done in 1196s
+[    0.0s rss=1.07GB] fit: 13 training streams, 359 events, config 8451e7085102e2cd
+[  104.1s rss=1.27GB] design: X_proto (111326, 64) X_band (111326, 48) positives 3475
+[  104.2s rss=1.27GB] folds: {0: ['cv1_train_04', 'cv1_train_06', 'cv1_train_07', 'cv1_train_12'], 1: ['cv1_train_05', 'cv1_train_09', 'cv1_train_10'], 2: ['cv1_train_00', 'cv1_train_01', 'cv1_train_02'], 3: ['cv1_train_03', 'cv1_train_08', 'cv1_train_11']}
+[  366.9s rss=1.27GB] tcn: CV fold 0 done (263 s)
+[  666.8s rss=1.27GB] tcn: CV fold 1 done (563 s)
+[  895.0s rss=1.27GB] tcn: CV fold 2 done (791 s)
+[ 1099.9s rss=1.27GB] tcn: CV fold 3 done (996 s)
+[ 1327.5s rss=1.27GB] tcn: CV + final bag done (1223.3 s)
+[ 1329.1s rss=1.27GB]   operating point (0.5, 5, 0.8, 0.2) OOF rank F1 0.9252
+[ 1329.2s rss=1.27GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9252, "f1@0.1/0.3/0.5/0.7": [0.96, 0.939, 0.876, 0.602], "tp_fp_fn@0.3": [178, 10, 13], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.21, "mean_tiou@0.3": 0.74}}
+[ 1329.2s rss=1.27GB] fit done in 1329.2 s -> /home/user/data_raw/srcv/runs/tcn_bag1/fold_1
+[tcn_bag1] 1 done in 1330s
+[    0.0s rss=1.27GB] fit: 13 training streams, 359 events, config 8451e7085102e2cd
+[   96.3s rss=1.27GB] design: X_proto (111342, 64) X_band (111342, 48) positives 3285
+[   96.4s rss=1.27GB] folds: {0: ['cv2_train_03', 'cv2_train_06', 'cv2_train_07'], 1: ['cv2_train_01', 'cv2_train_02', 'cv2_train_10', 'cv2_train_12'], 2: ['cv2_train_00', 'cv2_train_04', 'cv2_train_08'], 3: ['cv2_train_05', 'cv2_train_09', 'cv2_train_11']}
+[  311.2s rss=1.27GB] tcn: CV fold 0 done (215 s)
+[  556.2s rss=1.27GB] tcn: CV fold 1 done (460 s)
+[  764.8s rss=1.27GB] tcn: CV fold 2 done (668 s)
+[  966.5s rss=1.27GB] tcn: CV fold 3 done (870 s)
+[ 1185.8s rss=1.27GB] tcn: CV + final bag done (1089.4 s)
+[ 1187.6s rss=1.27GB]   operating point (0.5, 5, 0.8, 0.2) OOF rank F1 0.9394
+[ 1187.7s rss=1.27GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9394, "f1@0.1/0.3/0.5/0.7": [0.979, 0.963, 0.877, 0.594], "tp_fp_fn@0.3": [180, 4, 10], "fa_per_h@0.3": 0.65, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.727}}
+[ 1187.7s rss=1.27GB] fit done in 1187.7 s -> /home/user/data_raw/srcv/runs/tcn_bag1/fold_2
+[tcn_bag1] 2 done in 1189s
+[    0.0s rss=1.27GB] fit: 13 training streams, 358 events, config 8451e7085102e2cd
+[   86.0s rss=1.28GB] design: X_proto (110954, 64) X_band (110954, 48) positives 3364
+[   86.1s rss=1.28GB] folds: {0: ['cv3_train_01', 'cv3_train_07', 'cv3_train_08'], 1: ['cv3_train_05', 'cv3_train_10', 'cv3_train_11'], 2: ['cv3_train_00', 'cv3_train_03', 'cv3_train_09', 'cv3_train_12'], 3: ['cv3_train_02', 'cv3_train_04', 'cv3_train_06']}
+[  298.8s rss=1.28GB] tcn: CV fold 0 done (213 s)
+[  507.7s rss=1.28GB] tcn: CV fold 1 done (422 s)
+[  787.2s rss=1.28GB] tcn: CV fold 2 done (701 s)
+[ 1124.3s rss=1.28GB] tcn: CV fold 3 done (1038 s)

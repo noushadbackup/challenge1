@@ -1,12 +1,87 @@
 {
- "n_frames_all_fold_parts_equal": true,
- "cir_equal": true,
- "features_equal": {
-  "e_raw": true,
-  "e_mot": true,
-  "e_diff": true,
-  "mot_map": true,
-  "prof_02": true
+ "V7": {
+  "n_frames_all_fold_parts_equal": true,
+  "cir_equal": true,
+  "features_equal": {
+   "e_raw": true,
+   "e_mot": true,
+   "e_diff": true,
+   "mot_map": true,
+   "prof_02": true
+  },
+  "events_equal": true
  },
- "events_equal": true
+ "V8": {
+  "0/train": {
+   "n_streams": 13,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "0/test": {
+   "n_streams": 5,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "1/train": {
+   "n_streams": 13,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "1/test": {
+   "n_streams": 5,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "2/train": {
+   "n_streams": 13,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "2/test": {
+   "n_streams": 5,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "3/train": {
+   "n_streams": 13,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  },
+  "3/test": {
+   "n_streams": 5,
+   "index_plan_equal": true,
+   "content_keys_equal": 0
+  }
+ },
+ "V9": {
+  "n_subjects": 32,
+  "each_held_out_once": true,
+  "shape_2_2_2_2": true,
+  "P3_3_fold": [
+   3
+  ],
+  "train_test_subject_overlap": {
+   "0": [],
+   "1": [],
+   "2": [],
+   "3": []
+  },
+  "subjects_covered": {
+   "0": true,
+   "1": true,
+   "2": true,
+   "3": true
+  },
+  "regenerates_identically": {
+   "0/train": true,
+   "0/test": true,
+   "1/train": true,
+   "1/test": true,
+   "2/train": true,
+   "2/test": true,
+   "3/train": true,
+   "3/test": true
+  },
+  "ok": true
+ }
 }

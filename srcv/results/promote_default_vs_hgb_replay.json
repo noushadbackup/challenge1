@@ -40,6 +40,10 @@
   }
  ],
  "n_folds_improved": 3,
- "val_ok": null,
- "promote": true
+ "val_A": 0.9215686274509803,
+ "val_B": 0.9646464646464646,
+ "val_ok": true,
+ "promote": true,
+ "A": "uwb_hgb_replay",
+ "B": "uwb_default"
 }

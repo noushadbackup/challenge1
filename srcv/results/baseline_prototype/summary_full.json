@@ -24,7 +24,7 @@
    },
    "n_train_blocks": 110981,
    "n_test_blocks": 37210,
-   "sec": 131.7
+   "sec": 205.3
   },
   {
    "fold": 1,
@@ -49,7 +49,7 @@
    },
    "n_train_blocks": 111326,
    "n_test_blocks": 36915,
-   "sec": 109.5
+   "sec": 188.3
   },
   {
    "fold": 2,
@@ -74,7 +74,7 @@
    },
    "n_train_blocks": 111342,
    "n_test_blocks": 36933,
-   "sec": 100.2
+   "sec": 191.5
   },
   {
    "fold": 3,
@@ -99,7 +99,7 @@
    },
    "n_train_blocks": 110954,
    "n_test_blocks": 37202,
-   "sec": 107.6
+   "sec": 190.7
   }
  ],
  "pooled": {
@@ -320,6 +320,6 @@
    "fn": 0
   }
  ],
- "wall_s": 449.4,
- "peak_rss_gb": 0.967076
+ "wall_s": 776.1,
+ "peak_rss_gb": 0.89508
 }

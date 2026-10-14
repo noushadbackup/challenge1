@@ -147,8 +147,9 @@ def make_plan(fold: int, part: str) -> list[tuple[str, list[Segment]]]:
     return [(f"cv{fold}_{part}_{i:02d}", st.segments) for i, st in enumerate(plan.streams)]
 
 
-def generate(fold: int, part: str) -> dict:
-    """Write fold_k/{part}_composition.csv and {part}_events.csv (no radar data is read)."""
+def generate(fold: int, part: str, out_dir: Path | None = None) -> dict:
+    """Write fold_k/{part}_composition.csv and {part}_events.csv (no radar data is read).
+    ``out_dir`` overrides the destination (verification of deterministic regeneration)."""
     comp_rows, ev_rows, meta = [], [], []
     for sid, segs in make_plan(fold, part):
         n, events, comp = R.plan_stream(sid, segs)
@@ -164,7 +165,7 @@ def generate(fold: int, part: str) -> dict:
         ev_rows += events
         meta.append({"stream_id": sid, "n_frames": n, "n_events": len(events),
                      "n_evaluable": sum(e["ignore"] == "false" for e in events)})
-    d = fold_dir(fold)
+    d = out_dir if out_dir is not None else fold_dir(fold)
     d.mkdir(parents=True, exist_ok=True)
     _write_csv(d / f"{part}_composition.csv", comp_rows)
     _write_csv(d / f"{part}_events.csv", ev_rows)

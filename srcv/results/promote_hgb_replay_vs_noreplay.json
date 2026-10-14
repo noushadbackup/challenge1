@@ -43,5 +43,7 @@
  "val_A": 0.8921568627450981,
  "val_B": 0.9215686274509803,
  "val_ok": true,
- "promote": true
+ "promote": true,
+ "A": "uwb_hgb_noreplay",
+ "B": "uwb_hgb_replay"
 }

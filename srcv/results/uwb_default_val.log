@@ -1,0 +1,18 @@
+[   10.0s rss=0.42GB] fit: 13 training streams, 359 events, config 69b01cf662dc6a07
+[  193.3s rss=1.04GB] design: X_proto (111268, 64) X_band (111268, 48) positives 3272
+[  193.3s rss=1.04GB] folds: {0: ['train_08', 'train_09', 'train_11'], 1: ['train_00', 'train_03', 'train_06'], 2: ['train_01', 'train_05', 'train_10'], 3: ['train_02', 'train_04', 'train_07', 'train_12']}
+[  247.3s rss=1.04GB] hgb: OOF + final done (54.0 s, n_iter final 300)
+[  449.1s rss=1.04GB] tcn: CV fold 0 done (202 s)
+[  642.5s rss=1.04GB] tcn: CV fold 1 done (395 s)
+[  846.7s rss=1.04GB] tcn: CV fold 2 done (599 s)
+[ 1058.7s rss=1.04GB] tcn: CV fold 3 done (811 s)
+[ 1291.5s rss=1.04GB] tcn: CV + final bag done (1044.2 s)
+[ 1293.1s rss=1.04GB]   operating point (0.5, 5, 0.8, 0.2) OOF rank F1 0.9410
+[ 1587.6s rss=1.06GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.941, "f1@0.1/0.3/0.5/0.7": [0.965, 0.954, 0.905, 0.681], "tp_fp_fn@0.3": [175, 6, 11], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.22, "mean_tiou@0.3": 0.753}, "final": {"rank_f1": 0.941, "f1@0.1/0.3/0.5/0.7": [0.97, 0.954, 0.899, 0.774], "tp_fp_fn@0.3": [175, 6, 11], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.834}}
+[ 1587.6s rss=1.06GB] fit done in 1577.6 s -> /home/user/data_raw/srcv/runs/uwb_default/official_train
+[   28.7s rss=1.06GB] predict val_00: 27 candidates, 26 replay-refined, 28.7 s
+[   56.8s rss=1.06GB] predict val_01: 24 candidates, 24 replay-refined, 28.1 s
+[   90.2s rss=1.06GB] predict val_02: 24 candidates, 23 replay-refined, 33.4 s
+[  109.4s rss=1.06GB] predict val_03: 12 candidates, 12 replay-refined, 19.2 s
+[  111.3s rss=1.06GB] predict val_04: 5 candidates, 5 replay-refined, 1.9 s
+[uwb_default] official val rank F1 0.9646 tp/fp/fn@0.3 65/0/2

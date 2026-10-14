@@ -9,10 +9,19 @@ splits them into 4 folds. For each fold it **regenerates** streams with the offi
 No raw stream is ever written to disk. A stream is rebuilt in memory from its composition rows by a bit-exact
 replica of the package writer, and only extracted features are cached.
 
-Every number in this README comes from code in this directory, run in this session:
+Every number in this README comes from code in this directory. The work was done in two sessions, the second
+after a usage-limit cut-off. In the second session, every stored number was **re-run or re-scored and
+reproduced**:
+
+- the verification suite V1–V9 was re-run;
+- the baseline was re-run and is byte-identical on all 4 folds;
+- every saved prediction set was re-scored with the official evaluator (`results/rescore.json`, all `matches_stored_summary: true`);
+- the val clause for the default system was run.
+
+Where results live:
 
 - logs: `results/*.log`
-- JSON: `results/verify.json`, `results/verify_bridge.json`, `results/baseline_prototype/summary_full.json`
+- JSON: `results/verify.json`, `results/verify_bridge.json` (V7–V9), `results/rescore.json`, `results/promote_*.json`, `results/baseline_prototype/summary_full.json`
 
 All scores use the official `abc2027.evaluate` code with `--ignore-flagged` semantics.
 
@@ -26,7 +35,8 @@ All scores use the official `abc2027.evaluate` code with `--ignore-flagged` sema
 | `cache_feats.py` | Pre-computes the feature cache, using 2 workers at about 1.5 GB RSS each. |
 | `scoring.py` | `score`, `score_pooled`, `score_val` (official evaluator), `cluster_counts` (subject attribution), `bootstrap_ci`, `promote` (the promotion rule). |
 | `compare.py` | CLI wrapper of `promote` for two prediction directories. |
-| `bridge.py` | Builds `uwbfall.VirtualSource` lists from SR-CV folds and seeds uwbfall's feature cache from srcv's cache. |
+| `bridge.py` | Builds `uwbfall.VirtualSource` lists from SR-CV folds (`pipeline_sources`), writes full-precision pipeline composition CSVs and `comp:` specs for `uwbfall.parse_sources` / the uwbfall CLI (`pipeline_csv`, `spec`), and seeds uwbfall's feature cache from srcv's cache. |
+| `rescore.py` | Re-scores every saved run (`results/<name>/fold_k*.csv`) with the official evaluator, checks it against the stored summary, and adds the CI, the pooled F1 without Test_P3_3 and val. |
 | `run_pipeline.py` | Runs `uwbfall.fit`/`predict` on all 4 folds, then pooled score + CI. |
 | `baseline_prototype.py` | The end-to-end baseline (prototype recipe, 'full' features) on all 4 folds. |
 | `verify.py` | Verification suite V1–V7 (section 3). |
@@ -34,7 +44,10 @@ All scores use the official `abc2027.evaluate` code with `--ignore-flagged` sema
 Data locations:
 
 - `srcv/folds.json`: in git; also copied to `/home/user/data_raw/srcv/folds.json`.
-- `/home/user/data_raw/srcv/fold_k/`: the CSVs, about 0.5 MB per fold.
+- `/home/user/data_raw/srcv/fold_k/`: the CSVs, about 0.8 MB per fold:
+  - `{train,test}_composition.csv`: official columns, plus `*_exact` times, flags and subject;
+  - `{train,test}_events.csv`: official `streams_events.csv` columns, plus subject;
+  - `{train,test}_pipeline_composition.csv`: uwbfall layout with full-precision `source_t0/source_t1`.
 - `/home/user/data_raw/srcv/feats/<stream_id>.npz`: feature cache, plus a `.json` sidecar holding the plan hash. About 2.3 GB for all 72 streams.
 - `/home/user/data_raw/srcv/runs/`: uwbfall model bundles.
 
@@ -96,6 +109,8 @@ plan_stream(stream_id, segments)  -> composition + events CSV (+ exact float col
 | **V5** regenerated `cv0_test_04` | `write_stream` (data) gives the same composition, events and T as the stored fold CSVs (`plan_stream`). |
 | **V6** `score_val` vs the official CLI | The full JSON report is identical for `sample_submission.csv` (0.315091) and the prototype val CSVs: full 0.883951, physics 0.790323, structure 0.875912. |
 | **V7** `bridge.pipeline_sources` (uwbfall) | n_frames are equal for all 8 fold-parts. On `cv0_test_04`, the cir is bit-equal, uwbfall's extractor equals srcv's on its 5 keys, and the events are equal. |
+| **V8** `uwbfall.parse_sources(srcv.spec(k, part))` vs `bridge.pipeline_sources(k, part)` | All 8 fold-parts (72 streams) have the same stream ids, T, per-segment slice indices, event indices, flags, events and composition, so the cir is bit-identical. The uwbfall *content keys* differ on every stream (0/72 equal). The reason is that pandas' default float parser, which `parse_sources` uses, is off by 1 ulp on 2902 of the 41180 times written with `repr()`. The only effect is that the spec path caches features under its own key (`seed_uwbfall_cache(..., with_spec=True)` pre-seeds it). |
+| **V9** fold integrity | All 32 subjects are held out exactly once, with a 2/2/2/2 shape in every fold, and Test_P3_3 is in fold 3. No subject is in both fold-train and fold-test of any fold, whether through fall clips, Autre/Empty or ADL. Fold-train ∪ fold-test covers all 32 subjects. Re-running the official `prepare_split` + `finish_plan` with the stored seeds gives **byte-identical** composition and events CSVs for all 8 fold-parts. |
 | scorer self-check | `cluster_counts` asserts that its per-subject TP/FP/FN sum to the official `evaluate()` counts at every θ, on every call. |
 
 The package was never written. All runs used `PYTHONDONTWRITEBYTECODE=1`, and `build_streams` is imported only for
@@ -121,7 +136,14 @@ srcv.score(pred, k, part="train")   # same on the fold's training streams (for O
 srcv.score_pooled({k: pred_k})  # official report on all 20 test streams (pooled OOF); a single DataFrame
                                 #   holding cv{k}_test_* rows for all folds also works
 srcv.score_val(pred)            # official report on the real val streams (== CLI json, V6)
-srcv.scoring.bootstrap_ci(preds)          # pooled rank F1 + subject-cluster bootstrap 95% CI
+srcv.bootstrap_ci(preds)        # pooled rank F1 + subject-cluster bootstrap 95% CI
+
+srcv.pipeline_sources(k, part)  # list[uwbfall.VirtualSource], exact (full-precision segments)   [V7]
+srcv.spec(k, part)              # 'comp:/home/user/data_raw/srcv/fold_k/{part}_pipeline_composition.csv:
+                                #   /home/user/data_raw/srcv/fold_k/{part}_events.csv@cv{k}_{part}_'
+                                #   -> uwbfall.parse_sources(spec); CLI: train --train-splits <spec>
+                                #      --events <fold_k/train_events.csv>, predict --sources <spec>   [V8]
+srcv.seed_uwbfall_cache(k, part)  # copy srcv's cached features into uwbfall's cache (no recompute)
 srcv.promote(A, B, val_A=..., val_B=...)  # promotion rule (below)
 ```
 
@@ -166,6 +188,10 @@ for k in range(4):
     preds[k] = uwbfall.predict(bundle, bridge.pipeline_sources(k, "test"))
 srcv.score_pooled(preds); srcv.scoring.bootstrap_ci(preds)
 ```
+
+The spec string works anywhere uwbfall takes a source spec, for example
+`uwbfall.parse_sources(srcv.spec(0, "test"))`. It gives the same streams as `pipeline_sources` (V8), but under
+different feature-cache keys.
 
 The same loop is available as a CLI: `python3 -m srcv.run_pipeline <name> [--config cfg.json]`. It writes
 `srcv/results/<name>/fold_k.csv` and `summary.json`.
@@ -242,6 +268,9 @@ those runs: HGB without replay **0.8922** (62/7/5 @0.3), HGB + replay **0.9216**
 
 ### First live use of the promotion rule: does annotator replay help the HGB detector?
 
+(The second session re-ran this with the val clause computed from the official val CSVs; the result is identical.
+See the table in the next section.)
+
 ```
 python3 -m srcv.compare uwb_hgb_noreplay uwb_hgb_replay      # + val clause via srcv.promote(..., val_A=csv, val_B=csv)
 ```
@@ -264,6 +293,9 @@ This confirms E2's val finding (+0.044 on the prototype) on leak-free subject-di
 
 The open question in PLAN §0 is not answered by this test. That question concerns replay on top of the TCN or the
 blend, which can now be tested the same way.
+
+The second session re-ran the baseline (`results/baseline_prototype_full.log`: 776 s, 0.90 GB peak RSS). All 4
+fold CSVs came out **byte-identical** to the first run.
 
 The mean over folds is 0.809 ± 0.070 (sd), which matches the pooled 0.811. Peak RSS was 0.97 GB and wall time
 7.5 min for all 4 folds, with features cached.
@@ -292,7 +324,46 @@ The mean over folds is 0.809 ± 0.070 (sd), which matches the pooled 0.811. Peak
 
 ### Current best candidate (uwbfall default = 0.75 TCN 3-seed bag + 0.25 HGB, then replay B) on SR-CV
 
-DEFAULT_RESULT
+This is `python3 -m srcv.run_pipeline uwb_default` with config `null`, i.e. `uwbfall/configs/default.json`
+semantics (HGB `early_stopping=False`). Wall time was 3697 s for 4 folds (about 15 min per fold) at 1.63 GB peak RSS.
+The val clause comes from `run_pipeline uwb_default --val-only` (official train → val), run in the second session:
+0.9646, 65/0/2 @0.3, confirmed with the official CLI.
+
+| fold | **test rank F1** | F1 @0.1/0.3/0.5/0.7 | TP/FP/FN @0.3 | med. start err | FA/h | Δ vs HGB+replay |
+|---|---|---|---|---|---|---|
+| 0 | **0.8854** | .906/.906/.844/.703 | 58/8/4 | 0.05 s | 3.87 | +0.030 |
+| 1 | **0.8249** | .849/.835/.791/.647 | 58/19/4 | 0.07 s | 9.26 | **−0.024** |
+| 2 | **0.8730** | .889/.889/.841/.730 | 56/7/7 | 0.02 s | 3.41 | +0.005 |
+| 3 (P3_3) | **0.9596** | .985/.970/.924/.758 | 64/2/2 | 0.04 s | 0.97 | **+0.204** |
+| **pooled** | **0.8851** (CI 0.826–0.933) | .907/.899/.850/.709 | 236/36/17 | 0.04 s | 4.37 | +0.051 |
+
+Without the Test_P3_3 cluster, the pooled score is 0.8799. The fold mean is 0.886. Official val is **0.9646**.
+
+**Promotion rule results** (`results/promote_*.json`; 5000 paired resamples; val clause from the official val CSVs):
+
+| incumbent A → candidate B | pooled A → B | Δ [95% CI] | P(Δ>0) | per-fold Δ | folds ↑ | val A → B | decision |
+|---|---|---|---|---|---|---|---|
+| HGB no replay → HGB + replay B | 0.8052 → 0.8340 | +0.029 [+0.008, +0.049] | **0.996** | +.037/+.016/+.011/+.054 | 4 | 0.8922 → 0.9216 | **PROMOTE** |
+| HGB + replay → default (0.75 TCN bag + 0.25 HGB, replay B) | 0.8340 → 0.8851 | +0.051 [−0.015, +0.141] | **0.922** | +.030/−.024/+.005/+.204 | 3 | 0.9216 → 0.9646 | **PROMOTE** (narrowly) |
+| prototype baseline → default | 0.8113 → 0.8851 | +0.074 [+0.006, +0.164] | **0.986** | +.042/+.009/+.006/+.251 | 4 | 0.8840 → 0.9646 | **PROMOTE** |
+
+**How to read the default-vs-HGB promotion.** The gain is almost entirely the D3 subject Test_P3_3.
+
+- The TCN blend detects **15/16** of P3_3's falls @0.3, against 0/16 for HGB + replay.
+- Excluding that one cluster (a diagnostic, not part of the rule), Δ = +0.018, CI [−0.030, +0.062], P = 0.78.
+- So on D1/D2 subjects the TCN blend is a plausible but **unproven** improvement. Its real, measured value is the D3 recall, which is exactly the W4 "D3 hedge" risk.
+
+**Where the default's errors are** (@0.3, attributed by `cluster_counts`):
+
+- **FPs (36):**
+  - 18 in fall-subject recordings: 16 in fall-clip margins and 2 in Autre. HGB + replay has 24 there.
+  - **18 in ADL pieces**, against 4 for HGB + replay. 13 of these come from ADL_12 in fold 1, which is why fold 1 drops. By activity, **11 FPs come from `Laver_dents` (teeth brushing)**, 2 each from `Utiliser_ordinateur` and `Dormir`, and 1 each from `Faire_menage`, `Laver_mains` and `Faire_the`.
+  - The TCN generalises worse than the HGB to unseen ADL subjects. This is the main FP lever for W5 (score/FP model) and a natural hard-negative target. Note that only 8 ADL subjects exist, so this rests on a few clusters.
+- **FNs (17):**
+  - D2: 10 (P2_1 3; P2_6, P2_7 2 each; P2_2, P2_3, P2_5 1 each);
+  - D1: 6 (P1_3, P1_9 2 each; P1_5, P1_8 1 each);
+  - P3_3: 1.
+  - D2 recall remains the weakest stratum.
 
 ### Recipes for the next work packages
 
@@ -310,6 +381,23 @@ W2 needs these arms; each is a uwbfall config:
 
 Compare each against `uwb_default`.
 
+**Seed averaging (PLAN §2).** The default TCN is a deterministic 3-member bag, and `uwb_default` is one such bag.
+Running 3 independent bags and passing them as a comma list averages counts over seeds:
+
+```bash
+for s in 0 1 2; do echo "{\"tcn\": {\"cv_seed_base\": $((100+7*s)), \"final_seed_base\": $((1000+1000*s))}}" > /tmp/s$s.json
+  python3 -m srcv.run_pipeline cand_s$s --config /tmp/s$s.json; done      # (+ the candidate's own keys)
+python3 -m srcv.compare inc_s0,inc_s1,inc_s2 cand_s0,cand_s1,cand_s2
+```
+
+uwbfall seeds CV member s of fold k with `cv_seed_base·s + k` and final member s with `final_seed_base + s`.
+
+- Changing `final_seed_base` gives fully independent final bags. That bag is the one that predicts the SR-CV test streams.
+- **CV member 0 always gets seed k**, whatever the base. The OOF used for the operating point is therefore only partly re-seeded.
+- This is an open issue for the pipeline engineer: a `tcn.seed_offset` key would fix it.
+
+`python3 -m srcv.rescore [name ...]` re-scores saved runs and appends them to `results/rescore.json`.
+
 ## 6. Honest limitations
 
 - **The fold structure is a model of the test, not the test.**
@@ -324,4 +412,9 @@ Compare each against `uwb_default`.
 - **t_last.** The published plan used a clip end one frame shorter than the aligned segment (V2). SR-CV follows the published behaviour (`(n−1)·0.02`). One val clip (Test_P3_8/Chute02_270) is still 1 frame off, which is immaterial.
 - **Training OOF inside a fold is still leaky.** The recipe's GroupKFold-by-stream on regenerated train streams shares ADL files and subjects across streams, exactly as on the official train. This affects only operating-point choices *inside* a fold. The SR-CV test score itself is leak-free: the test subjects, their Autre/Empty files and the test ADL subjects never appear in fold-train.
 - **Prototype seed sensitivity.** The HGB uses `early_stopping='auto'` with `random_state=0`, as in the recipe. Model-seed variance (X5: sd about 0.012 on val) is **not** in the baseline CI.
+- **One subject can decide a promotion.** Test_P3_3 is the only D3 subject with evaluable falls (16), so any change in D3 recall moves pooled F1 by about 0.05.
+  - The default-vs-HGB promotion passes with P = 0.922 only because of it. Without that cluster, P = 0.78.
+  - Report `rescore`'s `pooled_without_Test_P3_3`, or the masked bootstrap used in section 5, next to every decision that hinges on fold 3.
+- **Bag-seed variance is not yet in the default's CI.** `uwb_default` is one deterministic 3-member TCN bag. Its sensitivity to the bag seed was not measured on SR-CV: four folds at about 15 min each per extra bag, which did not fit this time box. The recipe is above.
+- **`srcv.spec` cache keys.** uwbfall's CSV reader is off by 1 ulp on some times (V8). Frame indices are unaffected, so the streams are identical, but features are cached under a second key. Use `srcv.pipeline_sources` for the exact path.
 - **Val stays a confirmation set.** Folds 1–3 contain original val subjects (P1_8/9, P2_8/9, P3_8/9, ADL_0/11). SR-CV models are trained on regenerated streams that include *some* val subjects in fold-train. Therefore never tune on val and SR-CV jointly. Report official val only as the third clause of the rule.

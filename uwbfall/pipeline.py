@@ -135,7 +135,7 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
             tr = seqs(Xs, y, sid, fold != k)
             ho_ids = np.unique(sid[fold == k])
             for s in range(tc["seeds"]):
-                model = train_tcn(tr, cfg, seed=tc["cv_seed_base"] * s + k, epochs=tc["epochs"])
+                model = train_tcn(tr, cfg, seed=tc["cv_seed_base"] * s + k + tc["seed_offset"], epochs=tc["epochs"])
                 for h in ho_ids:
                     m = sid == h
                     probs[s, m] = predict_seq(model, Xs[m])
@@ -144,7 +144,7 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         del probs
         all_seqs = seqs(Xs, y, sid, np.ones(len(y), bool))
         for s in range(tc["seeds"]):
-            model = train_tcn(all_seqs, cfg, seed=tc["final_seed_base"] + s, epochs=tc["epochs"])
+            model = train_tcn(all_seqs, cfg, seed=tc["final_seed_base"] + s + tc["seed_offset"], epochs=tc["epochs"])
             torch.save(model.state_dict(), out / f"tcn_{s}.pt")
         timings["tcn_s"] = round(time.time() - t0, 1)
         log(f"tcn: CV + final bag done ({timings['tcn_s']} s)")
