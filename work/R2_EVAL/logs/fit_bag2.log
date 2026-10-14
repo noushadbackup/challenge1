@@ -52,3 +52,4 @@
 [  320.3s rss=1.30GB] tcn: CV fold 0 done (290 s)
 [  671.9s rss=1.30GB] tcn: CV fold 1 done (641 s)
 [  923.5s rss=1.30GB] tcn: CV fold 2 done (893 s)
+[ 1153.8s rss=1.30GB] tcn: CV fold 3 done (1123 s)
