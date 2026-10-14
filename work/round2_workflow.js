@@ -93,7 +93,7 @@ const IMPROVE = [
 let improveResults = []
 let state = brief(evalRes)
 for (const imp of IMPROVE) {
-  const r = await agent(`You are improvement engineer ${imp.id}: ${imp.name}.
+  const r = await agent(`You are improvement engineer ${imp.id}: ${imp.name}.\n\nRESUME NOTE: an earlier attempt at this task may have been cut off by a usage limit. If you find partial code, logs or a report from it (reports/round2/, uwbfall/, work/R2_*), review it critically, reuse what you can verify, and finish.
 ${CTX}
 
 Evaluation/reference state so far (latest first is most relevant):
@@ -109,7 +109,7 @@ Implement inside the uwbfall package behind config flags (keep the default confi
 }
 
 phase('Integrate')
-const integ = await agent(`You are the INTEGRATOR.
+const integ = await agent(`You are the INTEGRATOR.\n\nRESUME NOTE: an earlier attempt at this task may have been cut off by a usage limit. If you find partial code, logs or a report from it (reports/round2/, uwbfall/, work/R2_*), review it critically, reuse what you can verify, and finish.
 ${CTX}
 
 Evaluation: ${brief(evalRes)}
@@ -123,14 +123,14 @@ Improvements: ${improveResults.map(x => x.id + ': ' + brief(x.r)).join('\n')}
 
 phase('Audit')
 const [audit, review] = await parallel([
-  () => agent(`You are the REPRODUCIBILITY & COMPLIANCE AUDITOR.
+  () => agent(`You are the REPRODUCIBILITY & COMPLIANCE AUDITOR.\n\nRESUME NOTE: an earlier attempt at this task may have been cut off by a usage limit. If you find partial code, logs or a report from it (reports/round2/, uwbfall/, work/R2_*), review it critically, reuse what you can verify, and finish.
 ${CTX}
 
 Integrator result: ${brief(integ)}
 
 Audit like a challenge organiser verifying a top team: (1) fresh clone of the repo into /home/user/data_raw/audit_clone (git clone /home/user/challenge1 — note uncommitted files: copy the working tree with rsync excluding big caches if needed), install per README, run the documented commands, check that reproduce-val gives the reported val CSV bit-exactly (or document every difference); (2) run predict twice and with different thread counts — determinism; (3) validate_predictions on the dry-run CSV; (4) rule compliance: grep for any use of external data, transductive cross-stream tricks enabled by default, val/test labels used in training or tuning, package files modified (compare package manifest sha256 fb0e2402... recorded in work/E1_pseudo_test/manifest_before.txt); (5) RAM/time of predict on 5 streams. Write /home/user/challenge1/reports/round2/AUDIT.md with PASS/FAIL per item and exact fixes needed.`,
     { label: 'Reproducibility & compliance auditor', phase: 'Audit', schema: RESULT_SCHEMA }),
-  () => agent(`You are the SKEPTICAL REVIEWER (independent; your job is to find what is wrong before the leaderboard does).
+  () => agent(`You are the SKEPTICAL REVIEWER (independent; your job is to find what is wrong before the leaderboard does).\n\nRESUME NOTE: an earlier attempt at this task may have been cut off by a usage limit. If you find partial code, logs or a report from it (reports/round2/, uwbfall/, work/R2_*), review it critically, reuse what you can verify, and finish.
 ${CTX}
 
 Evaluation: ${brief(evalRes)}
