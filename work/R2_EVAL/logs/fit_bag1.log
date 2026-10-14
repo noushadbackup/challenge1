@@ -47,3 +47,6 @@
 [ 1494.2s rss=1.28GB] fit done in 1494.2 s -> /home/user/data_raw/srcv/runs/tcn_bag1/fold_3
 [tcn_bag1] 3 done in 1495s
 [    0.0s rss=1.28GB] fit: 13 training streams, 359 events, config 8451e7085102e2cd
+[   31.3s rss=1.28GB] design: X_proto (111268, 64) X_band (111268, 48) positives 3272
+[   31.4s rss=1.28GB] folds: {0: ['train_08', 'train_09', 'train_11'], 1: ['train_00', 'train_03', 'train_06'], 2: ['train_01', 'train_05', 'train_10'], 3: ['train_02', 'train_04', 'train_07', 'train_12']}
+[  321.1s rss=1.28GB] tcn: CV fold 0 done (290 s)
