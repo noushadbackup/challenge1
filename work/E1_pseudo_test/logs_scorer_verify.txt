@@ -1,0 +1,5 @@
+durations equal (npz vs h5): True {'val_00': 1763.78, 'val_01': 1768.42, 'val_02': 1761.68, 'val_03': 1770.52, 'val_04': 311.4}
+sample_submission.csv: mine=0.315091 cli=0.315091 full_report_identical=True
+val_full.csv: mine=0.883951 cli=0.883951 full_report_identical=True
+val_physics.csv: mine=0.790323 cli=0.790323 full_report_identical=True
+val_structure.csv: mine=0.875912 cli=0.875912 full_report_identical=True

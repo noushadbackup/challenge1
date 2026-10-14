@@ -1,0 +1,3 @@
+val_04: shape_equal=True cir_bit_equal_per_radar=[True, True, True] events_equal=True (5 ev) composition_times_equal=True
+val_04: extractor vs cache: {'e_raw': 'bit-equal', 'e_mot': 'bit-equal', 'e_diff': 'bit-equal', 'mot_map': 'bit-equal', 'amp_1s': 'bit-equal', 'prof_1s': 'bit-equal', 'prof_02': 'bit-equal'}
+peak RSS 0.41 GB

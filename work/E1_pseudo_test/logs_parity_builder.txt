@@ -1,0 +1,6 @@
+val_00: shape_equal=True cir_bit_equal_per_radar=[True, True, True] events_equal=True (34 ev) composition_times_equal=True
+val_01: shape_equal=True cir_bit_equal_per_radar=[True, True, True] events_equal=True (31 ev) composition_times_equal=True
+val_02: shape_equal=True cir_bit_equal_per_radar=[True, True, True] events_equal=True (31 ev) composition_times_equal=True
+val_03: shape_equal=True cir_bit_equal_per_radar=[True, True, True] events_equal=True (18 ev) composition_times_equal=True
+val_04: shape_equal=True cir_bit_equal_per_radar=[True, True, True] events_equal=True (5 ev) composition_times_equal=True
+peak RSS 1.32 GB

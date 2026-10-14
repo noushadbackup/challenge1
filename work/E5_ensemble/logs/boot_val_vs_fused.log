@@ -1,0 +1,44 @@
+{
+ "split": "val",
+ "ref": "val_single__lgb_fused.csv",
+ "ref_rank_f1": 0.8657,
+ "n_segments": 588,
+ "cands": {
+  "val_radar__2of3_agree.csv": {
+   "rank_f1": 0.8462,
+   "delta": -0.0195,
+   "ci95": [
+    -0.0768,
+    0.0344
+   ],
+   "p_delta_gt_0": 0.234
+  },
+  "val_radar__fused_OR_2of3.csv": {
+   "rank_f1": 0.8636,
+   "delta": -0.002,
+   "ci95": [
+    -0.0394,
+    0.0348
+   ],
+   "p_delta_gt_0": 0.445
+  },
+  "val_radar__meanfused_max_radar.csv": {
+   "rank_f1": 0.8622,
+   "delta": -0.0035,
+   "ci95": [
+    -0.0329,
+    0.0259
+   ],
+   "p_delta_gt_0": 0.38
+  },
+  "val_radar__mean3.csv": {
+   "rank_f1": 0.8448,
+   "delta": -0.0209,
+   "ci95": [
+    -0.0648,
+    0.0194
+   ],
+   "p_delta_gt_0": 0.159
+  }
+ }
+}

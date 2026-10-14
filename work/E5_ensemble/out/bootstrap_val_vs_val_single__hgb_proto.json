@@ -1,0 +1,53 @@
+{
+ "split": "val",
+ "ref": "val_single__hgb_proto.csv",
+ "ref_rank_f1": 0.8822,
+ "n_segments": 588,
+ "cands": {
+  "val_committee__mean.csv": {
+   "rank_f1": 0.8804,
+   "delta": -0.0018,
+   "ci95": [
+    -0.0461,
+    0.0427
+   ],
+   "p_delta_gt_0": 0.445
+  },
+  "val_wbf1d__committee.csv": {
+   "rank_f1": 0.8753,
+   "delta": -0.0069,
+   "ci95": [
+    -0.05,
+    0.0367
+   ],
+   "p_delta_gt_0": 0.364
+  },
+  "val_stack__committee.csv": {
+   "rank_f1": 0.8622,
+   "delta": -0.0201,
+   "ci95": [
+    -0.0688,
+    0.0244
+   ],
+   "p_delta_gt_0": 0.195
+  },
+  "val_single__lgb_fused.csv": {
+   "rank_f1": 0.8657,
+   "delta": -0.0165,
+   "ci95": [
+    -0.0655,
+    0.0296
+   ],
+   "p_delta_gt_0": 0.252
+  },
+  "val_committeeptcn__w_tcn0.75.csv": {
+   "rank_f1": 0.9141,
+   "delta": 0.0319,
+   "ci95": [
+    -0.0111,
+    0.0779
+   ],
+   "p_delta_gt_0": 0.921
+  }
+ }
+}

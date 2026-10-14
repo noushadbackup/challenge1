@@ -4,6 +4,11 @@ Package analysed: `abc2027_uwb_train_v1.zip` (8.17 GB, 13 train + 5 val streams,
 Every number below is reproducible with the scripts in `analysis/` (see *Reproduce* at the end);
 headline numbers are also in `reports/numbers.json`.
 
+> **Corrections after the team review** (`reports/team/DATA_TEAM_VERDICT.md`): the EMA junction spike is ~55×, not 84×.
+> "Motion peak before onset" was itself an EMA artefact; junction-immune motion peaks inside 87–90 % of D1/D2 falls.
+> Dataset 3 is seen by R29171 at bins ~40–68. The fingerprint AUC vs ADL is 0.94–0.98. Current best val system: **0.965**
+> (see `reports/PLAN.md` v2).
+
 > **সংক্ষেপে (বাংলা):** ডেটাটা আসলে "সত্যিকারের একটানা রেকর্ডিং" নয় — fall রেকর্ডিং আর ADL রেকর্ডিং
 > কেটে জোড়া লাগানো। এই জোড়া (junction), প্রতিটা corpus-এর আলাদা background, আর fall-এর পরে
 > static profile-এর স্থায়ী পরিবর্তন — এই তিনটা pattern সবচেয়ে শক্তিশালী। এগুলো ব্যবহার করে একটা সাধারণ

@@ -1,0 +1,53 @@
+{
+ "split": "train",
+ "ref": "oof_single__hgb_proto.csv",
+ "ref_rank_f1": 0.9016,
+ "n_segments": 1758,
+ "cands": {
+  "oof_committee__mean.csv": {
+   "rank_f1": 0.9162,
+   "delta": 0.0146,
+   "ci95": [
+    -0.0037,
+    0.0334
+   ],
+   "p_delta_gt_0": 0.939
+  },
+  "oof_wbf1d__committee.csv": {
+   "rank_f1": 0.9203,
+   "delta": 0.0187,
+   "ci95": [
+    -0.0019,
+    0.0405
+   ],
+   "p_delta_gt_0": 0.96
+  },
+  "oof_stack__committee.csv": {
+   "rank_f1": 0.907,
+   "delta": 0.0053,
+   "ci95": [
+    -0.0125,
+    0.0238
+   ],
+   "p_delta_gt_0": 0.707
+  },
+  "oof_single__lgb_fused.csv": {
+   "rank_f1": 0.9107,
+   "delta": 0.0091,
+   "ci95": [
+    -0.0137,
+    0.032
+   ],
+   "p_delta_gt_0": 0.78
+  },
+  "oof_committeeptcn__w_tcn0.75.csv": {
+   "rank_f1": 0.9464,
+   "delta": 0.0448,
+   "ci95": [
+    0.0213,
+    0.0715
+   ],
+   "p_delta_gt_0": 1.0
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "split": "train",
+ "ref": "oof_single__lgb_fused.csv",
+ "ref_rank_f1": 0.9107,
+ "n_segments": 1758,
+ "cands": {
+  "oof_radar__2of3_agree.csv": {
+   "rank_f1": 0.8624,
+   "delta": -0.0483,
+   "ci95": [
+    -0.0805,
+    -0.0186
+   ],
+   "p_delta_gt_0": 0.0
+  },
+  "oof_radar__fused_OR_2of3.csv": {
+   "rank_f1": 0.9121,
+   "delta": 0.0014,
+   "ci95": [
+    -0.0202,
+    0.0231
+   ],
+   "p_delta_gt_0": 0.55
+  },
+  "oof_radar__meanfused_max_radar.csv": {
+   "rank_f1": 0.918,
+   "delta": 0.0073,
+   "ci95": [
+    -0.0108,
+    0.0257
+   ],
+   "p_delta_gt_0": 0.782
+  },
+  "oof_radar__mean3.csv": {
+   "rank_f1": 0.8776,
+   "delta": -0.0331,
+   "ci95": [
+    -0.0654,
+    -0.0017
+   ],
+   "p_delta_gt_0": 0.019
+  }
+ }
+}

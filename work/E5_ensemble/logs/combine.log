@@ -1,0 +1,72 @@
+members: ['xgb_fused', 'cat_fused', 'lgb_fused', 'lgb_radar1', 'hgb_fused', 'hgb_proto', 'lgb_radar0', 'lgb_radar2', 'lgb_physics', 'tcn_e4']
+single:xgb_fused                         oof=0.9135 (0.4, 5, 0.8, 0.2)  [5s]
+single:cat_fused                         oof=0.9036 (0.3, 5, 0.8, 0.2)  [7s]
+single:lgb_fused                         oof=0.9107 (0.3, 5, 0.8, 0.2)  [10s]
+single:lgb_radar1                        oof=0.8209 (0.3, 5, 0.8, 0.2)  [12s]
+single:hgb_fused                         oof=0.9008 (0.4, 5, 0.8, 0.6)  [14s]
+single:hgb_proto                         oof=0.9016 (0.4, 5, 0.8, 0.2)  [17s]
+single:lgb_radar0                        oof=0.7769 (0.3, 3, 0.8, 0.6)  [19s]
+single:lgb_radar2                        oof=0.8202 (0.3, 5, 0.8, 0.6)  [21s]
+single:lgb_physics                       oof=0.8781 (0.4, 5, 0.8, 0.2)  [24s]
+single:tcn_e4                            oof=0.9404 (0.5, 3, 0.8, 0.6)  [26s]
+committee:mean                           oof=0.9162 (0.4, 5, 0.8, 0.6)  [29s]
+committee:logit_mean                     oof=0.9162 (0.4, 5, 0.8, 0.6)  [31s]
+committee:rank_mean                      oof=0.8960 (0.97, 5, 0.8, 0.2)  [34s]
+radar:mean3                              oof=0.8776 (0.3, 3, 0.8, 0.6)  [36s]
+radar:max                                oof=0.8527 (0.5, 5, 0.8, 0.6)  [39s]
+radar:2of3_agree                         oof=0.8624 (0.3, 5, 0.8, 0.6)  [41s]
+radar:fused_OR_2of3                      oof=0.9121 (0.5, 5, 0.8, 0.2)  [44s]
+radar:mean(fused,max_radar)              oof=0.9180 (0.4, 5, 0.8, 0.2)  [46s]
+radar:mean(fused,3radars)                oof=0.9027 (0.3, 5, 0.8, 0.2)  [49s]
+hedge:committee+physics_w0.2             oof=0.9173 (0.4, 5, 0.8, 0.2)  [51s]
+hedge:committee+physics_w0.33            oof=0.9119 (0.4, 5, 0.8, 0.2)  [54s]
+stack:committee                          oof=0.9070 (0.5, 3, 0.8, 0.2)  [56s]
+stack:committee+radars+physics           oof=0.9096 (0.4, 5, 0.8, 0.2)  [59s]
+stack:all+tcn                            oof=0.9280 (0.4, 3, 0.8, 0.6)  [62s]
+committee+tcn:w_tcn0.25                  oof=0.9266 (0.3, 5, 0.8, 0.2)  [64s]
+committee+tcn:w_tcn0.5                   oof=0.9409 (0.4, 5, 0.8, 0.2)  [67s]
+committee+tcn:w_tcn0.75                  oof=0.9464 (0.5, 5, 0.8, 0.2)  [69s]
+committee+tcn:mean_equal5                oof=0.9218 (0.4, 5, 0.8, 0.2)  [72s]
+wbf1d:committee                      oof=0.9203 (1, 0.4)
+softnms:committee                      oof=0.9151 0.6
+wbf1d:committee+radars               oof=0.9190 (5, 0.2)
+softnms:committee+radars               oof=0.9054 0.8
+wbf1d:committee+tcn                  oof=0.9389 (5, 0.2)
+softnms:committee+tcn                  oof=0.9348 0.8
+
+candidate                                       OOF      VAL  val f1@.1/.3/.5/.7 | tp/fp/fn | med start err
+committee+tcn:w_tcn0.75                      0.9464   0.9141  [0.97, 0.955, 0.818, 0.591] | [63, 2, 4] | 0.34
+committee+tcn:w_tcn0.5                       0.9409   0.8790  [0.948, 0.919, 0.77, 0.504] | [62, 6, 5] | 0.34
+single:tcn_e4                                0.9404   0.9303  [0.97, 0.97, 0.851, 0.507] | [65, 2, 2] | 0.34
+wbf1d:committee+tcn                          0.9389   0.8872  [0.969, 0.923, 0.769, 0.477] | [60, 3, 7] | 0.331
+softnms:committee+tcn                        0.9348   0.9026  [0.954, 0.954, 0.8, 0.492] | [62, 1, 5] | 0.32
+stack:all+tcn                                0.9280   0.8790  [0.948, 0.919, 0.77, 0.489] | [62, 6, 5] | 0.34
+committee+tcn:w_tcn0.25                      0.9266   0.8725  [0.941, 0.897, 0.779, 0.412] | [61, 8, 6] | 0.34
+committee+tcn:mean_equal5                    0.9218   0.8772  [0.947, 0.902, 0.782, 0.511] | [60, 6, 7] | 0.3
+wbf1d:committee                              0.9203   0.8753  [0.947, 0.916, 0.763, 0.458] | [60, 4, 7] | 0.336
+wbf1d:committee+radars                       0.9190   0.8753  [0.947, 0.931, 0.748, 0.458] | [61, 3, 6] | 0.359
+radar:mean(fused,max_radar)                  0.9180   0.8622  [0.947, 0.887, 0.752, 0.466] | [59, 7, 8] | 0.32
+hedge:committee+physics_w0.2                 0.9173   0.8753  [0.947, 0.901, 0.779, 0.519] | [59, 5, 8] | 0.28
+committee:mean                               0.9162   0.8804  [0.947, 0.901, 0.794, 0.489] | [59, 5, 8] | 0.28
+committee:logit_mean                         0.9162   0.8804  [0.947, 0.901, 0.794, 0.489] | [59, 5, 8] | 0.28
+softnms:committee                            0.9151   0.8855  [0.947, 0.931, 0.779, 0.443] | [61, 3, 6] | 0.34
+single:xgb_fused                             0.9135   0.8636  [0.939, 0.894, 0.758, 0.485] | [59, 6, 8] | 0.26
+radar:fused_OR_2of3                          0.9121   0.8636  [0.939, 0.894, 0.758, 0.515] | [59, 6, 8] | 0.28
+hedge:committee+physics_w0.33                0.9119   0.8702  [0.947, 0.901, 0.763, 0.519] | [59, 5, 8] | 0.28
+single:lgb_fused                             0.9107   0.8657  [0.955, 0.896, 0.746, 0.418] | [60, 7, 7] | 0.32
+stack:committee+radars+physics               0.9096   0.8706  [0.94, 0.896, 0.776, 0.418] | [60, 7, 7] | 0.4
+stack:committee                              0.9070   0.8622  [0.932, 0.887, 0.767, 0.496] | [59, 7, 8] | 0.26
+softnms:committee+radars                     0.9054   0.8360  [0.905, 0.889, 0.714, 0.397] | [56, 3, 11] | 0.34
+single:cat_fused                             0.9036   0.8346  [0.919, 0.889, 0.696, 0.415] | [60, 8, 7] | 0.3
+radar:mean(fused,3radars)                    0.9027   0.8557  [0.955, 0.896, 0.716, 0.448] | [60, 7, 7] | 0.31
+single:hgb_proto                             0.9016   0.8822  [0.947, 0.902, 0.797, 0.541] | [60, 6, 7] | 0.24
+single:hgb_fused                             0.9008   0.8722  [0.947, 0.917, 0.752, 0.451] | [61, 5, 6] | 0.34
+committee:rank_mean                          0.8960   0.8657  [0.94, 0.881, 0.776, 0.522] | [59, 8, 8] | 0.28
+single:lgb_physics                           0.8781   0.8307  [0.905, 0.857, 0.73, 0.444] | [54, 5, 13] | 0.32
+radar:mean3                                  0.8776   0.8448  [0.931, 0.885, 0.718, 0.473] | [58, 6, 9] | 0.26
+radar:2of3_agree                             0.8624   0.8462  [0.923, 0.877, 0.738, 0.462] | [57, 6, 10] | 0.34
+radar:max                                    0.8527   0.8198  [0.904, 0.874, 0.681, 0.459] | [59, 9, 8] | 0.26
+single:lgb_radar1                            0.8209   0.7861  [0.851, 0.821, 0.687, 0.403] | [55, 12, 12] | 0.28
+single:lgb_radar2                            0.8202   0.8247  [0.889, 0.859, 0.726, 0.504] | [58, 10, 9] | 0.26
+single:lgb_radar0                            0.7769   0.7689  [0.92, 0.803, 0.584, 0.292] | [55, 15, 12] | 0.36
+wall 85s

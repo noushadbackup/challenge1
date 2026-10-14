@@ -1,0 +1,35 @@
+{
+ "split": "val",
+ "ref": "val_single__tcn_e4.csv",
+ "ref_rank_f1": 0.9303,
+ "n_segments": 588,
+ "cands": {
+  "val_committeeptcn__w_tcn0.75.csv": {
+   "rank_f1": 0.9141,
+   "delta": -0.0162,
+   "ci95": [
+    -0.0595,
+    0.0251
+   ],
+   "p_delta_gt_0": 0.223
+  },
+  "val_wbf1d__committeeptcn.csv": {
+   "rank_f1": 0.8872,
+   "delta": -0.0432,
+   "ci95": [
+    -0.0877,
+    0.0005
+   ],
+   "p_delta_gt_0": 0.026
+  },
+  "val_softnms__committeeptcn.csv": {
+   "rank_f1": 0.9026,
+   "delta": -0.0278,
+   "ci95": [
+    -0.0685,
+    0.0106
+   ],
+   "p_delta_gt_0": 0.078
+  }
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "split": "train",
+ "ref": "oof_committee__mean.csv",
+ "ref_rank_f1": 0.9162,
+ "n_segments": 1758,
+ "cands": {
+  "oof_wbf1d__committee.csv": {
+   "rank_f1": 0.9203,
+   "delta": 0.0041,
+   "ci95": [
+    -0.0072,
+    0.0163
+   ],
+   "p_delta_gt_0": 0.746
+  },
+  "oof_softnms__committee.csv": {
+   "rank_f1": 0.9151,
+   "delta": -0.0011,
+   "ci95": [
+    -0.0166,
+    0.0146
+   ],
+   "p_delta_gt_0": 0.44
+  },
+  "oof_stack__committee.csv": {
+   "rank_f1": 0.907,
+   "delta": -0.0093,
+   "ci95": [
+    -0.0231,
+    0.0046
+   ],
+   "p_delta_gt_0": 0.087
+  },
+  "oof_hedge__committeepphysics_w0.2.csv": {
+   "rank_f1": 0.9173,
+   "delta": 0.0011,
+   "ci95": [
+    -0.0097,
+    0.0128
+   ],
+   "p_delta_gt_0": 0.548
+  },
+  "oof_single__lgb_fused.csv": {
+   "rank_f1": 0.9107,
+   "delta": -0.0055,
+   "ci95": [
+    -0.0246,
+    0.0148
+   ],
+   "p_delta_gt_0": 0.288
+  }
+ }
+}

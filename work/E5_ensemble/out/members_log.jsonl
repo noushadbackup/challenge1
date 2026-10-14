@@ -1,0 +1,9 @@
+{"member": "lgb_fused", "n_features": 112, "fits": 8, "wall_s": 86.9, "oof_auc": 0.99439, "oof_ap": 0.8595, "val_auc": 0.97219, "val_ap": 0.6934, "peak_rss_gb": 0.8}
+{"member": "hgb_proto", "n_features": 64, "fits": 8, "wall_s": 58.0, "oof_auc": 0.99303, "oof_ap": 0.8424, "val_auc": 0.96911, "val_ap": 0.6998, "peak_rss_gb": 0.59}
+{"member": "lgb_radar0", "n_features": 37, "fits": 8, "wall_s": 33.2, "oof_auc": 0.98254, "oof_ap": 0.7031, "val_auc": 0.97767, "val_ap": 0.6366, "peak_rss_gb": 0.62}
+{"member": "lgb_radar1", "n_features": 37, "fits": 8, "wall_s": 33.3, "oof_auc": 0.98208, "oof_ap": 0.6993, "val_auc": 0.96472, "val_ap": 0.6028, "peak_rss_gb": 0.64}
+{"member": "lgb_radar2", "n_features": 37, "fits": 8, "wall_s": 32.5, "oof_auc": 0.97845, "oof_ap": 0.6785, "val_auc": 0.97169, "val_ap": 0.6505, "peak_rss_gb": 0.64}
+{"member": "lgb_physics", "n_features": 73, "fits": 8, "wall_s": 53.9, "oof_auc": 0.99181, "oof_ap": 0.8205, "val_auc": 0.98245, "val_ap": 0.7287, "peak_rss_gb": 0.69}
+{"member": "xgb_fused", "n_features": 112, "fits": 8, "wall_s": 59.7, "oof_auc": 0.99451, "oof_ap": 0.86, "val_auc": 0.97459, "val_ap": 0.6952, "peak_rss_gb": 0.75}
+{"member": "hgb_fused", "n_features": 112, "fits": 8, "wall_s": 85.5, "oof_auc": 0.99382, "oof_ap": 0.8481, "val_auc": 0.97244, "val_ap": 0.6879, "peak_rss_gb": 0.81}
+{"member": "cat_fused", "n_features": 112, "fits": 8, "wall_s": 132.1, "oof_auc": 0.99328, "oof_ap": 0.8433, "val_auc": 0.9701, "val_ap": 0.6799, "peak_rss_gb": 1.04}

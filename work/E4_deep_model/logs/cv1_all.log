@@ -1,0 +1,6 @@
+fold 0 done  bce/epoch(seed-mean) min=0.0320 at 7  t=123s
+fold 1 done  bce/epoch(seed-mean) min=0.0362 at 11  t=249s
+fold 2 done  bce/epoch(seed-mean) min=0.0300 at 9  t=375s
+fold 3 done  bce/epoch(seed-mean) min=0.0348 at 7  t=503s
+E*=8  oof_bce=0.0342  train OOF rank F1=0.9274 postproc=(0.5, 1, 0.8, 0.6)  t=505s
+{"args": {"tag": "cv1_all", "feats": "all", "stages": 1, "hidden": 64, "drop": 0.2, "in_drop": 0.1, "noise": 0.05, "lr": 0.001, "win": 1000, "batch": 16, "steps": 20, "max_epochs": 25, "seeds": 1, "no_val": true}, "e_star": 8, "train_oof_rank_f1": 0.9274, "postproc": [0.5, 1, 0.8, 0.6], "wall_s": 505}

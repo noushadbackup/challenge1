@@ -1,0 +1,398 @@
+{
+ "arm": "physics+iq+zone",
+ "seed": 0,
+ "early_stopping": false,
+ "reps": 3,
+ "n_features": 127,
+ "train_oof_rank_f1": 0.8911,
+ "train_oof_rank_f1_per_rep": [
+  0.8883,
+  0.8925,
+  0.8925
+ ],
+ "postproc": [
+  0.4,
+  5,
+  0.8,
+  0.2
+ ],
+ "train_oof_f1@0.1/0.3/0.5/0.7": [
+  0.919,
+  0.908,
+  0.838,
+  0.654
+ ],
+ "train_oof_tp_fp_fn@0.3": [
+  168,
+  16,
+  18
+ ],
+ "train_oof_per_stream": {
+  "train_00": {
+   "0.1": [
+    12,
+    0,
+    3
+   ],
+   "0.3": [
+    12,
+    0,
+    3
+   ],
+   "0.5": [
+    12,
+    0,
+    3
+   ]
+  },
+  "train_01": {
+   "0.1": [
+    15,
+    2,
+    2
+   ],
+   "0.3": [
+    15,
+    2,
+    2
+   ],
+   "0.5": [
+    15,
+    2,
+    2
+   ]
+  },
+  "train_02": {
+   "0.1": [
+    17,
+    0,
+    0
+   ],
+   "0.3": [
+    17,
+    0,
+    0
+   ],
+   "0.5": [
+    14,
+    3,
+    3
+   ]
+  },
+  "train_03": {
+   "0.1": [
+    16,
+    1,
+    1
+   ],
+   "0.3": [
+    16,
+    1,
+    1
+   ],
+   "0.5": [
+    14,
+    3,
+    3
+   ]
+  },
+  "train_04": {
+   "0.1": [
+    16,
+    1,
+    0
+   ],
+   "0.3": [
+    16,
+    1,
+    0
+   ],
+   "0.5": [
+    16,
+    1,
+    0
+   ]
+  },
+  "train_05": {
+   "0.1": [
+    10,
+    0,
+    3
+   ],
+   "0.3": [
+    10,
+    0,
+    3
+   ],
+   "0.5": [
+    8,
+    2,
+    5
+   ]
+  },
+  "train_06": {
+   "0.1": [
+    14,
+    1,
+    0
+   ],
+   "0.3": [
+    14,
+    1,
+    0
+   ],
+   "0.5": [
+    13,
+    2,
+    1
+   ]
+  },
+  "train_07": {
+   "0.1": [
+    10,
+    4,
+    2
+   ],
+   "0.3": [
+    9,
+    5,
+    3
+   ],
+   "0.5": [
+    9,
+    5,
+    3
+   ]
+  },
+  "train_08": {
+   "0.1": [
+    13,
+    2,
+    2
+   ],
+   "0.3": [
+    12,
+    3,
+    3
+   ],
+   "0.5": [
+    11,
+    4,
+    4
+   ]
+  },
+  "train_09": {
+   "0.1": [
+    15,
+    1,
+    0
+   ],
+   "0.3": [
+    15,
+    1,
+    0
+   ],
+   "0.5": [
+    14,
+    2,
+    1
+   ]
+  },
+  "train_10": {
+   "0.1": [
+    7,
+    0,
+    1
+   ],
+   "0.3": [
+    7,
+    0,
+    1
+   ],
+   "0.5": [
+    7,
+    0,
+    1
+   ]
+  },
+  "train_11": {
+   "0.1": [
+    18,
+    2,
+    1
+   ],
+   "0.3": [
+    18,
+    2,
+    1
+   ],
+   "0.5": [
+    15,
+    5,
+    4
+   ]
+  },
+  "train_12": {
+   "0.1": [
+    7,
+    0,
+    1
+   ],
+   "0.3": [
+    7,
+    0,
+    1
+   ],
+   "0.5": [
+    7,
+    0,
+    1
+   ]
+  }
+ },
+ "val_rank_f1": 0.8136,
+ "val_f1@0.1/0.3/0.5/0.7": [
+  0.866,
+  0.835,
+  0.74,
+  0.551
+ ],
+ "val_tp_fp_fn@0.3": [
+  53,
+  7,
+  14
+ ],
+ "val_fa_per_hour@0.3": 3.42,
+ "val_start_err_median@0.3": 0.26,
+ "val_mean_tiou@0.3": 0.721,
+ "features": [
+  "jump_max",
+  "static5_r0",
+  "static5_r1",
+  "static5_r2",
+  "static5_max",
+  "static10_r0",
+  "static10_r1",
+  "static10_r2",
+  "static10_max",
+  "diff_r0",
+  "diff_r1",
+  "diff_r2",
+  "diff_max",
+  "static5_max@-2s",
+  "static5_max@-1s",
+  "static5_max@+1s",
+  "static5_max@+2s",
+  "static10_max@-2s",
+  "static10_max@-1s",
+  "static10_max@+1s",
+  "static10_max@+2s",
+  "diff_max@-2s",
+  "diff_max@-1s",
+  "diff_max@+1s",
+  "diff_max@+2s",
+  "iq_hold_r0",
+  "iq_hold_r1",
+  "iq_hold_r2",
+  "iq_incoh02_r0",
+  "iq_incoh02_r1",
+  "iq_incoh02_r2",
+  "iq_incoh02_max",
+  "iq_hpE02_r0",
+  "iq_hpE02_r1",
+  "iq_hpE02_r2",
+  "iq_hpE02_max",
+  "iq_hpcoh02_r0",
+  "iq_hpcoh02_r1",
+  "iq_hpcoh02_r2",
+  "iq_hishare02_r0",
+  "iq_hishare02_r1",
+  "iq_hishare02_r2",
+  "iq_md02_r0",
+  "iq_md02_r1",
+  "iq_md02_r2",
+  "iq_md02_max",
+  "iq_mz02_r0",
+  "iq_mz02_r1",
+  "iq_mz02_r2",
+  "iq_mz02_max",
+  "iq_dopp02_r0",
+  "iq_dopp02_r1",
+  "iq_dopp02_r2",
+  "iq_ucoh02_r0",
+  "iq_ucoh02_r1",
+  "iq_ucoh02_r2",
+  "iq_cen02_r0",
+  "iq_cen02_r1",
+  "iq_cen02_r2",
+  "iq_spread02_r0",
+  "iq_spread02_r1",
+  "iq_spread02_r2",
+  "iq_incoh1_r0",
+  "iq_incoh1_r1",
+  "iq_incoh1_r2",
+  "iq_incoh1_max",
+  "iq_hpE1_r0",
+  "iq_hpE1_r1",
+  "iq_hpE1_r2",
+  "iq_hpE1_max",
+  "iq_hpcoh1_r0",
+  "iq_hpcoh1_r1",
+  "iq_hpcoh1_r2",
+  "iq_hishare1_r0",
+  "iq_hishare1_r1",
+  "iq_hishare1_r2",
+  "iq_md1_r0",
+  "iq_md1_r1",
+  "iq_md1_r2",
+  "iq_md1_max",
+  "iq_mz1_r0",
+  "iq_mz1_r1",
+  "iq_mz1_r2",
+  "iq_mz1_max",
+  "iq_dopp1_r0",
+  "iq_dopp1_r1",
+  "iq_dopp1_r2",
+  "iq_ucoh1_r0",
+  "iq_ucoh1_r1",
+  "iq_ucoh1_r2",
+  "iq_cen1_r0",
+  "iq_cen1_r1",
+  "iq_cen1_r2",
+  "iq_spread1_r0",
+  "iq_spread1_r1",
+  "iq_spread1_r2",
+  "iq_cenvel_r0",
+  "iq_cenvel_r1",
+  "iq_cenvel_r2",
+  "iq_hpE1_max@-2s",
+  "iq_hpE1_max@-1s",
+  "iq_hpE1_max@+1s",
+  "iq_hpE1_max@+2s",
+  "iq_mz1_max@-2s",
+  "iq_mz1_max@-1s",
+  "iq_mz1_max@+1s",
+  "iq_mz1_max@+2s",
+  "iq_incoh1_max@-2s",
+  "iq_incoh1_max@-1s",
+  "iq_incoh1_max@+1s",
+  "iq_incoh1_max@+2s",
+  "zst5_r0",
+  "zst10_r0",
+  "zst25_r0",
+  "zst5_r1",
+  "zst10_r1",
+  "zst25_r1",
+  "zst5_r2",
+  "zst10_r2",
+  "zst25_r2",
+  "zst5_max",
+  "zst10_max",
+  "zst25_max",
+  "zst10_max@-2s",
+  "zst10_max@-1s",
+  "zst10_max@+1s",
+  "zst10_max@+2s"
+ ],
+ "wall_s": 150.5
+}
