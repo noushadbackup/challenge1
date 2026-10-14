@@ -1,0 +1,10 @@
+{
+ "hgb": {"enabled": true, "early_stopping": false},
+ "tcn": {"enabled": true, "epochs": 8, "seeds": 3, "cv_seed_base": 100, "final_seed_base": 1000, "seed_offset": 0},
+ "blend": {"w_tcn": 0.75},
+ "decode": {"fixed": null},
+ "boundary": {"method": "replay",
+              "crops": ["loc2_3d", "loc2_5d", "det2_3d", "det2_5d", "detq2_3d", "detq2_5d"],
+              "gate": 0.1, "min_ok": 1, "dmin": 1.0},
+ "transductive": {"adl_duplicate_mask": false}
+}

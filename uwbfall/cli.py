@@ -89,7 +89,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="uwbfall", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     t = sub.add_parser("train", help="fit the pipeline and save a model bundle")
-    t.add_argument("--config", default=None, help="JSON config (partial, merged over the defaults)")
+    t.add_argument("--config", default=str(Path(__file__).parent / "configs" / "reference.json"),
+                   help="JSON config (partial, merged over the defaults); default: configs/reference.json (= REFERENCE SYSTEM C3)")
     t.add_argument("--train-splits", default="train", help="source spec, e.g. train or train,val")
     t.add_argument("--events", default=None, help="events CSV (default: package streams_events.csv)")
     t.add_argument("--out", required=True)

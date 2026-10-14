@@ -2,7 +2,7 @@
 REPO   ?= /home/user/challenge1
 MODELS ?= /home/user/data_raw/uwbfall_models
 RUNS   ?= /home/user/data_raw/uwbfall_runs
-CONFIG ?= $(REPO)/uwbfall/configs/default.json
+CONFIG ?= $(REPO)/uwbfall/configs/reference.json
 NAME   ?= default_train13
 SPLITS ?= train
 PY      = PYTHONPATH=$(REPO) PYTHONDONTWRITEBYTECODE=1 python3
