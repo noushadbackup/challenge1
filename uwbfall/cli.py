@@ -46,6 +46,16 @@ def _cmd_predict(a) -> int:
     srcs = parse_sources(spec)
     t0 = time.time()
     B = load_bundle(a.models)
+    if a.boundary:  # predict-time override of the boundary stage only (it does not depend on training)
+        from .config import load_config
+        over = json.loads(Path(a.boundary).read_text()) if Path(a.boundary).exists() else json.loads(a.boundary)
+        over = over.get("boundary", over)
+        B["cfg"] = load_config({**{k: v for k, v in B["cfg"].items() if k in load_config(None)},
+                                "boundary": {**B["cfg"]["boundary"], **over}})
+    if a.nms is not None:  # predict-time override of the final hard 1-D NMS (post-replay, training-independent)
+        mode = {"off": False, "time": "time"}[a.nms]
+        B["cfg"]["decode"] = {**B["cfg"]["decode"], "one_event_per_clip": mode,
+                              **({"nms_gap_s": a.nms_gap} if a.nms_gap is not None else {})}
     pred, cand, _ = predict(B, srcs, return_debug=True)
     # official validation against the official durations (stream_durations for package splits)
     durations = {s.sid: s.duration for s in srcs}
@@ -101,6 +111,14 @@ def main(argv=None) -> int:
     p.add_argument("--sources", default=None, help="source spec instead of --split")
     p.add_argument("--out", required=True)
     p.add_argument("--candidates", default=None, help="optional CSV of detector candidates (before replay)")
+    p.add_argument("--boundary", default=None,
+                   help="JSON (file or inline) overriding the bundle's boundary section at predict time, e.g. "
+                        "'{\"gate\": 0.3}' or configs/reference.json (its 'boundary' section is used)")
+    p.add_argument("--nms", choices=["off", "time"], default=None,
+                   help="override the bundle's final NMS: 'time' = at most one row within decode.nms_gap_s of a "
+                        "higher-scored row (reference since round 2, I1), 'off' = none. Segment NMS and the "
+                        "P(fall clip) gate need a bundle trained with the clip stage.")
+    p.add_argument("--nms-gap", type=float, default=None, help="gap (s) for --nms time (default: config, 4.0)")
     p.set_defaults(fn=_cmd_predict)
     s = sub.add_parser("score", help="official evaluator CLI (--ignore-flagged)")
     s.add_argument("--pred", required=True)

@@ -1,0 +1,24 @@
+[0] junction thr 1.082 (train fall-junction recall target 0.95) diag {"train": {"recall_fall_junctions": 0.9499217527386542, "recall_all_junctions": 0.8703917050691244, "peak_precision": 0.9754045307443365, "peaks_per_min": 4.176390553337959}, "test": {"recall_fall_junctions": 0.9330143540669856, "recall_all_junctions": 0.7529812606473595, "peak_precision": 0.9692307692307692, "peaks_per_min": 3.668368718086536}}
+[0] segclf {"train_oof": {"auc_fall_vs_rest": 0.9994327641837661, "n_seg": 1558, "n_fall_seg": 365, "acc": 0.9916559691912709}, "test": {"auc_fall_vs_rest": 0.9983803045027535, "n_seg": 460, "n_fall_seg": 117, "acc": 0.9630434782608696}}
+[0] prep done 107s
+[0] hgb3 fold 0 (145s)
+[0] hgb3 fold 1 (178s)
+[0] hgb3 fold 2 (213s)
+[0] hgb3 fold 3 (248s)
+[0] hgb3 done 288s, post-fall blocks 12711
+[2] junction thr 1.003 (train fall-junction recall target 0.95) diag {"train": {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8789625360230547, "peak_precision": 0.949375, "peaks_per_min": 4.311041655439995}, "test": {"recall_fall_junctions": 0.9758454106280193, "recall_all_junctions": 0.7929824561403509, "peak_precision": 0.9741379310344828, "peaks_per_min": 3.7689870847209814}}
+[2] segclf {"train_oof": {"auc_fall_vs_rest": 0.9972546050756844, "n_seg": 1613, "n_fall_seg": 382, "acc": 0.9919404835709857}, "test": {"auc_fall_vs_rest": 0.9558274672839797, "n_seg": 469, "n_fall_seg": 122, "acc": 0.9125799573560768}}
+[2] prep done 100s
+[2] hgb3 fold 0 (142s)
+[2] hgb3 fold 1 (204s)
+[2] hgb3 fold 2 (249s)
+[2] hgb3 fold 3 (282s)
+[2] hgb3 done 322s, post-fall blocks 12479
+[official] junction thr 1.017 (train fall-junction recall target 0.95) diag {"train": {"recall_fall_junctions": 0.9489953632148377, "recall_all_junctions": 0.8607449856733524, "peak_precision": 0.9608723540731238, "peaks_per_min": 4.203364848833447}, "test": {"recall_fall_junctions": 0.9406392694063926, "recall_all_junctions": 0.8164665523156089, "peak_precision": 0.9576612903225806, "peaks_per_min": 4.035035387911163}}
+[official] segclf {"train_oof": {"auc_fall_vs_rest": 0.9995318100358422, "n_seg": 1572, "n_fall_seg": 372, "acc": 0.9904580152671756}, "test": {"auc_fall_vs_rest": 0.9916333290317031, "n_seg": 501, "n_fall_seg": 123, "acc": 0.9660678642714571}}
+[official] prep done 129s
+[official] hgb3 fold 0 (189s)
+[official] hgb3 fold 1 (248s)
+[official] hgb3 fold 2 (322s)
+[official] hgb3 fold 3 (356s)
+[official] hgb3 done 450s, post-fall blocks 12617

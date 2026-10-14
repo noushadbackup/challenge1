@@ -26,6 +26,7 @@ import torch
 from sklearn.model_selection import GroupKFold
 
 from . import __version__
+from . import clip as CL
 from .boundary import refine, replay_stream, to_preds
 from .config import check_implemented, config_hash, load_config
 from .decode import decode_streams, events_df, to_events, tune
@@ -91,12 +92,22 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
     timings["features_s"] = round(time.time() - t_start, 1)
     pca = fit_pca([b["amp"] for b in blks], cfg)
     Xp, Xb, Y, SID, cols = [], [], [], [], None
+    need_comp = cfg["hgb"]["postfall_class"] or cfg["clip"]["segclf"]["enabled"]
+    comps = {s.sid: CL.composition_of(s) for s in sources} if need_comp else {}
+    Y3, clip_in = [], []
     for s, b in zip(sources, blks):
         xp, xb, cols = design(b, pca, cfg)
         y, _fl = block_labels(ev, s.sid, b["n"])
         Xp.append(xp); Xb.append(xb); Y.append(y.astype(np.int8)); SID.append(np.full(b["n"], s.sid))
+        if cfg["hgb"]["postfall_class"]:
+            pf = CL.postfall_labels(ev, comps[s.sid], s.sid, b["n"])
+            Y3.append(np.where(y, 1, np.where(pf, 2, 0)).astype(np.int8))
+        if cfg["clip"]["segclf"]["enabled"] or cfg["decode"]["one_event_per_clip"] == "segment":
+            fpc = [i for i, c in enumerate(cols) if c.startswith("fp") and not c.startswith("fpseg")]
+            clip_in.append((s, b["base"], xp[:, fpc]))
         b.pop("amp")
     Xp, Xb, y, sid = np.vstack(Xp), np.vstack(Xb), np.concatenate(Y), np.concatenate(SID)
+    y_hgb = np.concatenate(Y3) if Y3 else y
     del blks
     log(f"design: X_proto {Xp.shape} X_band {Xb.shape} positives {int(y.sum())}")
     fold = np.full(len(y), -1, np.int8)
@@ -112,9 +123,9 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         t0 = time.time()
         oof_hgb = np.zeros(len(y))
         for k in range(K):
-            m = fit_hgb(Xp[fold != k], y[fold != k], cfg)
-            oof_hgb[fold == k] = m.predict_proba(Xp[fold == k])[:, 1]
-        hgb = fit_hgb(Xp, y, cfg)
+            m = fit_hgb(Xp[fold != k], y_hgb[fold != k], cfg)
+            oof_hgb[fold == k] = m.predict_proba(Xp[fold == k])[:, 1]  # class 1 = fall (also with post-fall class 2)
+        hgb = fit_hgb(Xp, y_hgb, cfg)
         with open(out / "hgb.pkl", "wb") as f:
             pickle.dump(hgb, f)
         timings["hgb_s"] = round(time.time() - t0, 1)
@@ -149,9 +160,22 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         timings["tcn_s"] = round(time.time() - t0, 1)
         log(f"tcn: CV + final bag done ({timings['tcn_s']} s)")
 
+    # clip stage (W3): junction threshold, segment classifier, subject-grouped OOF gate
+    clip_state, gate_oof = None, None
+    if clip_in:
+        t0 = time.time()
+        clip_state, gate_oof = _fit_clip(clip_in, comps, cfg, log)
+        with open(out / "clip.pkl", "wb") as f:
+            pickle.dump(clip_state, f)
+        timings["clip_s"] = round(time.time() - t0, 1)
+    del clip_in
+
     # operating point on the blended OOF
     t0 = time.time()
     oof = _blend(cfg, oof_tcn, oof_hgb)
+    if cfg["clip"]["gate"] != "none":
+        oof = CL.gate_probs(oof, np.concatenate([gate_oof[x] for x in pd.unique(sid)]), cfg["clip"]["gate"],
+                            cfg["clip"]["gate_floor"])
     durations = {s.sid: s.duration for s in sources}
     gt = gt_records(ev, ignore_flagged=True)
     probs_by = {s: oof[sid == s] for s in pd.unique(sid)}
@@ -166,6 +190,7 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
     if cfg["report"]["oof_replay"] and cfg["boundary"]["method"] == "replay":
         t0 = time.time()
         final = _boundaries(sources, cand, cfg, durations, log)
+        final = _nms(final, cfg, clip_state["peaks"] if clip_state else {})
         final.to_csv(out / "oof_final.csv", index=False)
         oof_report["final"] = summary(score_inproc(final, gt, durations))
         timings["oof_replay_s"] = round(time.time() - t0, 1)
@@ -176,7 +201,9 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
         "config_hash": config_hash(cfg), "train_streams": [s.sid for s in sources], "content_keys": keys,
         "folds": folds, "proto_cols": cols, "n_blocks": int(len(y)),
         "postproc": list(g), "oof_rank_f1_tuned": oof_rank, "oof": oof_report,
-        "decode_grid_table": table, "timings": {**timings, "total_s": round(time.time() - t_start, 1)},
+        "decode_grid_table": table,
+        "clip": None if clip_state is None else {"junction_thr": clip_state["thr"], "junction_diag": clip_state["diag"],
+                                                 "segclf_features": clip_state["features"]}, "timings": {**timings, "total_s": round(time.time() - t_start, 1)},
         "peak_rss_gb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 2),
         "env": {"python": platform.python_version(), "numpy": np.__version__, "sklearn": sklearn.__version__,
                 "torch": torch.__version__, "torch_threads": torch.get_num_threads()},
@@ -189,10 +216,69 @@ def fit(train_sources: list[StreamSource], events: pd.DataFrame | None, config=N
     return out
 
 
+def _fit_clip(clip_in, comps, cfg, log):
+    """Junction threshold (fall-junction recall on the training streams), segment tables, segment classifier.
+    Returns (state for the bundle, {sid: per-block OOF P(fall clip)} grouped by segment subject)."""
+    from sklearn.model_selection import GroupKFold
+    c = cfg["clip"]
+    stats = {}
+    for s, _base, _fp in clip_in:
+        stats[s.sid] = CL.junction_stat(get_features(s, cfg)["prof_02"], c["junction_W"])
+    thr = CL.junction_threshold(stats, {k: comps[k] for k in stats}, c["junction_recall"])
+    diag = CL.junction_recall(stats, {k: comps[k] for k in stats}, thr, c["junction_min_sep_s"])
+    log(f"clip: junction threshold {thr:.4f}, train diag {json.dumps(diag)}")
+    state = {"thr": thr, "diag": diag, "peaks": {}, "segclf": None, "features": None}
+    gate_oof = None
+    if c["segclf"]["enabled"]:
+        tabs = []
+        for s, base, fp in clip_in:
+            F = get_features(s, cfg)
+            segs, tab, pk_t, _ = CL.stream_segments(F, base, fp, thr, cfg)
+            s.release()
+            tab["sid"], tab["a"], tab["b"] = s.sid, segs[:, 0], segs[:, 1]
+            tab["y"] = CL.segment_labels(segs, comps[s.sid])
+            tab["subj"] = CL.segment_subjects(segs, comps[s.sid])
+            state["peaks"][s.sid] = pk_t
+            tabs.append(tab)
+        T = pd.concat(tabs, ignore_index=True)
+        feats = [x for x in T.columns if x not in ("sid", "a", "b", "y", "subj")]
+        fs = CL.feature_set(feats, c["segclf"]["features"])
+        oof = np.zeros(len(T))
+        groups = T.subj if c["segclf"]["oof_groups"] == "subject" else T.sid
+        for a, b in GroupKFold(4).split(T, T.y, groups):
+            m = CL.lgbm_segclf(cfg).fit(T.iloc[a][fs], T.y.iloc[a])
+            oof[b] = m.predict_proba(T.iloc[b][fs])[:, 1]
+        state["segclf"] = CL.lgbm_segclf(cfg).fit(T[fs], T.y)
+        state["features"] = fs
+        gate_oof = {}
+        for sid_, g in T.assign(p=oof).groupby("sid", sort=False):
+            n = len(stats[sid_])
+            gate_oof[sid_] = CL.block_gate(np.stack([g.a.values, g.b.values], 1), g.p.values, n)
+        from sklearn.metrics import roc_auc_score
+        log(f"clip: segment classifier on {len(T)} segments ({len(fs)} features), subject-grouped OOF AUC "
+            f"fall-vs-rest {roc_auc_score(T.y == 1, oof):.4f}")
+    else:
+        for s, _base, _fp in clip_in:
+            state["peaks"][s.sid] = CL.junction_peaks(stats[s.sid], thr, c["junction_min_sep_s"]) * CL.STEP
+    return state, gate_oof
+
+
+def _nms(df: pd.DataFrame, cfg: dict, peaks: dict) -> pd.DataFrame:
+    mode = cfg["decode"]["one_event_per_clip"]
+    if mode == "time":
+        return CL.nms_time(df, cfg["decode"]["nms_gap_s"]).reset_index(drop=True)
+    if mode == "segment":
+        return CL.nms_segment(df, peaks, cfg["decode"]["nms_max_span_s"]).reset_index(drop=True)
+    return df
+
+
 # ============================================================================ predict
 def load_bundle(path) -> dict:
     p = Path(path)
-    cfg = json.loads((p / "config.json").read_text())
+    raw = json.loads((p / "config.json").read_text())
+    if "clip" not in raw:  # bundle trained before the clip stage existed: keep it OFF (no clip.pkl, untuned op)
+        raw["clip"] = {"segclf": {"enabled": False}, "gate": "none"}
+    cfg = load_config(raw)
     meta = json.loads((p / "meta.json").read_text())
     B = {"cfg": cfg, "meta": meta, "path": p}
     with open(p / "pca.pkl", "rb") as f:
@@ -201,6 +287,10 @@ def load_bundle(path) -> dict:
     if cfg["hgb"]["enabled"]:
         with open(p / "hgb.pkl", "rb") as f:
             B["hgb"] = pickle.load(f)
+    B["clip"] = None
+    if (p / "clip.pkl").exists():
+        with open(p / "clip.pkl", "rb") as f:
+            B["clip"] = pickle.load(f)
     B["tcn"] = []
     if cfg["tcn"]["enabled"]:
         z = np.load(p / "tcn_norm.npz")
@@ -217,14 +307,24 @@ def load_bundle(path) -> dict:
 def stream_probs(B: dict, F: dict) -> tuple[np.ndarray, dict]:
     cfg = B["cfg"]
     blk = stream_blocks(F, cfg)
-    xp, xb, _ = design(blk, B["pca"], cfg)
+    xp, xb, cols = design(blk, B["pca"], cfg)
     p_hgb = B["hgb"].predict_proba(xp)[:, 1] if B["hgb"] is not None else None
     p_tcn = None
     if B["tcn"]:
         X = np.hstack([xp.astype(np.float32), xb]) if cfg["features"]["use_bands"] else xp.astype(np.float32)
         Xs = standardise(X, B["mu"], B["sd"], cfg["tcn"]["clip_z"])
         p_tcn = np.mean([predict_seq(m, Xs) for m in B["tcn"]], 0)
-    return _blend(cfg, p_tcn, p_hgb), {"hgb": p_hgb, "tcn": p_tcn}
+    p = _blend(cfg, p_tcn, p_hgb)
+    parts = {"hgb": p_hgb, "tcn": p_tcn, "peaks": None}
+    if B.get("clip") is not None:
+        fpc = [i for i, c in enumerate(cols) if c.startswith("fp") and not c.startswith("fpseg")]
+        segs, tab, pk_t, _ = CL.stream_segments(F, blk["base"], xp[:, fpc], B["clip"]["thr"], cfg)
+        parts["peaks"] = pk_t
+        if B["clip"]["segclf"] is not None and cfg["clip"]["gate"] != "none":
+            pf = B["clip"]["segclf"].predict_proba(tab[B["clip"]["features"]])[:, 1]
+            parts["gate"] = CL.block_gate(segs, pf, blk["n"])
+            p = CL.gate_probs(p, parts["gate"], cfg["clip"]["gate"], cfg["clip"]["gate_floor"])
+    return p, parts
 
 
 def _boundaries(sources, cand: pd.DataFrame, cfg: dict, durations: dict, log) -> pd.DataFrame:
@@ -265,6 +365,8 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
             r = to_preds(c, c.t_start.values, c.t_end.values, durations) if len(c) else c
             n_rep = 0
         s.release()
+        if len(r):
+            r = _nms(r, cfg, {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {})
         rows.append(r)
         cands.append(c)
         if return_debug:

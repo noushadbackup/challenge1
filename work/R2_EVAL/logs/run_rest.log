@@ -1,0 +1,3 @@
+uwb_default: variants written; R == derive outputs (byte-identical)
+tcn_bag1: variants written; R == derive outputs (byte-identical)
+tcn_bag2: variants written; R == derive outputs (byte-identical)

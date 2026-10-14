@@ -1,0 +1,98 @@
+{
+ "2": {
+  "all": {
+   "subjOOF_auc": 0.8706,
+   "subjOOF_ll": 0.7266,
+   "test_auc": 0.9558,
+   "test_ll": 0.2798
+  },
+  "nofp": {
+   "subjOOF_auc": 0.9714,
+   "subjOOF_ll": 0.2567,
+   "test_auc": 0.9883,
+   "test_ll": 0.1654
+  },
+  "norep": {
+   "subjOOF_auc": 0.8441,
+   "subjOOF_ll": 0.8695,
+   "test_auc": 0.9196,
+   "test_ll": 0.3451
+  },
+  "phys": {
+   "subjOOF_auc": 0.9346,
+   "subjOOF_ll": 0.3537,
+   "test_auc": 0.9439,
+   "test_ll": 0.3201
+  },
+  "phys+sp3": {
+   "subjOOF_auc": 0.9597,
+   "subjOOF_ll": 0.2932,
+   "test_auc": 0.9766,
+   "test_ll": 0.2304
+  }
+ },
+ "3": {
+  "all": {
+   "subjOOF_auc": 0.9475,
+   "subjOOF_ll": 0.426,
+   "test_auc": 0.9787,
+   "test_ll": 0.2563
+  },
+  "nofp": {
+   "subjOOF_auc": 0.9852,
+   "subjOOF_ll": 0.1712,
+   "test_auc": 0.9852,
+   "test_ll": 0.2295
+  },
+  "norep": {
+   "subjOOF_auc": 0.9219,
+   "subjOOF_ll": 0.5735,
+   "test_auc": 0.9702,
+   "test_ll": 0.3199
+  },
+  "phys": {
+   "subjOOF_auc": 0.9515,
+   "subjOOF_ll": 0.2844,
+   "test_auc": 0.9666,
+   "test_ll": 0.2615
+  },
+  "phys+sp3": {
+   "subjOOF_auc": 0.9762,
+   "subjOOF_ll": 0.2122,
+   "test_auc": 0.9875,
+   "test_ll": 0.2144
+  }
+ },
+ "official": {
+  "all": {
+   "subjOOF_auc": 0.986,
+   "subjOOF_ll": 0.1359,
+   "test_auc": 0.9916,
+   "test_ll": 0.0908
+  },
+  "nofp": {
+   "subjOOF_auc": 0.9719,
+   "subjOOF_ll": 0.2629,
+   "test_auc": 0.9833,
+   "test_ll": 0.203
+  },
+  "norep": {
+   "subjOOF_auc": 0.9755,
+   "subjOOF_ll": 0.1711,
+   "test_auc": 0.9795,
+   "test_ll": 0.1664
+  },
+  "phys": {
+   "subjOOF_auc": 0.9094,
+   "subjOOF_ll": 0.4286,
+   "test_auc": 0.9551,
+   "test_ll": 0.288
+  },
+  "phys+sp3": {
+   "subjOOF_auc": 0.9646,
+   "subjOOF_ll": 0.3019,
+   "test_auc": 0.9774,
+   "test_ll": 0.2131
+  }
+ }
+}

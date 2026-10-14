@@ -1,0 +1,16 @@
+[1] junction thr 0.968 (train fall-junction recall target 0.95) diag {"train": {"recall_fall_junctions": 0.9496062992125984, "recall_all_junctions": 0.8677829099307159, "peak_precision": 0.946969696969697, "peaks_per_min": 4.268544634676535}, "test": {"recall_fall_junctions": 0.9414634146341463, "recall_all_junctions": 0.7491228070175439, "peak_precision": 0.9320175438596491, "peaks_per_min": 3.70581064607883}}
+[1] segclf {"train_oof": {"auc_fall_vs_rest": 0.9993383211520995, "n_seg": 1597, "n_fall_seg": 380, "acc": 0.9899812147777082}, "test": {"auc_fall_vs_rest": 0.9130975407571152, "n_seg": 461, "n_fall_seg": 132, "acc": 0.6919739696312365}}
+[1] prep done 101s
+[1] hgb3 fold 0 (136s)
+[1] hgb3 fold 1 (174s)
+[1] hgb3 fold 2 (209s)
+[1] hgb3 fold 3 (244s)
+[1] hgb3 done 285s, post-fall blocks 12727
+[3] junction thr 0.990 (train fall-junction recall target 0.95) diag {"train": {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8813073394495413, "peak_precision": 0.9641959798994975, "peaks_per_min": 4.304486543973177}, "test": {"recall_fall_junctions": 0.9255813953488372, "recall_all_junctions": 0.7993254637436762, "peak_precision": 0.9347826086956522, "peaks_per_min": 4.080425783560023}}
+[3] segclf {"train_oof": {"auc_fall_vs_rest": 0.9986761706403108, "n_seg": 1605, "n_fall_seg": 378, "acc": 0.9912772585669782}, "test": {"auc_fall_vs_rest": 0.9786613319996667, "n_seg": 511, "n_fall_seg": 124, "acc": 0.913894324853229}}
+[3] prep done 99s
+[3] hgb3 fold 0 (135s)
+[3] hgb3 fold 1 (202s)
+[3] hgb3 fold 2 (250s)
+[3] hgb3 fold 3 (281s)
+[3] hgb3 done 321s, post-fall blocks 12430

@@ -53,3 +53,8 @@
 [  665.7s rss=1.28GB] tcn: CV fold 1 done (634 s)
 [  915.1s rss=1.28GB] tcn: CV fold 2 done (884 s)
 [ 1136.5s rss=1.28GB] tcn: CV fold 3 done (1105 s)
+[ 1372.5s rss=1.28GB] tcn: CV + final bag done (1341.1 s)
+[ 1374.0s rss=1.28GB]   operating point (0.4, 5, 0.8, 0.6) OOF rank F1 0.9344
+[ 1374.1s rss=1.28GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9344, "f1@0.1/0.3/0.5/0.7": [0.968, 0.957, 0.878, 0.585], "tp_fp_fn@0.3": [180, 10, 6], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.29, "mean_tiou@0.3": 0.721}}
+[ 1374.1s rss=1.28GB] fit done in 1374.1 s -> /home/user/data_raw/srcv/runs/tcn_bag1/official_train
+[tcn_bag1] official done in 1374s

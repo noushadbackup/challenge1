@@ -1,0 +1,13 @@
+C0: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8052 (sd 0.0) folds [0.8189, 0.8333, 0.8571, 0.7024] val 0.8922 tp/fp/fn 203.0/30.0/50.0
+C1: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8706 (sd 0.0040305260949941935) folds [0.8652, 0.8174, 0.8949, 0.9075] val 0.9154 tp/fp/fn 234.7/35.3/18.3
+C2: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8796 (sd 0.008461047939460934) folds [0.8588, 0.8125, 0.9125, 0.9383] val 0.9370 tp/fp/fn 237.7/36.7/15.3
+C3: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8861 (sd 0.0130339655267028) folds [0.8638, 0.8441, 0.8771, 0.96] val 0.9538 tp/fp/fn 236.0/38.0/17.0
+C4: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8763 (sd 0.005678462528070441) folds [0.8552, 0.8442, 0.8759, 0.9308] val 0.9138 tp/fp/fn 232.7/37.0/20.3
+C3K: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8885 (sd 0.012626765364165125) folds [0.8638, 0.8502, 0.8913, 0.95] val 0.9572 tp/fp/fn 236.3/38.0/16.7
+C3J: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8866 (sd 0.018904639768759997) folds [0.8574, 0.8475, 0.8754, 0.9668] val 0.9622 tp/fp/fn 236.3/37.7/16.7
+C3JK: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8861 (sd 0.014302159494727127) folds [0.8556, 0.849, 0.8842, 0.9567] val 0.9589 tp/fp/fn 236.0/38.0/17.0
+C4K: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8805 (sd 0.00382282476388857) folds [0.8586, 0.8458, 0.8901, 0.9292] val 0.9251 tp/fp/fn 232.7/37.0/20.3
+C4J: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8784 (sd 0.004147246373300953) folds [0.8568, 0.8458, 0.8759, 0.936] val 0.9237 tp/fp/fn 233.0/36.7/20.0
+C4JK: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8814 (sd 0.0034723735782073695) folds [0.8585, 0.8458, 0.8865, 0.936] val 0.9300 tp/fp/fn 232.3/37.3/20.7
+C3G3: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8942 (sd 0.009164289987136948) folds [0.869, 0.8475, 0.8913, 0.97] val 0.9606 tp/fp/fn 238.0/35.7/15.0
+C4G3: bags ['uwb_default', 'tcn_bag1', 'tcn_bag2'] pooled 0.8849 (sd 0.007440312203673099) folds [0.8709, 0.8409, 0.8918, 0.9376] val 0.9284 tp/fp/fn 234.3/35.0/18.7

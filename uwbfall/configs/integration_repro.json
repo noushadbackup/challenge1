@@ -1,3 +1,4 @@
 {
-  "hgb": {"early_stopping": "auto"}
+  "hgb": {"early_stopping": "auto"},
+  "boundary": {"gate": 0.1}
 }

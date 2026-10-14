@@ -1,0 +1,66 @@
+{
+ "0": {
+  "all": {
+   "subjOOF_auc": 0.9737,
+   "subjOOF_ll": 0.1698,
+   "test_auc": 0.9984,
+   "test_ll": 0.1375
+  },
+  "nofp": {
+   "subjOOF_auc": 0.9702,
+   "subjOOF_ll": 0.2367,
+   "test_auc": 0.993,
+   "test_ll": 0.1509
+  },
+  "norep": {
+   "subjOOF_auc": 0.9794,
+   "subjOOF_ll": 0.1576,
+   "test_auc": 0.9981,
+   "test_ll": 0.2868
+  },
+  "phys": {
+   "subjOOF_auc": 0.9129,
+   "subjOOF_ll": 0.3829,
+   "test_auc": 0.9798,
+   "test_ll": 0.2006
+  },
+  "phys+sp3": {
+   "subjOOF_auc": 0.9593,
+   "subjOOF_ll": 0.2737,
+   "test_auc": 0.9892,
+   "test_ll": 0.1699
+  }
+ },
+ "1": {
+  "all": {
+   "subjOOF_auc": 0.9448,
+   "subjOOF_ll": 0.4769,
+   "test_auc": 0.9131,
+   "test_ll": 1.0051
+  },
+  "nofp": {
+   "subjOOF_auc": 0.9739,
+   "subjOOF_ll": 0.2719,
+   "test_auc": 0.9806,
+   "test_ll": 0.1893
+  },
+  "norep": {
+   "subjOOF_auc": 0.9195,
+   "subjOOF_ll": 0.6435,
+   "test_auc": 0.8745,
+   "test_ll": 1.6262
+  },
+  "phys": {
+   "subjOOF_auc": 0.9283,
+   "subjOOF_ll": 0.3675,
+   "test_auc": 0.9789,
+   "test_ll": 0.2152
+  },
+  "phys+sp3": {
+   "subjOOF_auc": 0.9679,
+   "subjOOF_ll": 0.2837,
+   "test_auc": 0.9846,
+   "test_ll": 0.1791
+  }
+ }
+}

@@ -15,6 +15,15 @@ parity tests import from there. The package only reads the challenge package and
 - The train OOF probabilities of the HGB and of the TCN bag are bit-equal to E4's `probs_hgb.npz` and `probs_tcn_all.npz`.
 - Details are in the Verification section below.
 
+## Round-2 status (evaluation engineer)
+
+**REFERENCE SYSTEM = `configs/reference.json` = `DEFAULT_CONFIG`.** It is the blend 0.75 TCN + 0.25 HGB plus replay with agreement gate **0.3**.
+- SR-CV pooled ranking F1 is 0.894 (3 TCN bags), against 0.886 for gate 0.1. The promotion rule gives P = 1.000 with 4/4 folds.
+- Val is 0.9646, 65/0/2 (bag 0).
+- Details are in `reports/round2/EVAL.md`.
+- `train` defaults to that config.
+- Bundles trained before this change store gate 0.1. To apply the reference boundary stage without retraining, use `predict --boundary configs/reference.json`.
+
 ## Quick start
 
 ```bash
@@ -111,13 +120,14 @@ then come from the writer's own events.
 | `cv.n_folds` | 4 | GroupKFold by stream on the training sources, used for the operating-point OOF |
 | `hgb.*` | prototype params; **`early_stopping: false`** | `max_iter 300, lr 0.06, max_leaf_nodes 31, l2 1.0, random_state 0`. `"auto"` reproduces INTEGRATION (`configs/integration_repro.json`). |
 | `tcn.*` | E4 | `hidden 64, stages 1, dilations 1..64, drop 0.2, in_drop 0.1, noise 0.05, lr 1e-3, wd 1e-2, win 1000, batch 16, steps 20, epochs 8 (E*), seeds 3, cv_seed_base 100, final_seed_base 1000, clip_z 6` |
+| `tcn.seed_offset` | 0 | Added to every CV and final TCN seed; re-seeds a whole bag (round 2: bags with 10000 / 20000) |
 | `blend.w_tcn` | 0.75 | Weight of the TCN. One model can be disabled with `hgb.enabled` / `tcn.enabled`. |
 | `decode.grid` | 5×3×2×2 | thr, smooth, min_dur, gap |
 | `decode.fixed` | null | `[thr, smooth, min_dur, gap]` skips the OOF search |
 | `decode.one_event_per_clip` | false | **reserved** (W3). Raises NotImplementedError if enabled. |
 | `boundary.method` | "replay" | replay or none |
 | `boundary.crops` | B's 6 crops | `loc2_3d, loc2_5d, det2_3d, det2_5d, detq2_3d, detq2_5d` (grammar `(loc\|det\|detq)L_R[d]`) |
-| `boundary.gate`, `min_ok`, `dmin` | 0.1, 1, 1.0 | Agreement gate tIoU(replay, detector), minimum agreeing crops, duration floor (end-extension only) |
+| `boundary.gate`, `min_ok`, `dmin` | **0.3**, 1, 1.0 | Agreement gate tIoU(crop replay, detector), minimum agreeing crops, duration floor (end-extension only). 0.3 promoted on SR-CV in round 2 (reports/round2/EVAL.md); 0.1 = E2 config B (`configs/replayB_gate01.json`, `integration_repro.json`) |
 | `boundary.ds/de/pds/pde` | 0 | Start/end offsets, for replayed and detector-bound rows |
 | `boundary.dedup` | true | (documentation; the `d` crop suffix controls it per crop) |
 | `boundary.junction_q`, `junction_q_recall` | 97, 95 | Junction percentile thresholds for `det` / `detq` crops |
