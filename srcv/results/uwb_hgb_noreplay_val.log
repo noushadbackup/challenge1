@@ -1,0 +1,13 @@
+[    1.4s rss=0.42GB] fit: 13 training streams, 359 events, config d71ca6ec5f39c6b1
+[   19.2s rss=1.05GB] design: X_proto (111268, 64) X_band (111268, 48) positives 3272
+[   19.3s rss=1.05GB] folds: {0: ['train_08', 'train_09', 'train_11'], 1: ['train_00', 'train_03', 'train_06'], 2: ['train_01', 'train_05', 'train_10'], 3: ['train_02', 'train_04', 'train_07', 'train_12']}
+[   94.3s rss=1.05GB] hgb: OOF + final done (75.0 s, n_iter final 300)
+[   95.6s rss=1.05GB]   operating point (0.4, 5, 0.8, 0.2) OOF rank F1 0.9016
+[   95.7s rss=1.05GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9016, "f1@0.1/0.3/0.5/0.7": [0.934, 0.923, 0.847, 0.65], "tp_fp_fn@0.3": [169, 11, 17], "fa_per_h@0.3": 1.78, "start_err_med@0.3": 0.16, "mean_tiou@0.3": 0.755}}
+[   95.7s rss=1.05GB] fit done in 94.3 s -> /home/user/data_raw/srcv/runs/uwb_hgb_noreplay/official_train
+[    1.7s rss=1.05GB] predict val_00: 28 candidates, 0 replay-refined, 1.7 s
+[    2.9s rss=1.05GB] predict val_01: 24 candidates, 0 replay-refined, 1.2 s
+[    4.2s rss=1.05GB] predict val_02: 23 candidates, 0 replay-refined, 1.3 s
+[    5.6s rss=1.05GB] predict val_03: 10 candidates, 0 replay-refined, 1.4 s
+[    5.8s rss=1.05GB] predict val_04: 5 candidates, 0 replay-refined, 0.2 s
+[uwb_hgb_noreplay] official val rank F1 0.8922 tp/fp/fn@0.3 62/7/5

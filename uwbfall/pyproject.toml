@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uwbfall"
+version = "0.1.0"
+description = "ABC 2027 UWB fall-event pipeline: raw radar streams -> submission CSV (HGB + TCN blend, annotator-replay boundaries)"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "pandas", "scikit-learn", "torch", "h5py"]
+
+[project.scripts]
+uwbfall = "uwbfall.cli:main"
+
+# The package directory is this folder itself (import name `uwbfall`).
+[tool.setuptools]
+package-dir = {"uwbfall" = ".", "uwbfall.tests" = "tests"}
+packages = ["uwbfall", "uwbfall.tests"]
+
+[tool.setuptools.package-data]
+uwbfall = ["configs/*.json", "README.md", "Makefile"]

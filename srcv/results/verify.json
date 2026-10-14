@@ -1,0 +1,229 @@
+{
+ "V1_pool": {
+  "n": {
+   "falls": 0,
+   "adl": 0,
+   "others": 0,
+   "t_last_diff_frames": {
+    "0": 478
+   },
+   "n": {
+    "falls": 478,
+    "adl": 120,
+    "others": 24
+   }
+  },
+  "n_minus_1": {
+   "falls": 0,
+   "adl": 0,
+   "others": 0,
+   "t_last_diff_frames": {
+    "1": 478
+   },
+   "n": {
+    "falls": 478,
+    "adl": 120,
+    "others": 24
+   }
+  }
+ },
+ "V2_public_seed_replay": {
+  "n": {
+   "train": {
+    "n_falls": 359,
+    "t0_mismatch": 0,
+    "t1_mismatch": 5,
+    "max_abs_t1_diff": 0.019999999999999574
+   },
+   "val": {
+    "n_falls": 119,
+    "t0_mismatch": 0,
+    "t1_mismatch": 4,
+    "max_abs_t1_diff": 0.03999999999999915
+   }
+  },
+  "n_minus_1": {
+   "train": {
+    "n_falls": 359,
+    "t0_mismatch": 0,
+    "t1_mismatch": 0,
+    "max_abs_t1_diff": 0.000498318004940046
+   },
+   "val": {
+    "n_falls": 119,
+    "t0_mismatch": 0,
+    "t1_mismatch": 1,
+    "max_abs_t1_diff": 0.019999999999999574
+   }
+  }
+ },
+ "V3_plan_stream": {
+  "all_equal": true,
+  "streams": {
+   "train_00": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 30
+   },
+   "train_01": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 29
+   },
+   "train_02": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 25
+   },
+   "train_03": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 29
+   },
+   "train_04": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 26
+   },
+   "train_05": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 34
+   },
+   "train_06": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 27
+   },
+   "train_07": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 25
+   },
+   "train_08": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 27
+   },
+   "train_09": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 23
+   },
+   "train_10": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 27
+   },
+   "train_11": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 33
+   },
+   "train_12": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 24
+   },
+   "val_00": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 34
+   },
+   "val_01": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 31
+   },
+   "val_02": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 31
+   },
+   "val_03": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 18
+   },
+   "val_04": {
+    "T_equal": true,
+    "composition_equal": true,
+    "events_equal": true,
+    "n_events": 5
+   }
+  }
+ },
+ "V6_scorer": {
+  "sample_submission.csv": {
+   "srcv": 0.3150912106135987,
+   "cli": 0.3150912106135987,
+   "identical": true
+  },
+  "val_full.csv": {
+   "srcv": 0.8839506172839506,
+   "cli": 0.8839506172839506,
+   "identical": true
+  },
+  "val_physics.csv": {
+   "srcv": 0.7903225806451614,
+   "cli": 0.7903225806451614,
+   "identical": true
+  },
+  "val_structure.csv": {
+   "srcv": 0.875912408759124,
+   "cli": 0.875912408759124,
+   "identical": true
+  }
+ },
+ "V5_fold_stream": {
+  "T_equal": true,
+  "composition_equal": true,
+  "events_equal": true,
+  "n_events": 6,
+  "T": 20183
+ },
+ "V4_bitexact": {
+  "val_04": {
+   "cir_bit_equal": true,
+   "features_bit_equal": {
+    "e_raw": true,
+    "e_mot": true,
+    "e_diff": true,
+    "mot_map": true,
+    "amp_1s": true,
+    "prof_1s": true,
+    "prof_02": true
+   }
+  },
+  "train_00": {
+   "cir_bit_equal": true,
+   "features_bit_equal": {
+    "e_raw": true,
+    "e_mot": true,
+    "e_diff": true,
+    "mot_map": true,
+    "amp_1s": true,
+    "prof_1s": true,
+    "prof_02": true
+   }
+  }
+ },
+ "peak_rss_gb": 1.532668
+}

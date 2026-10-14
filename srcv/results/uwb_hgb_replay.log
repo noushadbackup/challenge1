@@ -1,0 +1,53 @@
+[    1.4s rss=0.43GB] fit: 13 training streams, 358 events, config df377cac8ef45880
+[   20.4s rss=1.10GB] design: X_proto (110981, 64) X_band (110981, 48) positives 3447
+[   20.4s rss=1.10GB] folds: {0: ['cv0_train_01', 'cv0_train_06', 'cv0_train_09'], 1: ['cv0_train_00', 'cv0_train_02', 'cv0_train_07', 'cv0_train_12'], 2: ['cv0_train_03', 'cv0_train_08', 'cv0_train_10'], 3: ['cv0_train_04', 'cv0_train_05', 'cv0_train_11']}
+[   60.3s rss=1.10GB] hgb: OOF + final done (39.8 s, n_iter final 300)
+[   61.6s rss=1.10GB]   operating point (0.3, 5, 0.8, 0.2) OOF rank F1 0.9191
+[  142.1s rss=1.41GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9191, "f1@0.1/0.3/0.5/0.7": [0.95, 0.93, 0.877, 0.569], "tp_fp_fn@0.3": [178, 14, 13], "fa_per_h@0.3": 2.27, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.724}, "final": {"rank_f1": 0.9184, "f1@0.1/0.3/0.5/0.7": [0.943, 0.927, 0.885, 0.734], "tp_fp_fn@0.3": [178, 15, 13], "fa_per_h@0.3": 2.43, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.839}}
+[  142.1s rss=1.41GB] fit done in 140.7 s -> /home/user/data_raw/srcv/runs/uwb_hgb_replay/fold_0
+[    8.3s rss=1.41GB] predict cv0_test_00: 23 candidates, 22 replay-refined, 8.3 s
+[   17.5s rss=1.41GB] predict cv0_test_01: 26 candidates, 26 replay-refined, 9.2 s
+[   25.7s rss=1.41GB] predict cv0_test_02: 32 candidates, 32 replay-refined, 8.2 s
+[   33.2s rss=1.41GB] predict cv0_test_03: 18 candidates, 18 replay-refined, 7.5 s
+[   34.4s rss=1.41GB] predict cv0_test_04: 5 candidates, 3 replay-refined, 1.2 s
+[uwb_hgb_replay] fold 0: rank F1 0.8556 tp/fp/fn@0.3 55/10/7 (178s)
+[    0.0s rss=1.41GB] fit: 13 training streams, 359 events, config df377cac8ef45880
+[   17.0s rss=1.41GB] design: X_proto (111326, 64) X_band (111326, 48) positives 3475
+[   17.0s rss=1.41GB] folds: {0: ['cv1_train_04', 'cv1_train_06', 'cv1_train_07', 'cv1_train_12'], 1: ['cv1_train_05', 'cv1_train_09', 'cv1_train_10'], 2: ['cv1_train_00', 'cv1_train_01', 'cv1_train_02'], 3: ['cv1_train_03', 'cv1_train_08', 'cv1_train_11']}
+[   60.2s rss=1.41GB] hgb: OOF + final done (43.2 s, n_iter final 300)
+[   61.5s rss=1.41GB]   operating point (0.4, 5, 0.8, 0.2) OOF rank F1 0.8948
+[  143.4s rss=1.46GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.8948, "f1@0.1/0.3/0.5/0.7": [0.923, 0.902, 0.859, 0.653], "tp_fp_fn@0.3": [170, 16, 21], "fa_per_h@0.3": 2.59, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.765}, "final": {"rank_f1": 0.8948, "f1@0.1/0.3/0.5/0.7": [0.912, 0.897, 0.875, 0.759], "tp_fp_fn@0.3": [169, 17, 22], "fa_per_h@0.3": 2.75, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.85}}
+[  143.4s rss=1.46GB] fit done in 143.4 s -> /home/user/data_raw/srcv/runs/uwb_hgb_replay/fold_1
+[    6.9s rss=1.46GB] predict cv1_test_00: 22 candidates, 21 replay-refined, 6.9 s
+[   11.7s rss=1.46GB] predict cv1_test_01: 19 candidates, 18 replay-refined, 4.8 s
+[   19.7s rss=1.46GB] predict cv1_test_02: 27 candidates, 26 replay-refined, 8.0 s
+[   25.4s rss=1.46GB] predict cv1_test_03: 22 candidates, 22 replay-refined, 5.7 s
+[   25.9s rss=1.46GB] predict cv1_test_04: 1 candidates, 1 replay-refined, 0.5 s
+[uwb_hgb_replay] fold 1: rank F1 0.8490 tp/fp/fn@0.3 55/11/7 (171s)
+[    0.0s rss=1.46GB] fit: 13 training streams, 359 events, config df377cac8ef45880
+[   16.4s rss=1.46GB] design: X_proto (111342, 64) X_band (111342, 48) positives 3285
+[   16.4s rss=1.46GB] folds: {0: ['cv2_train_03', 'cv2_train_06', 'cv2_train_07'], 1: ['cv2_train_01', 'cv2_train_02', 'cv2_train_10', 'cv2_train_12'], 2: ['cv2_train_00', 'cv2_train_04', 'cv2_train_08'], 3: ['cv2_train_05', 'cv2_train_09', 'cv2_train_11']}
+[   56.6s rss=1.46GB] hgb: OOF + final done (40.2 s, n_iter final 300)
+[   58.1s rss=1.46GB]   operating point (0.4, 3, 0.8, 0.6) OOF rank F1 0.8836
+[  139.8s rss=1.46GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.8836, "f1@0.1/0.3/0.5/0.7": [0.924, 0.913, 0.814, 0.551], "tp_fp_fn@0.3": [174, 17, 16], "fa_per_h@0.3": 2.75, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.729}, "final": {"rank_f1": 0.8994, "f1@0.1/0.3/0.5/0.7": [0.924, 0.913, 0.861, 0.698], "tp_fp_fn@0.3": [174, 17, 16], "fa_per_h@0.3": 2.75, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.822}}
+[  139.8s rss=1.46GB] fit done in 139.8 s -> /home/user/data_raw/srcv/runs/uwb_hgb_replay/fold_2
+[    5.2s rss=1.46GB] predict cv2_test_00: 16 candidates, 16 replay-refined, 5.2 s
+[   10.3s rss=1.46GB] predict cv2_test_01: 19 candidates, 19 replay-refined, 5.0 s
+[   14.9s rss=1.46GB] predict cv2_test_02: 16 candidates, 15 replay-refined, 4.7 s
+[   18.7s rss=1.46GB] predict cv2_test_03: 14 candidates, 14 replay-refined, 3.7 s
+[   19.8s rss=1.46GB] predict cv2_test_04: 4 candidates, 4 replay-refined, 1.1 s
+[uwb_hgb_replay] fold 2: rank F1 0.8683 tp/fp/fn@0.3 52/4/11 (161s)
+[    0.0s rss=1.46GB] fit: 13 training streams, 358 events, config df377cac8ef45880
+[   15.5s rss=1.46GB] design: X_proto (110954, 64) X_band (110954, 48) positives 3364
+[   15.5s rss=1.46GB] folds: {0: ['cv3_train_01', 'cv3_train_07', 'cv3_train_08'], 1: ['cv3_train_05', 'cv3_train_10', 'cv3_train_11'], 2: ['cv3_train_00', 'cv3_train_03', 'cv3_train_09', 'cv3_train_12'], 3: ['cv3_train_02', 'cv3_train_04', 'cv3_train_06']}
+[   54.1s rss=1.46GB] hgb: OOF + final done (38.6 s, n_iter final 300)
+[   55.3s rss=1.46GB]   operating point (0.5, 5, 0.8, 0.6) OOF rank F1 0.8827
+[  132.3s rss=1.46GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.8827, "f1@0.1/0.3/0.5/0.7": [0.931, 0.898, 0.82, 0.598], "tp_fp_fn@0.3": [162, 12, 25], "fa_per_h@0.3": 1.95, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.739}, "final": {"rank_f1": 0.9178, "f1@0.1/0.3/0.5/0.7": [0.936, 0.925, 0.892, 0.748], "tp_fp_fn@0.3": [167, 7, 20], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.843}}
+[  132.3s rss=1.46GB] fit done in 132.3 s -> /home/user/data_raw/srcv/runs/uwb_hgb_replay/fold_3
+[    4.5s rss=1.46GB] predict cv3_test_00: 15 candidates, 14 replay-refined, 4.5 s
+[   11.5s rss=1.46GB] predict cv3_test_01: 19 candidates, 19 replay-refined, 6.9 s
+[   16.4s rss=1.46GB] predict cv3_test_02: 19 candidates, 18 replay-refined, 4.9 s
+[   22.6s rss=1.46GB] predict cv3_test_03: 26 candidates, 25 replay-refined, 6.2 s
+[   23.2s rss=1.46GB] predict cv3_test_04: 2 candidates, 2 replay-refined, 0.6 s
+[uwb_hgb_replay] fold 3: rank F1 0.7560 tp/fp/fn@0.3 43/3/23 (157s)
+[uwb_hgb_replay] POOLED rank F1 0.8340 CI [0.7474279028289047, 0.8952786852187941]

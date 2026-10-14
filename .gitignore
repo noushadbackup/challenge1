@@ -3,3 +3,6 @@ __pycache__/
 reports/prototype/tmp_*
 work/*/cache/
 work/**/*.npz
+uwbfall/*.egg-info/
+uwbfall/build/
+uwbfall/**/*.pt

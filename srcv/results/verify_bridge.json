@@ -1,0 +1,12 @@
+{
+ "n_frames_all_fold_parts_equal": true,
+ "cir_equal": true,
+ "features_equal": {
+  "e_raw": true,
+  "e_mot": true,
+  "e_diff": true,
+  "mot_map": true,
+  "prof_02": true
+ },
+ "events_equal": true
+}
