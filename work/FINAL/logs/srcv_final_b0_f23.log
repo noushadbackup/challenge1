@@ -1,0 +1,27 @@
+[    1.2s rss=0.43GB] fit: 13 training streams, 359 events, config 204d32de158f1814
+[  106.4s rss=1.06GB] design: X_proto (111342, 64) X_band (111342, 48) positives 3285
+[  106.4s rss=1.06GB] folds: {0: ['cv2_train_03', 'cv2_train_06', 'cv2_train_07'], 1: ['cv2_train_01', 'cv2_train_02', 'cv2_train_10', 'cv2_train_12'], 2: ['cv2_train_00', 'cv2_train_04', 'cv2_train_08'], 3: ['cv2_train_05', 'cv2_train_09', 'cv2_train_11']}
+[  137.8s rss=1.06GB] hgb: OOF + final done (31.4 s, n_iter final 300)
+[  251.6s rss=1.06GB] tcn: CV fold 0 done (114 s)
+[  362.6s rss=1.06GB] tcn: CV fold 1 done (225 s)
+[  474.8s rss=1.06GB] tcn: CV fold 2 done (337 s)
+[  584.6s rss=1.06GB] tcn: CV fold 3 done (447 s)
+[  695.8s rss=1.08GB] tcn: CV + final bag done (558.1 s)
+[  712.2s rss=1.46GB] clip: junction threshold 1.0026, train diag {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8789625360230547, "peak_precision": 0.949375, "peaks_per_min": 4.311041655439995}
+[  732.0s rss=1.48GB] clip: segment classifier on 1613 segments (18 features), subject-grouped OOF AUC fall-vs-rest 0.9714
+[  732.7s rss=1.48GB]   operating point (0.3, 1, 0.8, 0.6) OOF rank F1 0.9368
+[  793.7s rss=1.68GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9368, "f1@0.1/0.3/0.5/0.7": [0.977, 0.966, 0.868, 0.566], "tp_fp_fn@0.3": [186, 9, 4], "fa_per_h@0.3": 1.45, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.719}, "final": {"rank_f1": 0.9589, "f1@0.1/0.3/0.5/0.7": [0.982, 0.971, 0.924, 0.745], "tp_fp_fn@0.3": [185, 6, 5], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.05, "mean_tiou@0.3": 0.825}}
+[  809.5s rss=1.68GB] drift reference written: /home/user/data_raw/srcv/runs/final_b0/fold_2/drift_ref.json (junctions/h 258.6, events/h 57.4, repeat share 0.240)
+[  809.5s rss=1.68GB] fit done in 792.5 s -> /home/user/data_raw/srcv/runs/final_b0/fold_2
+[    8.5s rss=1.68GB] predict cv2_test_00: 18 candidates, 15 replay-refined, 8.5 s
+[   19.0s rss=1.68GB] predict cv2_test_01: 24 candidates, 22 replay-refined, 10.5 s
+[   27.8s rss=1.68GB] predict cv2_test_02: 22 candidates, 19 replay-refined, 8.7 s
+[   36.8s rss=1.68GB] predict cv2_test_03: 20 candidates, 17 replay-refined, 9.1 s
+[   38.0s rss=1.68GB] predict cv2_test_04: 6 candidates, 5 replay-refined, 1.2 s
+[final_b0] fold 2: rank F1 0.9086 tp/fp/fn@0.3 57/4/6 (848s)
+[    0.0s rss=1.68GB] fit: 13 training streams, 358 events, config 204d32de158f1814
+[   43.6s rss=1.68GB] design: X_proto (110954, 64) X_band (110954, 48) positives 3364
+[   43.6s rss=1.68GB] folds: {0: ['cv3_train_01', 'cv3_train_07', 'cv3_train_08'], 1: ['cv3_train_05', 'cv3_train_10', 'cv3_train_11'], 2: ['cv3_train_00', 'cv3_train_03', 'cv3_train_09', 'cv3_train_12'], 3: ['cv3_train_02', 'cv3_train_04', 'cv3_train_06']}
+[   72.7s rss=1.68GB] hgb: OOF + final done (29.1 s, n_iter final 300)
+[  170.0s rss=1.68GB] tcn: CV fold 0 done (97 s)
+[  268.2s rss=1.68GB] tcn: CV fold 1 done (196 s)

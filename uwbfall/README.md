@@ -15,6 +15,26 @@ parity tests import from there. The package only reads the challenge package and
 - The train OOF probabilities of the HGB and of the TCN bag are bit-equal to E4's `probs_hgb.npz` and `probs_tcn_all.npz`.
 - Details are in the Verification section below.
 
+## Round-2 FINAL (integrator)
+
+**`configs/final.json` is the frozen submission config.** It equals `configs/reference.json` and `DEFAULT_CONFIG`
+(asserted in `tests/check_configs.py`): C3G3 + the I1 clip gate + 4 s time NMS. I2 and I3 promoted nothing.
+- The FINAL bundle is trained on train + val: `/home/user/data_raw/uwbfall_models/final`, with a runnable copy plus
+  sha256 manifest in `models/final/`.
+- Release-day steps are in `/home/user/challenge1/SUBMISSION.md`; targets are in the top-level `Makefile`.
+- The final table and promotion-rule comparison vs C3 are in `reports/round2/FINAL.md`.
+
+New in this round:
+- **Drift monitors** (`drift.py`). `predict` prints them and writes `<out>_drift.json`. They are: events/h, junctions/h,
+  near-junction share of predictions, repeated-frame share, per-radar raw-energy level, and per-radar PSI of motion /
+  frame-difference / repeat features vs the bundle's training streams.
+  - The reference is `<bundle>/drift_ref.json`. `fit` writes it; for older bundles, run
+    `python -m uwbfall driftref --models <bundle> --train-splits <splits>`.
+  - Sanity test: `python -m uwbfall.tests.check_drift <bundle>`.
+- **Physics-only fallback** `configs/fallback_physics.json`. This is a switch for when the drift monitors fire, not a
+  promoted system.
+- `tests/check_submission.py` runs the release-day CSV checks: official validator, header, and expected ids.
+
 ## Round-2 status
 
 **REFERENCE SYSTEM (after I1) = `configs/reference.json` = `DEFAULT_CONFIG`** (checked by `tests/check_configs.py`).

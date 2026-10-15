@@ -232,6 +232,11 @@ def _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in,
         pickle.dump(pca, f)
     (out / "config.json").write_text(json.dumps(cfg, indent=1))
     (out / "meta.json").write_text(json.dumps(meta, indent=1, default=str))
+    try:   # label-free drift reference for predict-time monitors (uwbfall/drift.py); never fails a fit
+        from . import drift
+        drift.reference_for_bundle(out, sources, cfg, log)
+    except Exception as exc:  # pragma: no cover
+        log(f"drift reference skipped: {exc!r}")
     log(f"fit done in {meta['timings']['total_s']} s -> {out}")
     return out
 
@@ -306,7 +311,7 @@ def retune(bundle, train_sources: list[StreamSource], events: pd.DataFrame | Non
     base = load_config(raw)
     cfg = load_config(_deep(base, overrides))
     # a hit model (W5) is fitted on candidates of the old operating point: drop it (re-attach with hitattach)
-    cfg["score"].update({"hit_model": None, "threshold": None})
+    cfg["score"].update({"hit_model": None, "threshold": None, "nms_order": "score"})
     check_implemented(cfg)
     if cfg["hgb"]["postfall_class"] != base["hgb"]["postfall_class"]:
         raise ValueError("hgb.postfall_class needs a refit")
@@ -355,7 +360,8 @@ def retune(bundle, train_sources: list[StreamSource], events: pd.DataFrame | Non
 def attach_hit(bundle, hit_state: dict, out_dir) -> Path:
     """W5 (I3): copy a bundle and attach an event hit model. hit_state = {"model": hitmodel.HitModel,
     "tau": float | None, "meta": {...}} (from hitmodel.fit_nested on SR-CV OOF candidate tables). Sets
-    score.hit_model="lgbm" and score.threshold=tau in the copied config.json."""
+    score.hit_model="lgbm", score.threshold=tau and score.nms_order=hit_state.get("nms_order", "score") in the
+    copied config.json."""
     import shutil
     src, out = Path(bundle), Path(out_dir)
     if out.exists():
@@ -364,6 +370,7 @@ def attach_hit(bundle, hit_state: dict, out_dir) -> Path:
     raw = json.loads((out / "config.json").read_text())
     cfg = load_config(raw if "clip" in raw else {**raw, "clip": {"segclf": {"enabled": False}, "gate": "none"}})
     cfg["score"].update({"hit_model": "lgbm", "threshold": hit_state.get("tau"),
+                         "nms_order": hit_state.get("nms_order", "score"),
                          **{k: v for k, v in hit_state["model"].cfg_s.items() if k in cfg["score"] and k not in
                             ("hit_model", "threshold")}})
     check_implemented(cfg)
@@ -415,6 +422,8 @@ def load_bundle(path) -> dict:
     if (p / "clip.pkl").exists():
         with open(p / "clip.pkl", "rb") as f:
             B["clip"] = pickle.load(f)
+    from . import drift
+    B["drift_ref"] = drift.load_reference(p)
     B["tcn"] = []
     if cfg["tcn"]["enabled"]:
         z = np.load(p / "tcn_norm.npz")
@@ -466,7 +475,9 @@ def _boundaries(sources, cand: pd.DataFrame, cfg: dict, durations: dict, log) ->
     return pd.concat(out, ignore_index=True) if out else cand.iloc[:0]
 
 
-def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = False):
+def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = False, monitor: dict | None = None):
+    """Predict final rows for `sources`. If `monitor` is a dict, it is filled with per-stream drift-monitor inputs
+    ({sid: drift.stream_stats}); drift.report(B['drift_ref'], monitor, pred) turns them into the monitor table."""
     B = bundle if isinstance(bundle, dict) else load_bundle(bundle)
     cfg = B["cfg"]
     check_implemented(cfg)
@@ -479,6 +490,10 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
         t0 = time.time()
         F = get_features(s, cfg, log)
         p, parts = stream_probs(B, F)
+        if monitor is not None:
+            from . import drift
+            thr = (B.get("drift_ref") or {}).get("junction_thr") or (B.get("clip") or {}).get("thr")
+            monitor[s.sid] = drift.stream_stats(F, float("inf") if thr is None else float(thr))
         c = events_df(to_events(s.sid, p, *g))
         if cfg["boundary"]["method"] == "replay" and len(c):
             D = replay_stream(s, F["prof_02"], c, cfg)
@@ -487,7 +502,10 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
                 X = HM.candidate_features(D, cfg["boundary"], {s.sid: p}, {s.sid: parts},
                                           {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {})
                 r = HM.final_rows(D, cfg["boundary"], durations,
-                                  score=np.round(B["hit"]["model"].predict(X), 6)).drop(columns="row")
+                                  score=np.round(B["hit"]["model"].predict(X), 6))
+                if cfg["score"]["nms_order"] == "detector":   # keep the detector score for the NMS order
+                    r = r.assign(det=D.score.values[r.row.values])
+                r = r.drop(columns="row")
             else:
                 r = to_preds(D, a, e, durations)
             n_rep = int(use.sum())
@@ -496,7 +514,12 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
             n_rep = 0
         s.release()
         if len(r):
-            r = _nms(r, cfg, {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {})
+            pk = {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {}
+            if "det" in r:   # score.nms_order="detector": the NMS ranks by the detector score, rows keep the hit score
+                k = _nms(r.assign(score=r["det"], _i=np.arange(len(r))), cfg, pk)["_i"].values
+                r = r.iloc[np.sort(k)].drop(columns="det").reset_index(drop=True)
+            else:
+                r = _nms(r, cfg, pk)
         if len(r) and B.get("hit") is not None and cfg["score"]["threshold"] is not None:
             r = r[r.score >= float(cfg["score"]["threshold"])].reset_index(drop=True)
         rows.append(r)

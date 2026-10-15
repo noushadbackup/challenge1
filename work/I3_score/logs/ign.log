@@ -1,0 +1,81 @@
+{
+ "free_rows": 574,
+ "free_removal_changes_score": 0,
+ "nms_suppressed_by_free": 0,
+ "nms_suppressed_hits": 9,
+ "dropped": {
+  "T0": {
+   "tp": 5,
+   "fp": 7,
+   "free": 9,
+   "other": 0
+  },
+  "HT": {
+   "tp": 1,
+   "fp": 11,
+   "free": 8,
+   "other": 0
+  },
+  "HTN": {
+   "tp": 0,
+   "fp": 9,
+   "free": 4,
+   "other": 0
+  },
+  "XT0": {
+   "tp": 14,
+   "fp": 18,
+   "free": 31,
+   "other": 1
+  },
+  "XHT": {
+   "tp": 5,
+   "fp": 14,
+   "free": 29,
+   "other": 0
+  },
+  "XHTF": {
+   "tp": 6,
+   "fp": 18,
+   "free": 31,
+   "other": 2
+  },
+  "XHTP": {
+   "tp": 6,
+   "fp": 21,
+   "free": 32,
+   "other": 0
+  },
+  "XHTPF": {
+   "tp": 5,
+   "fp": 21,
+   "free": 24,
+   "other": 1
+  },
+  "XHTPN": {
+   "tp": 5,
+   "fp": 21,
+   "free": 29,
+   "other": 0
+  },
+  "XHTPFN": {
+   "tp": 3,
+   "fp": 21,
+   "free": 21,
+   "other": 1
+  },
+  "XOPd": {
+   "tp": 380,
+   "fp": 37,
+   "free": 245,
+   "other": 7
+  },
+  "XOPf": {
+   "tp": 463,
+   "fp": 43,
+   "free": 254,
+   "other": 10
+  }
+ },
+ "cells": 15
+}

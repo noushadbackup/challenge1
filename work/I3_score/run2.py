@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "I2_boundaries"))
 from common import BAGS, target_sources  # noqa: E402
-from run import CFG_S, nms, write  # noqa: E402
+from run import CFG_S, nms, nms_det, write  # noqa: E402
 from uwbfall import hitmodel as HM  # noqa: E402
 from uwbfall.scoring import gt_records  # noqa: E402
 from uwbfall.sources import events_for  # noqa: E402
@@ -39,11 +39,14 @@ def load_target(bag, t, gts, durs):
     F = pickle.load(open(HERE / "cache" / f"{FEAT}_{bag}_{t}.pkl", "rb"))
     r = F["rows_te"]
     Y = HM.hit_labels(r.stream_id.values, r.t_start.values, r.t_end.values, gts[t])
-    return {"X": F["Xte"], "rows": r.drop(columns="row"), "Y": Y}
+    return {"X": F["Xte"], "rows": r.drop(columns="row").assign(det=r.score.values), "Y": Y}
+
+
+NMS = nms
 
 
 def fit_choose(parts, gt, dur, cfg_s, use_hit=True, groups=None, tau_parts=None):
-    return HM.fit_nested(parts, gt, dur, cfg_s, nms, groups=groups, tau_parts=tau_parts, use_hit=use_hit)
+    return HM.fit_nested(parts, gt, dur, cfg_s, NMS, groups=groups, tau_parts=tau_parts, use_hit=use_hit)
 
 
 def main():
@@ -54,11 +57,14 @@ def main():
     ap.add_argument("--pool-bags", action="store_true", help="train the hit model on the rows of all bags")
     ap.add_argument("--fixed-tau", type=float, default=None,
                     help="XHT uses this fixed tau (F1*/2 rule) instead of the nested choice")
+    ap.add_argument("--nms-det", action="store_true", help="time NMS ordered by the detector score (the kept set "
+                    "is the reference's); the hit score only acts through the threshold cut")
     ap.add_argument("--feat", default="feat", help="feature cache prefix: feat (reference candidates, run.py) | "
                     "featR (recall-oriented candidates, run3.py)")
     a = ap.parse_args()
-    global FEAT
+    global FEAT, NMS
     FEAT = a.feat
+    NMS = nms_det if a.nms_det else nms
     V = a.variants.split(",")
     gts, durs = {}, {}
     for t in FOLDS + ["official"]:
@@ -79,7 +85,7 @@ def main():
             gt = sum((gts[f] for f in train), [])
             dur = {k: v for f in train for k, v in durs[f].items()}
             tgt = T[t]
-            ref = nms(tgt["rows"])
+            ref = nms(tgt["rows"]).drop(columns="det")
             rec = {"train_folds": train}
             if "XT0" in V:
                 _, tau0, c0, n = fit_choose([T[f] for f in train], gt, dur, CFG_S, use_hit=False)
@@ -90,7 +96,7 @@ def main():
                 if a.fixed_tau is not None:
                     tau = a.fixed_tau
                 h = model.predict(tgt["X"])
-                H = nms(tgt["rows"].assign(score=np.round(h, 6)))
+                H = NMS(tgt["rows"].assign(score=np.round(h, 6))).drop(columns="det")
                 if "XH" in V:
                     write(bag, "XH" + a.tag, t, H)
                 if "XHT" in V:

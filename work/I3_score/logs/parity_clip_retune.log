@@ -1,0 +1,13 @@
+[    1.2s rss=0.43GB] retune /home/user/data_raw/srcv/runs/uwb_default/official_train -> /home/user/data_raw/I1/retune/G7N4_official: overrides {"boundary": {"gate": 0.3}, "clip": {"segclf": {"enabled": true}, "gate": "mult", "gate_floor": 0.7}, "decode": {"one_event_per_clip": "time", "nms_gap_s": 4.0}}, config 204d32de158f1814
+[   69.3s rss=1.20GB] clip: junction threshold 1.0173, train diag {"recall_fall_junctions": 0.9489953632148377, "recall_all_junctions": 0.8607449856733524, "peak_precision": 0.9608723540731238, "peaks_per_min": 4.203364848833447}
+[   88.8s rss=1.20GB] clip: segment classifier on 1572 segments (18 features), subject-grouped OOF AUC fall-vs-rest 0.9719
+[   89.6s rss=1.20GB]   operating point (0.4, 5, 0.8, 0.2) OOF rank F1 0.9405
+[  330.5s rss=1.20GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9405, "f1@0.1/0.3/0.5/0.7": [0.962, 0.957, 0.903, 0.622], "tp_fp_fn@0.3": [177, 7, 9], "fa_per_h@0.3": 1.13, "start_err_med@0.3": 0.24, "mean_tiou@0.3": 0.736}, "final": {"rank_f1": 0.9457, "f1@0.1/0.3/0.5/0.7": [0.967, 0.962, 0.908, 0.772], "tp_fp_fn@0.3": [177, 5, 9], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.833}}
+[  330.5s rss=1.20GB] fit done in 329.6 s -> /home/user/data_raw/I1/retune/G7N4_official
+[    7.8s rss=1.20GB] predict val_00: 27 candidates, 27 replay-refined, 7.8 s
+[   15.1s rss=1.20GB] predict val_01: 24 candidates, 24 replay-refined, 7.3 s
+[   22.2s rss=1.20GB] predict val_02: 26 candidates, 23 replay-refined, 7.2 s
+[   27.8s rss=1.20GB] predict val_03: 12 candidates, 10 replay-refined, 5.6 s
+[   28.6s rss=1.20GB] predict val_04: 5 candidates, 5 replay-refined, 0.8 s
+[official] op [0.4, 5, 0.8, 0.2] == experiment [0.4, 5, 0.8, 0.2]: True; 94 rows identical to G7N4/val.csv: True; train OOF final {"rank_f1": 0.9457, "f1@0.1/0.3/0.5/0.7": [0.967, 0.962, 0.908, 0.772], "tp_fp_fn@0.3": [177, 5, 9], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.833}
+ALL OK

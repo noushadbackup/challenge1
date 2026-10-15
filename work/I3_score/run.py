@@ -10,6 +10,8 @@ Variants (all end with the reference time NMS 4 s; the NMS keeps the higher *sco
   T0   REF + cut detector score < tau, tau on train OOF final rows (no model -> no nesting needed)
   H    score = hit model (fit on all train candidates)
   HT   H + cut hit score < tau, tau on train OOF rows scored by subject-grouped inner-CV hit models (nested)
+  HN   hit score, but NMS ordered by the detector score (kept rows = REF's rows)
+  HTN  HN + nested tau chosen under the same detector-ordered NMS
 
     python3 work/I3_score/run.py <targets> [--bags ...]
 """
@@ -49,6 +51,13 @@ def subjects(cands: pd.DataFrame, comp: pd.DataFrame) -> np.ndarray:
 
 def nms(df):
     return CL.nms_time(df, REF_CFG["decode"]["nms_gap_s"]).reset_index(drop=True)
+
+
+def nms_det(df):
+    """Time NMS ordered by the DETECTOR score (column 'det'), keeping each row's own score column: the kept set is
+    exactly the reference's, so a hit score only acts through the threshold cut (I3 '...N' variants)."""
+    keep = CL.nms_time(df.assign(score=df["det"]), REF_CFG["decode"]["nms_gap_s"]).index
+    return df.loc[keep].reset_index(drop=True)
 
 
 def write(bag, name, t, df):
@@ -124,6 +133,15 @@ def main():
             tau, curve = HM.choose_threshold(rows_tr.drop(columns="row").assign(score=np.round(h_oof, 6)), gt, dur_tr,
                                              CFG_S, nms)
             write(bag, "HT", t, H[H.score >= tau])
+            # HN / HTN: same hit scores, but the time NMS is ordered by the detector score (kept set = REF's), so the
+            # hit score acts only through the cut; tau re-chosen (nested) under that NMS
+            HN = nms_det(rows_te.drop(columns="row").assign(det=rows_te.score.values, score=np.round(h_te, 6)))
+            HN = HN.drop(columns="det")
+            write(bag, "HN", t, HN)
+            tauN, curveN = HM.choose_threshold(rows_tr.drop(columns="row").assign(det=rows_tr.score.values,
+                                                                                  score=np.round(h_oof, 6)),
+                                               gt, dur_tr, CFG_S, nms_det)
+            write(bag, "HTN", t, HN[HN.score >= tauN])
             from sklearn.metrics import roc_auc_score
             auc = {str(th): float(roc_auc_score(Ytr[f"hit{th}"][m], h_oof[m])) if Ytr[f"hit{th}"][m].nunique() > 1 else None
                    for th in HM.THETAS}
@@ -133,10 +151,10 @@ def main():
             info[bag] = {"ref_identical_to_I1_G7N4": same, "op": list(op), "n_train_cand": int(len(rows_tr)),
                          "n_train_ok": int(m.sum()), "n_train_ignore_free": int((~m).sum()),
                          "train_hit_rate": {str(th): float(Ytr[f"hit{th}"][m].mean()) for th in HM.THETAS},
-                         "tau_T0": tau0, "tau_HT": tau, "curve_T0": curve0, "curve_HT": curve,
+                         "tau_T0": tau0, "tau_HT": tau, "tau_HTN": tauN, "curve_HTN": curveN, "curve_T0": curve0, "curve_HT": curve,
                          "inner_auc_hit": auc, "train_auc_detector_score": auc_det, "train_oof_ref": tr_ref,
                          "importance": hm.importance(), "n_test_cand": int(len(rows_te))}
-            print(f"{t} {bag}: REF identical={same} tau_T0={tau0} tau_HT={tau} innerAUC={auc} detAUC={auc_det} "
+            print(f"{t} {bag}: REF identical={same} tau_T0={tau0} tau_HT={tau} tau_HTN={tauN} innerAUC={auc} detAUC={auc_det} "
                   f"n_tr={len(rows_tr)} free={int((~m).sum())}", flush=True)
         (HERE / "out" / f"info_{t}.json").write_text(json.dumps(info, indent=1))
         print(f"target {t} done ({time.time() - t0:.0f}s)", flush=True)

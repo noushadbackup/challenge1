@@ -22,6 +22,8 @@ def diff(a, b, p=""):
 ref = load_config(C / "reference.json")
 assert ref == DEFAULT_CONFIG, diff(DEFAULT_CONFIG, ref)
 assert load_config(C / "default.json") == DEFAULT_CONFIG
+# FINAL (round-2 integrator): frozen submission config = reference + every promoted change (gate 0.3, I1 G7N4)
+assert load_config(C / "final.json") == DEFAULT_CONFIG, diff(DEFAULT_CONFIG, load_config(C / "final.json"))
 expect = {
     "C3G3.json": {"decode.one_event_per_clip": False, "clip.segclf.enabled": False, "clip.gate": "none"},
     "replayB_gate01.json": {"decode.one_event_per_clip": False, "clip.segclf.enabled": False, "clip.gate": "none",

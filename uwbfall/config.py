@@ -128,6 +128,9 @@ DEFAULT_CONFIG: dict[str, Any] = {
                                     # higher hit score. Not promoted (reports/round2/I3.md).
         "threshold": None,          # None | float tau: drop final rows with hit score < tau (after NMS). Stored by
                                     # hitattach (nested choice on SR-CV OOF, or the fixed F1*/2 rule)
+        "nms_order": "score",       # "score": the final NMS keeps the higher hit score | "detector": it keeps the
+                                    # higher detector score (kept rows = the reference's; the hit score then acts
+                                    # only through the threshold cut; I3 variant ...N). Only used with hit_model.
         "seeds": 3,                 # LightGBM seeds averaged per theta
         "inner_folds": 5,
         "tau_grid": [0.0, 0.6, 0.02],
@@ -183,6 +186,8 @@ def check_implemented(cfg: dict) -> None:
     if cfg["score"]["threshold"] is not None and (cfg["score"]["hit_model"] is None
                                                   or not 0 <= float(cfg["score"]["threshold"]) <= 1):
         raise ValueError("score.threshold needs score.hit_model and must lie in [0, 1]")
+    if cfg["score"]["nms_order"] not in ("score", "detector"):
+        raise ValueError("score.nms_order must be 'score' or 'detector'")
     if cfg["boundary"]["method"] not in ("replay", "none"):
         raise ValueError("boundary.method must be 'replay' or 'none'")
     if cfg["decode"]["one_event_per_clip"] not in (False, "time", "segment"):

@@ -1,0 +1,19 @@
+[    7.7s rss=1.08GB] predict val_00: 27 candidates, 27 replay-refined, 7.7 s
+[   15.0s rss=1.10GB] predict val_01: 24 candidates, 24 replay-refined, 7.3 s
+[   22.1s rss=1.12GB] predict val_02: 26 candidates, 23 replay-refined, 7.1 s
+[   27.9s rss=1.14GB] predict val_03: 12 candidates, 10 replay-refined, 5.8 s
+[   28.8s rss=1.14GB] predict val_04: 5 candidates, 5 replay-refined, 0.9 s
+hit model off: identical to G7N4/val.csv: True
+[    7.5s rss=1.14GB] predict val_00: 27 candidates, 27 replay-refined, 7.5 s
+[   14.6s rss=1.14GB] predict val_01: 24 candidates, 24 replay-refined, 7.1 s
+[   21.4s rss=1.14GB] predict val_02: 26 candidates, 23 replay-refined, 6.7 s
+[   27.6s rss=1.15GB] predict val_03: 12 candidates, 10 replay-refined, 6.2 s
+[   28.5s rss=1.15GB] predict val_04: 5 candidates, 5 replay-refined, 1.0 s
+hit model on (tau 0.46): 93 rows, identical to XHTPF/val.csv: True
+[    7.3s rss=1.15GB] predict val_00: 27 candidates, 27 replay-refined, 7.3 s
+[   15.0s rss=1.15GB] predict val_01: 24 candidates, 24 replay-refined, 7.6 s
+[   22.1s rss=1.15GB] predict val_02: 26 candidates, 23 replay-refined, 7.2 s
+[   28.7s rss=1.15GB] predict val_03: 12 candidates, 10 replay-refined, 6.5 s
+[   29.7s rss=1.15GB] predict val_04: 5 candidates, 5 replay-refined, 1.0 s
+hit model on, nms_order=detector (tau 0.46): 93 rows, identical to XHTPFN/val.csv: True
+ALL OK

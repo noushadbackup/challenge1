@@ -4,8 +4,10 @@
   python -m uwbfall predict --models <model_dir> --split val|test --out <csv>
   python -m uwbfall retune  --models <model_dir> --config cfg.json --train-splits train --out <new_model_dir>
                             (post-model stages only: clip stage, operating point, NMS; no HGB/TCN refit)
-  python -m uwbfall hitattach --models <model_dir> --hit <hit.pkl> [--tau 0.46|none] --out <new_model_dir>
+  python -m uwbfall hitattach --models <model_dir> --hit <hit.pkl> [--tau 0.46|none] [--nms-order detector]
+                            --out <new_model_dir>
                             (W5 event hit model as score column + threshold; not promoted, see reports/round2/I3.md)
+  python -m uwbfall driftref --models <model_dir> --train-splits train[,val]   (drift-monitor reference)
   python -m uwbfall score   --pred <csv> --split val [--out <json>]
   python -m uwbfall extract --sources train,val,test          (warm the feature cache)
 
@@ -60,7 +62,8 @@ def _cmd_predict(a) -> int:
         mode = {"off": False, "time": "time"}[a.nms]
         B["cfg"]["decode"] = {**B["cfg"]["decode"], "one_event_per_clip": mode,
                               **({"nms_gap_s": a.nms_gap} if a.nms_gap is not None else {})}
-    pred, cand, _ = predict(B, srcs, return_debug=True)
+    mon = {}
+    pred, cand, _ = predict(B, srcs, return_debug=True, monitor=mon)
     # official validation against the official durations (stream_durations for package splits)
     durations = {s.sid: s.duration for s in srcs}
     if a.split and not a.sources:
@@ -72,7 +75,26 @@ def _cmd_predict(a) -> int:
     tmp.replace(out)
     if a.candidates:
         cand.to_csv(a.candidates, index=False)
-    print(json.dumps({"pred": str(out), "rows": len(recs), "streams": len(srcs), "wall_s": round(time.time() - t0, 1)}))
+    # label-free drift monitors vs the bundle's training streams (uwbfall/drift.py)
+    from . import drift
+    rep = drift.report(B.get("drift_ref"), mon, pred)
+    print(drift.format_report(rep), flush=True)
+    dj = out.with_name(out.stem + "_drift.json")
+    dj.write_text(json.dumps(rep, indent=1, default=float))
+    print(json.dumps({"pred": str(out), "rows": len(recs), "streams": len(srcs), "wall_s": round(time.time() - t0, 1),
+                      "drift_alerts": rep["n_alert"], "recommend_fallback": rep["recommend_fallback"],
+                      "drift_json": str(dj)}))
+    return 0
+
+
+def _cmd_driftref(a) -> int:
+    from .config import load_config
+    from .drift import reference_for_bundle
+    from .sources import parse_sources
+
+    cfg = load_config(json.loads((Path(a.models) / "config.json").read_text()))
+    ref = reference_for_bundle(a.models, parse_sources(a.train_splits), cfg)
+    print(json.dumps({k: v for k, v in ref.items() if k != "psi"}))
     return 0
 
 
@@ -100,6 +122,8 @@ def _cmd_hitattach(a) -> int:
         state = pickle.load(f)
     if a.tau is not None:
         state["tau"] = None if a.tau.lower() == "none" else float(a.tau)
+    if a.nms_order is not None:
+        state["nms_order"] = a.nms_order
     out = attach_hit(a.models, state, a.out)
     print(json.dumps({"model_dir": str(Path(out).resolve()), "tau": state["tau"]}))
     return 0
@@ -167,8 +191,15 @@ def main(argv=None) -> int:
     h.add_argument("--models", required=True)
     h.add_argument("--hit", required=True, help="pickle {model: hitmodel.HitModel, tau, meta}")
     h.add_argument("--tau", default=None, help="override the stored threshold (float or 'none')")
+    h.add_argument("--nms-order", default=None, choices=["score", "detector"],
+                   help="final NMS ranks by the hit score (default) or by the detector score (I3 ...N variants)")
     h.add_argument("--out", required=True)
     h.set_defaults(fn=_cmd_hitattach)
+    d = sub.add_parser("driftref", help="(re)compute <bundle>/drift_ref.json (label-free drift-monitor reference) "
+                                        "from the bundle's training streams; fit does this automatically")
+    d.add_argument("--models", required=True)
+    d.add_argument("--train-splits", default="train", help="the bundle's training source spec")
+    d.set_defaults(fn=_cmd_driftref)
     s = sub.add_parser("score", help="official evaluator CLI (--ignore-flagged)")
     s.add_argument("--pred", required=True)
     s.add_argument("--split", default="val")

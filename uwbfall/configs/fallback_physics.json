@@ -1,0 +1,6 @@
+{
+ "features": {"proto_set": "physics"},
+ "clip": {"segclf": {"enabled": false}, "gate": "none"},
+ "decode": {"one_event_per_clip": "time", "nms_gap_s": 4.0},
+ "boundary": {"method": "replay", "crops": ["loc2_3d", "loc2_5d"], "gate": 0.3, "min_ok": 1, "dmin": 1.0}
+}

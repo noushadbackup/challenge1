@@ -1,0 +1,37 @@
+make predict-test TEST_DIR=/home/user/data_raw/fake_test/streams/test SUB=/home/user/data_raw/fake_test/submission
+make[1]: Entering directory '/home/user/challenge1'
+cd /home/user/data_raw/uwbfall_models/final && sha256sum -c /home/user/challenge1/models/final/MANIFEST.sha256
+config.json: OK
+meta.json: OK
+pca.pkl: OK
+hgb.pkl: OK
+clip.pkl: OK
+tcn_norm.npz: OK
+tcn_0.pt: OK
+tcn_1.pt: OK
+tcn_2.pt: OK
+drift_ref.json: OK
+mkdir -p /home/user/data_raw/fake_test/submission
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall predict --models /home/user/data_raw/uwbfall_models/final --sources dir:/home/user/data_raw/fake_test/streams/test:test --out /home/user/data_raw/fake_test/submission/submission.csv \
+    --candidates /home/user/data_raw/fake_test/submission/candidates.csv 2>&1 | tee /home/user/data_raw/fake_test/submission/predict.log
+DRIFT MONITORS (5 streams, 2.05 h)
+  stream test_00: events/h 69.4, junctions/h 261.3, repeat share 0.235
+  stream test_01: events/h 63.1, junctions/h 256.5, repeat share 0.237
+  stream test_02: events/h 63.3, junctions/h 237.0, repeat share 0.239
+  stream test_03: events/h 36.6, junctions/h 207.4, repeat share 0.237
+  stream test_04: events/h 57.8, junctions/h 289.0, repeat share 0.229
+  -> 0 ALERT(s); no fallback recommended
+{"pred": "/home/user/data_raw/fake_test/submission/submission.csv", "rows": 119, "streams": 5, "wall_s": 38.2, "drift_alerts": 0, "recommend_fallback": false, "drift_json": "/home/user/data_raw/fake_test/submission/submission_drift.json"}
+make check-test
+make[2]: Entering directory '/home/user/challenge1'
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.check_submission /home/user/data_raw/fake_test/submission/submission.csv /home/user/data_raw/fake_test/streams/test test_00,test_01,test_02,test_03,test_04
+/home/user/data_raw/fake_test/submission/submission.csv: 119 rows, 5 streams, official validate_predictions OK
+  test_00:  34 rows,  69.4 events/h,  29.4 min, dur 1.00-4.40 s, score 0.643-0.996
+  test_01:  31 rows,  63.1 events/h,  29.5 min, dur 1.00-4.00 s, score 0.616-0.996
+  test_02:  31 rows,  63.3 events/h,  29.4 min, dur 1.00-3.98 s, score 0.642-0.995
+  test_03:  18 rows,  36.6 events/h,  29.5 min, dur 1.00-3.60 s, score 0.574-0.990
+  test_04:   5 rows,  57.8 events/h,   5.2 min, dur 1.12-2.12 s, score 0.832-0.990
+SUBMISSION CHECK: OK
+make[2]: Leaving directory '/home/user/challenge1'
+make[1]: Leaving directory '/home/user/challenge1'
+[rss.py] rc=0 wall_s=45.0 peak_rss_gb=1.14

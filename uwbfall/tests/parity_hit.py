@@ -3,7 +3,8 @@
 Attach the pooled-bag SR-CV hit model with the fixed F1*/2 threshold (work/I3_score/fit_hit.py --fixed-tau 0.46)
 to the bag-0 reference bundle of the official train streams (I1 parity bundle G7N4_official), run
 pipeline.predict on val and compare with work/I3_score/preds/uwb_default/XHTPF/val.csv (rows sorted by stream,
-start). Also: with score.hit_model off the same bundle still predicts the reference G7N4 val CSV.
+start). Also: with score.hit_model off the same bundle still predicts the reference G7N4 val CSV, and with
+score.nms_order="detector" it reproduces work/I3_score/preds/uwb_default/XHTPFN/val.csv.
 
     python3 -m uwbfall.tests.parity_hit
 """
@@ -37,6 +38,18 @@ x = pd.read_csv(__import__("io").StringIO(pred.to_csv(index=False))).sort_values
 y = pd.read_csv(I3 / "preds" / "uwb_default" / "XHTPF" / "val.csv").sort_values(key).reset_index(drop=True)
 same = x.equals(y)
 print(f"hit model on (tau {state['tau']}): {len(x)} rows, identical to XHTPF/val.csv: {same}", flush=True)
+if not same:
+    print(x.compare(y) if len(x) == len(y) else (len(x), len(y)))
+ok &= same
+# score.nms_order="detector" (I3 variant XHTPFN): same model and tau, NMS ranked by the detector score
+state_n = {**state, "nms_order": "detector"}
+outn = PL.attach_hit(BUNDLE, state_n, OUT.with_name(OUT.name + "_nmsdet"))
+pred = PL.predict(outn, te)
+x = pd.read_csv(__import__("io").StringIO(pred.to_csv(index=False))).sort_values(key).reset_index(drop=True)
+y = pd.read_csv(I3 / "preds" / "uwb_default" / "XHTPFN" / "val.csv").sort_values(key).reset_index(drop=True)
+same = x.equals(y)
+print(f"hit model on, nms_order=detector (tau {state['tau']}): {len(x)} rows, identical to XHTPFN/val.csv: {same}",
+      flush=True)
 if not same:
     print(x.compare(y) if len(x) == len(y) else (len(x), len(y)))
 ok &= same
