@@ -17,6 +17,8 @@ bash run_all.sh cuda --data /mnt/e/uwbfall/data_raw          # GPU;  use "cpu" i
   (one `sudo` password prompt the first time).
 * The Python environments go to `~/.venvs/` in the Linux home (about 3 GB on C:). Windows drives do not handle
   venv symlinks well.
+* Verified on an RTX 5060 Ti (torch 2.11.0+cu128): the dataset download took about 44 min. With the GPU,
+  `train_val` took 129 s (about 1019 s on 4 CPU cores), and the val score was 0.9453 (64/3/3; CPU 0.9524).
 * WSL reads files on E: more slowly than on its own disk, so feature extraction takes longer than on the Linux home.
 * Add `--srcv` to also run the subject-disjoint CV. Re-running is safe: finished work is reused.
 * At the end it prints a SUMMARY: time per step, the val score (expect about 0.952), and where the final model and the
@@ -128,7 +130,8 @@ uv venv -p 3.13 ~/.venvs/uwbfall-gpu && source ~/.venvs/uwbfall-gpu/bin/activate
 grep -v '^torch' requirements-lock.txt > /tmp/req-no-torch.txt
 uv pip install -r /tmp/req-no-torch.txt
 # RTX 50xx (Blackwell, sm_120) needs a CUDA 12.8 or newer build of torch:
-uv pip install torch --index-url https://download.pytorch.org/whl/cu128
+export UV_HTTP_TIMEOUT=600 UV_HTTP_RETRIES=10        # the CUDA wheels are ~3 GB
+uv pip install --reinstall-package torch "torch==2.11.0" --index-url https://download.pytorch.org/whl/cu128   # verified on RTX 5060 Ti
 python -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0), torch.cuda.get_arch_list())"
 # expect True, 'NVIDIA GeForce RTX 5060 Ti', and 'sm_120' in the list
 ```

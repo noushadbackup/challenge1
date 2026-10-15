@@ -83,8 +83,12 @@ setup_env() {
   else
     grep -v '^torch' "$REPO/requirements-lock.txt" > "$LOGS/req-no-torch.txt"
     uv pip install -r "$LOGS/req-no-torch.txt"
+    # The CUDA wheels are large (~3 GB): give uv long timeouts and retries. torch 2.11.0+cu128 is the build verified on an
+    # RTX 5060 Ti (sm_120); override with TORCH_CUDA_SPEC="torch==<ver>" and TORCH_CUDA_INDEX=<index url> if needed.
+    export UV_HTTP_TIMEOUT="${UV_HTTP_TIMEOUT:-600}" UV_HTTP_RETRIES="${UV_HTTP_RETRIES:-10}"
     python3 -c "import torch, sys; sys.exit(0 if torch.cuda.is_available() else 1)" 2>/dev/null || \
-      uv pip install torch --index-url https://download.pytorch.org/whl/cu128
+      uv pip install --reinstall-package torch "${TORCH_CUDA_SPEC:-torch==2.11.0}" \
+        --index-url "${TORCH_CUDA_INDEX:-https://download.pytorch.org/whl/cu128}"
   fi
   uv pip install gdown
 }
