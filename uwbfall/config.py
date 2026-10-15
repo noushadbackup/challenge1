@@ -117,7 +117,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "selector": None,           # None | "lgbm": W4 boundary-hypothesis selector (I2; boundary.select)
         "dmin": 1.0,                # duration floor, extends the end only
         "ds": 0.0, "de": 0.0, "pds": 0.0, "pde": 0.0,
-        "dedup": True,              # annotator on distinct frames (sample-and-hold repeats removed)
+        "dedup": True,              # False: replay on all frames for every crop (crops ending in "d" use distinct frames)
         "junction_q": 97,
         "junction_q_recall": 95,
     },

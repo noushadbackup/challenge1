@@ -101,7 +101,8 @@ def replay_stream(source: StreamSource, prof_02: np.ndarray, cands: pd.DataFrame
                 out[f"{name}_s"] = out[f"{name}_e"] = np.nan
                 continue
             a = t0 + ia / FS
-            p = propose_fall(tracks_for(cir[:, ia:ib, :], dd), (ib - ia) / FS)
+            # boundary.dedup = False switches off the distinct-frame replay for every crop (rule-compliance variant)
+            p = propose_fall(tracks_for(cir[:, ia:ib, :], dd and b.get("dedup", True)), (ib - ia) / FS)
             out[f"{name}_s"], out[f"{name}_e"] = a + p.t_start, a + p.t_end
             out[f"{name}_pk"] = a + p.t_peak
             out[f"{name}_rev"] = ";".join(p.reasons)
