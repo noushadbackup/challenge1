@@ -9,7 +9,8 @@
 #   make checks          config invariants + drift-monitor sanity;  make predict-test-fallback  physics-only switch
 #
 # Variables (override on the command line, e.g. make predict-test TEST_DIR=/path/to/streams/test):
-REPO     ?= /home/user/challenge1
+# REPO = the directory of this Makefile, so a clone elsewhere runs its own code (audit F1).
+REPO     ?= $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 PKG      ?= /home/user/data_raw/abc2027_uwb_train_v1
 TEST_DIR ?= $(PKG)/streams/test
 MODELS   ?= /home/user/data_raw/uwbfall_models
@@ -32,20 +33,20 @@ features:       ## warm the feature cache (content-hashed; safe to re-run)
 train-final:    ## ~20 min (2 threads): FINAL bundle on all 18 labelled streams; op. point from its own CV OOF
 	$(PY) -m uwbfall train --config $(CONFIG) --train-splits train,val --out $(FINAL)
 
-verify-models:  ## sha256 of the shipped FINAL bundle files (models/final/MANIFEST.sha256)
-	cd $(FINAL) && sha256sum -c $(REPO)/models/final/MANIFEST.sha256
+verify-models:  ## sha256 of the FINAL bundle vs models/final/MANIFEST.sha256 (a refit may differ only in meta timings/git rev)
+	$(PY) -m uwbfall.tests.verify_bundle $(FINAL) $(REPO)/models/final
 
 predict-test: verify-models   ## release day: predict + official validate_predictions + drift monitors + checks
 	mkdir -p $(SUB)
 	$(PY) -m uwbfall predict --models $(FINAL) --sources dir:$(TEST_DIR):test --out $(SUB)/submission.csv \
 	    --candidates $(SUB)/candidates.csv 2>&1 | tee $(SUB)/predict.log
-	$(MAKE) check-test
+	$(MAKE) -f $(REPO)/Makefile REPO=$(REPO) check-test
 
 check-test:     ## hard checks on $(SUB)/submission.csv (ids test_00..test_04, header, official validator)
 	$(PY) -m uwbfall.tests.check_submission $(SUB)/submission.csv $(TEST_DIR) test_00,test_01,test_02,test_03,test_04
 
-verify-fallback: ## sha256 of the prebuilt fallback bundle (models/fallback_physics/MANIFEST.sha256)
-	cd $(FALLBACK) && sha256sum -c $(REPO)/models/fallback_physics/MANIFEST.sha256
+verify-fallback: ## sha256 of the fallback bundle vs models/fallback_physics/MANIFEST.sha256 (refit-tolerant for meta.json)
+	$(PY) -m uwbfall.tests.verify_bundle $(FALLBACK) $(REPO)/models/fallback_physics
 
 train-fallback: ## physics-only fallback bundle (switch; only if drift monitors recommend it)
 	$(PY) -m uwbfall train --config $(FB_CONFIG) --train-splits train,val --out $(FALLBACK)
@@ -67,7 +68,7 @@ reproduce-val:  ## final.json trained on the 13 train streams -> val (official C
 srcv:           ## ~75 min: clean SR-CV run of final.json (4 folds, then official train -> val), then the table
 	$(PY) -m srcv.run_pipeline $(SRCV_NAME) --config $(CONFIG)
 	$(PY) -m srcv.run_pipeline $(SRCV_NAME) --config $(CONFIG) --val-only
-	$(MAKE) srcv-table
+	$(MAKE) -f $(REPO)/Makefile REPO=$(REPO) srcv-table
 
 srcv-table:     ## final table + promotion rule C3 -> FINAL (3 TCN bags), official evaluator
 	$(PY) $(REPO)/work/FINAL/score.py link
@@ -80,11 +81,12 @@ checks:         ## config invariants, drift-monitor sanity, submission checker o
 	$(PY) -m uwbfall.tests.check_drift $(FINAL) val
 
 FAKE ?= /home/user/data_raw/fake_test
+FAKE_SUB ?= $(FAKE)/submission
 fake-test:      ## (re)build the dry-run fixture: val streams copied as test_00..04 (1.6 GB; package untouched)
 	mkdir -p $(FAKE)/streams/test
 	for f in $(PKG)/streams/val/stream_*.h5; do test -f $(FAKE)/streams/test/$$(basename $$f) || cp $$f $(FAKE)/streams/test/; done
 	ln -sfn $(PKG)/src $(FAKE)/src
 	tr -d '\r' < $(PKG)/streams_events.csv | sed 's/^val_/test_/; s/,val_\([0-9][0-9]\)_/,test_\1_/' | awk -F, 'NR==1 || $$1 ~ /^test_/' > $(FAKE)/streams_events_fake.csv
 
-dry-run: fake-test   ## release-day rehearsal: val streams copied as test_00..04 under /home/user/data_raw/fake_test
-	$(MAKE) predict-test TEST_DIR=/home/user/data_raw/fake_test/streams/test SUB=/home/user/data_raw/fake_test/submission
+dry-run: fake-test   ## release-day rehearsal: val streams copied as test_00..04 under $(FAKE) (output: $(FAKE_SUB))
+	$(MAKE) -f $(REPO)/Makefile REPO=$(REPO) predict-test TEST_DIR=$(FAKE)/streams/test SUB=$(FAKE_SUB)

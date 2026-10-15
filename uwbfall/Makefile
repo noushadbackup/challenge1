@@ -1,5 +1,6 @@
 # uwbfall shortcuts (run from anywhere: make -C /home/user/challenge1/uwbfall <target>)
-REPO   ?= /home/user/challenge1
+# REPO = parent of this Makefile's directory, so a clone elsewhere runs its own code (audit F1).
+REPO   ?= $(abspath $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/..)
 MODELS ?= /home/user/data_raw/uwbfall_models
 RUNS   ?= /home/user/data_raw/uwbfall_runs
 CONFIG ?= $(REPO)/uwbfall/configs/reference.json

@@ -241,3 +241,29 @@ The scripts were run from the scratchpad. Relative inputs such as `detj.json` ar
 Outside git: `/home/user/data_raw/review_fresh/` holds fold CSVs with seeds 9100+k, predictions (`preds/{C3,C3G3,N4,FINAL}`, `preds_FG1/{fresh,orig,val}`), the feature cache (about 0.5 GB, deletable) and the logs.
 
 Compute: about 1 h wall for this review, on ≤ 2 threads, shared with another agent. No model was retrained. The package and the frozen config were not modified, and nothing was committed.
+
+## 11. Resume verification (session after the usage-limit reset)
+
+The review above was written before a usage-limit cut-off. After the reset I re-ran its key numbers from the committed scripts and cached predictions. Every number below was run in this session with the official evaluator. Nothing was retrained, the package was not touched, and nothing was committed.
+
+| check | result |
+|---|---|
+| `work/REVIEW/indep_score.py` (pooled SR-CV, 3 bags) | FINAL 0.9183 / 0.9235 / 0.9244, mean **0.9221**. C3 mean **0.8861**. 253 evaluable falls, 20 streams, 8.237 h. Identical to §1. |
+| Official CLI val, `srcv/results/final_b0/val.csv` | **0.9524**, 64/2/3 @0.3, median start error 0.055 s, 0.98 FA/h. |
+| Official CLI val, `work/R2_EVAL/preds/uwb_default/C3/val.csv` | 0.9646, 65/0/2. |
+| Fresh-stream predictions re-scored (official `evaluate` on the seeds-9100+k GT) | C3 0.8881, C3G3 0.8805, N4 0.8885, FINAL **0.9079** (240/32/13). Identical to §4. |
+| Are the fresh streams really new compositions? | Yes. At most 0.2% of composition rows match the original SR-CV rows on (stream, file, t_start), while the file set is the same. Fresh test ∩ fold train: 0 files and 0 subjects in all 4 folds. |
+| `testdraw.py FINAL,C3`, re-run in a scratch dir | Output JSON **byte-identical** to the committed `testdraw.json`: FINAL mean 0.9215, sd 0.032, 95% [0.849, 0.973]. ADL_12 is again the top FP subject (10 of 21 FPs on bag 0). |
+| `models/final/MANIFEST.sha256` | all OK |
+
+**One caveat on §7 that I add here.** `testdraw.py` resamples subjects and TCN bags but keeps each subject's counts from a single composition. It therefore leaves out composition-level variance. That is the same blind spot §4 found in the subject-cluster bootstrap. Its sd of 0.032 is a lower bound: the fresh-composition counts alone give sd 0.052. The headline interval in §7 already uses the wider sd of about 0.04, together with the fresh-stream central shift (−0.010). I leave the estimate unchanged: **expected official test ≈ 0.91, 80% interval [0.85, 0.96], 95% interval [0.80, 0.975].**
+
+**Release-day tooling still open in HEAD (31d30ed).** These are from AUDIT.md and still not applied:
+- F1: `REPO ?= /home/user/challenge1` is hard-coded in the Makefile.
+- F2: `meta.json` is still in `models/final/MANIFEST.sha256`, so after a `make train-final` refit, `make predict-test` aborts in `verify-models`.
+- F4: `uwbfall/pyproject.toml` lists neither `lightgbm` nor `threadpoolctl`.
+- F5: the root `README.md` is empty.
+
+None of these changes a prediction. F2 does sit on the documented "bundle missing" recovery path, so it adds to risk R2/R3 operationally. The release-day operator should either apply F2 or know to use `make predict-test FINAL=<refit> -o verify-models`.
+
+Verdict unchanged: **submit FINAL as frozen.**
