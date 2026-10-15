@@ -34,7 +34,7 @@ cp "$REPO/Makefile" "$REPO/run_all.sh" "$REPO/requirements-lock.txt" "$OUT/"
 # measured scores (CPU, official evaluator): val = trained on the 13 train streams; SR-CV = pooled, TCN bag 0
 case "$VARIANT" in
   final)        VAL="0.952 (64/2/3 @0.3)"; SRCV="0.918" ;;
-  final_norep)  VAL="@NOREP_VAL@";          SRCV="0.914" ;;
+  final_norep)  VAL="0.937 (63/3/4 @0.3)"; SRCV="0.914" ;;
   final_strict) VAL="0.937";               SRCV="0.896" ;;
   *)            VAL="see reports";         SRCV="see reports" ;;
 esac

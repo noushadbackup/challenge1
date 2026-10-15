@@ -206,3 +206,12 @@ mkdir -p /tmp/pkgtest && cd /tmp/pkgtest && unzip -q <repo>/dist/uwbfall_final_n
 sha256sum -c --quiet SHA256SUMS && make checks && make predict-test TEST_DIR=/path/to/streams/test SUB=/tmp/pkgtest/sub
 cmp /tmp/pkgtest/sub/submission.csv results/submission.csv && echo "package reproduces the submitted CSV"
 ```
+
+Verified on 2026-10-15:
+* `models/final_norep` and `models/final_strict` are clean `make train-final` refits on CPU. The earlier copies were
+  re-tuned from `final`, and their `pca.pkl` pickled to different bytes with the same numbers. Predictions on the
+  dry-run streams are byte-identical before and after the swap.
+* A second from-scratch refit of each variant passes `make verify-models` with every file identical.
+* From a fresh unzip of `dist/uwbfall_final_norep_code.zip`: `SHA256SUMS` OK, `make checks` OK, and `make dry-run`
+  gives `SUBMISSION CHECK: OK` with 0 drift alerts in 45 s. Its CSV is byte-identical to the repo's.
+* `final_norep` trained on the 13 train streams scores 0.9373 on val (63/3/4 @0.3; official evaluator, CPU).

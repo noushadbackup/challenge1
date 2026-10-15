@@ -1,6 +1,6 @@
 {
  "uwbfall_version": "0.1.0",
- "git_rev": "32fc375f8de0e1d4e59ee1d00bf42e0f32f2a8c0",
+ "git_rev": "9981627d46dc7cd24023d9c244424bebae3b6b83",
  "extractor_version": "uwbfall-extract-v1(e1lib._one_radar subset: e_raw,e_mot,e_diff,mot_map,prof_02)",
  "config_hash": "25fe83d844067b53",
  "train_streams": [
@@ -138,11 +138,6 @@
   "fpseg15"
  ],
  "n_blocks": 148145,
- "retuned_from": {
-  "path": "/home/user/data_raw/uwbfall_models/final",
-  "config_hash": "204d32de158f1814",
-  "git_rev": "44aa6817c634b8dd1175ed657d1423e178e9dd6f"
- },
  "postproc": [
   0.4,
   5,
@@ -633,15 +628,15 @@
   ]
  },
  "timings": {
-  "features_s": 21.7,
-  "hgb_s": 48.0,
-  "tcn_s": 713.0,
-  "clip_s": 53.5,
+  "features_s": 31.9,
+  "hgb_s": 55.4,
+  "tcn_s": 828.1,
+  "clip_s": 51.0,
   "decode_tune_s": 1.6,
-  "oof_replay_s": 102.3,
-  "total_s": 178.0
+  "oof_replay_s": 92.3,
+  "total_s": 1061.9
  },
- "peak_rss_gb": 1.21,
+ "peak_rss_gb": 1.63,
  "env": {
   "python": "3.13.16",
   "numpy": "2.5.3",
