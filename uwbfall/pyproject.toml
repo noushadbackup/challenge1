@@ -7,7 +7,8 @@ name = "uwbfall"
 version = "0.1.0"
 description = "ABC 2027 UWB fall-event pipeline: raw radar streams -> submission CSV (HGB + TCN blend, annotator-replay boundaries)"
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "pandas", "scikit-learn", "torch", "h5py"]
+dependencies = ["numpy", "scipy", "pandas", "scikit-learn", "torch", "h5py", "lightgbm", "threadpoolctl"]
+# Exact versions the shipped bundles were trained and verified with: ../requirements-lock.txt (audit F4).
 
 [project.scripts]
 uwbfall = "uwbfall.cli:main"

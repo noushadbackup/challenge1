@@ -33,7 +33,10 @@ New in this round:
   - Sanity test: `python -m uwbfall.tests.check_drift <bundle>`.
 - **Physics-only fallback** `configs/fallback_physics.json`. This is a switch for when the drift monitors fire, not a
   promoted system.
-- `tests/check_submission.py` runs the release-day CSV checks: official validator, header, and expected ids.
+- `tests/check_submission.py` runs the release-day CSV checks: official validator, header, and expected ids. A stream
+  under 10 min with no rows is a WARN only.
+- `tests/check_short.py` (part of `make checks`) checks that predict survives short remainder streams. Streams under
+  `pipeline.MIN_PREDICT_S` = 5 s get no rows (reports/round2/FIXES.md X1).
 
 ## Round-2 status
 

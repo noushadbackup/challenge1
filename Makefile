@@ -76,9 +76,10 @@ srcv-table:     ## final table + promotion rule C3 -> FINAL (3 TCN bags), offici
 	$(PY) $(REPO)/work/FINAL/score.py table
 	$(PY) $(REPO)/work/FINAL/score.py promote
 
-checks:         ## config invariants, drift-monitor sanity, submission checker on val
+checks:         ## config invariants, drift-monitor sanity, short remainder streams (FIXES.md X1)
 	$(PY) -m uwbfall.tests.check_configs
 	$(PY) -m uwbfall.tests.check_drift $(FINAL) val
+	$(PY) -m uwbfall.tests.check_short $(FINAL)
 
 FAKE ?= /home/user/data_raw/fake_test
 FAKE_SUB ?= $(FAKE)/submission

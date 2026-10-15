@@ -1,0 +1,45 @@
+=== L0.8
+predict rc=1
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L0.52
+predict rc=1
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L1
+predict rc=1
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L1.2
+predict rc=1
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L1.5
+predict rc=1
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L1.8
+predict rc=1
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L2.1
+predict rc=0
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L3
+predict rc=0
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L4
+predict rc=0
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L6
+predict rc=0
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L7.3
+predict rc=0
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L8
+predict rc=0
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L9.17
+predict rc=0
+SUBMISSION CHECK: OK

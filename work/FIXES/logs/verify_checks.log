@@ -1,0 +1,38 @@
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.verify_bundle /home/user/data_raw/uwbfall_models/final /home/user/challenge1/models/final
+config.json: OK
+meta.json: OK
+pca.pkl: OK
+hgb.pkl: OK
+clip.pkl: OK
+tcn_norm.npz: OK
+tcn_0.pt: OK
+tcn_1.pt: OK
+tcn_2.pt: OK
+drift_ref.json: OK
+BUNDLE CHECK: OK
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.verify_bundle /home/user/data_raw/uwbfall_models/fallback_physics /home/user/challenge1/models/fallback_physics
+config.json: OK
+meta.json: OK
+pca.pkl: OK
+hgb.pkl: OK
+tcn_norm.npz: OK
+tcn_0.pt: OK
+tcn_1.pt: OK
+tcn_2.pt: OK
+drift_ref.json: OK
+BUNDLE CHECK: OK
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.check_configs
+C3G3.json: differs from the reference only in {'decode.one_event_per_clip': False, 'clip.segclf.enabled': False, 'clip.gate': 'none'}
+replayB_gate01.json: differs from the reference only in {'decode.one_event_per_clip': False, 'clip.segclf.enabled': False, 'clip.gate': 'none', 'boundary.gate': 0.1}
+integration_repro.json: differs from the reference only in {'hgb.early_stopping': 'auto', 'decode.one_event_per_clip': False, 'clip.segclf.enabled': False, 'clip.gate': 'none', 'boundary.gate': 0.1}
+configs OK
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.check_drift /home/user/data_raw/uwbfall_models/final val
+clean         ALERTs (excluding events/h): []
+scale x10     ALERTs (excluding events/h): ['psi log_ediff/r0', 'psi log_ediff/r1', 'psi log_ediff/r2', 'psi log_emot/r0', 'psi log_emot/r1', 'psi log_emot/r2', 'raw energy level r0', 'raw energy level r1', 'raw energy level r2']
+no repeats    ALERTs (excluding events/h): ['psi log_ediff/r0', 'psi log_ediff/r1', 'psi log_ediff/r2', 'psi rep_frac/r0', 'psi rep_frac/r1', 'psi rep_frac/r2', 'repeat_share']
+no junctions  ALERTs (excluding events/h): ['junctions_per_h']
+drift monitor check: OK
+
+real	0m40.618s
+user	0m24.375s
+sys	0m16.373s

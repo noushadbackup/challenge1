@@ -1,0 +1,1 @@
+{"cmd": "make -f /home/user/data_raw/audit_clone_head/Makefile train-final FINAL=/home/user/data_raw/audit_models_head/final", "rc": 0, "wall_s": 1311.9, "maxrss_gb": 1.584, "user_s": 1611.7, "sys_s": 133.4}

@@ -1,0 +1,1 @@
+{"cmd": "python3 -m uwbfall predict --models /home/user/data_raw/audit_clone_head/models/final --sources dir:/home/user/data_raw/fake_test/streams/test:test --out /home/user/data_raw/audit_out/head/pred_cold.csv", "rc": 0, "wall_s": 158.7, "maxrss_gb": 1.557, "user_s": 73.4, "sys_s": 61.4}

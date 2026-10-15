@@ -185,7 +185,7 @@ def report(ref: dict | None, stats: dict[str, dict], pred: pd.DataFrame) -> dict
                               "junctions_per_h": len(s["peaks"]) / s["hours"],
                               "repeat_share": s["repeat_share"]} for k, s in stats.items()}}
     checks = []
-    if ref is not None:
+    if ref is not None and stats:   # no monitored stream (all shorter than pipeline.MIN_PREDICT_S): values only
         for key, (lo, hi) in BANDS.items():
             if key in ref and key in cur:
                 r = cur[key] / max(ref[key], 1e-9)

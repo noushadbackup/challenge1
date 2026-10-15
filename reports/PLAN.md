@@ -116,3 +116,7 @@ P2 probes, because they are too heavy for the CPU budget without measured gain (
 * v2 — team review. Added SR-CV and the promotion rule; annotator-replay boundaries (E2: +0.044 val);
   TCN as main detector (E4: 0.930); integration 0.965 val (candidate); multi-agent voting re-scoped to what measured
   well; heavy deep models moved to P2; compliance ledger and packaging pulled forward.
+* v3 — round 2 done (`reports/round2/`): uwbfall end-to-end package; SR-CV harness; FINAL = 0.75 TCN + 0.25 HGB
+  + annotator replay (gate 0.3) + segment-classifier gate + 4 s NMS. SR-CV 0.922 (fresh-composition re-check 0.908),
+  val 0.952, 2.43 FA/h. Final models trained on train+val (`models/final/`); audit PASS (fresh clone reproduces
+  bit-exactly, deterministic, rule-compliant); release-day steps in `SUBMISSION.md`.

@@ -1,0 +1,7 @@
+   0.52 s: FAILED ValueError: All arrays must be of the same length
+   1.00 s: FAILED ValueError: All arrays must be of the same length
+   1.90 s: FAILED ValueError: All arrays must be of the same length
+   4.90 s: 0 rows OK
+   6.00 s: 0 rows OK
+  12.00 s: 1 rows OK
+SHORT-STREAM CHECK: FAILED 0.52 s: ValueError: All arrays must be of the same length | 1.0 s: ValueError: All arrays must be of the same length | 1.9 s: ValueError: All arrays must be of the same length

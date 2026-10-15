@@ -1,0 +1,48 @@
+=== L0.5
+predict rc=1
+    return arrays_to_mgr(arrays, columns, index, dtype=dtype, consolidate=copy)
+  File "/usr/local/lib/python3.13/dist-packages/pandas/core/internals/construction.py", line 113, in arrays_to_mgr
+    index = _extract_index(arrays)
+  File "/usr/local/lib/python3.13/dist-packages/pandas/core/internals/construction.py", line 643, in _extract_index
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+=== L2
+predict rc=0
+stream_id,t_start,t_end,score,t_alarm
+  test_04:   0 rows,   0.0 events/h,   0.0 min  WARN: events/h outside [10, 150]
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L5
+predict rc=0
+stream_id,t_start,t_end,score,t_alarm
+  test_04:   0 rows,   0.0 events/h,   0.1 min  WARN: events/h outside [10, 150]
+SUBMISSION CHECK: FAILED streams without any prediction: ['test_04']
+=== L10
+predict rc=0
+stream_id,t_start,t_end,score,t_alarm
+test_04,8.38,9.38,0.969,8.38
+  test_04:   1 rows, 360.0 events/h,   0.2 min, dur 1.00-1.00 s, score 0.969-0.969  WARN: events/h outside [10, 150]
+SUBMISSION CHECK: OK
+=== L20
+predict rc=0
+stream_id,t_start,t_end,score,t_alarm
+test_04,8.35,9.35,0.992,8.35
+test_04,17.78,19.86,0.63,17.78
+  test_04:   2 rows, 360.0 events/h,   0.3 min, dur 1.00-2.08 s, score 0.630-0.992  WARN: events/h outside [10, 150]
+SUBMISSION CHECK: OK
+=== L40
+predict rc=0
+stream_id,t_start,t_end,score,t_alarm
+test_04,8.35,9.35,0.989,8.35
+test_04,17.71,19.91,0.956,17.71
+test_04,31.98,33.2,0.656,31.98
+  test_04:   3 rows, 270.0 events/h,   0.7 min, dur 1.00-2.20 s, score 0.656-0.989  WARN: events/h outside [10, 150]
+SUBMISSION CHECK: OK
+=== L90
+predict rc=0
+stream_id,t_start,t_end,score,t_alarm
+test_04,8.36,9.36,0.995,8.36
+test_04,17.71,19.91,0.907,17.71
+test_04,32.01,33.22,0.925,32.01
+test_04,70.88,72.22,0.891,70.88
+  test_04:   4 rows, 160.0 events/h,   1.5 min, dur 1.00-2.20 s, score 0.891-0.995  WARN: events/h outside [10, 150]
+SUBMISSION CHECK: OK

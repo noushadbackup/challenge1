@@ -475,6 +475,12 @@ def _boundaries(sources, cand: pd.DataFrame, cfg: dict, durations: dict, log) ->
     return pd.concat(out, ignore_index=True) if out else cand.iloc[:0]
 
 
+# Streams shorter than this get no rows (FIXES.md X1). The feature code needs >= 2 s (10 blocks of 0.2 s) and crashed
+# below it, which would abort the whole 5-stream submission. A stream is a sequence of whole segments and the shortest
+# fall clip in the package is 7.32 s, so a stream under 5 s cannot hold a complete fall: any row would be a false alarm.
+MIN_PREDICT_S = 5.0
+
+
 def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = False, monitor: dict | None = None):
     """Predict final rows for `sources`. If `monitor` is a dict, it is filled with per-stream drift-monitor inputs
     ({sid: drift.stream_stats}); drift.report(B['drift_ref'], monitor, pred) turns them into the monitor table."""
@@ -488,6 +494,11 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
     durations = {s.sid: s.duration for s in sources}
     for s in sorted(sources, key=lambda s: s.sid):
         t0 = time.time()
+        if s.duration < MIN_PREDICT_S:
+            log(f"predict {s.sid}: WARNING only {s.duration:.2f} s long (< {MIN_PREDICT_S:g} s, shorter than any fall "
+                "clip): no rows for this stream")
+            s.release()
+            continue
         F = get_features(s, cfg, log)
         p, parts = stream_probs(B, F)
         if monitor is not None:
@@ -530,5 +541,5 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
     cols = ["stream_id", "t_start", "t_end", "score", "t_alarm"]
     pred = pd.concat(rows, ignore_index=True)[cols] if rows else pd.DataFrame(columns=cols)
     if return_debug:
-        return pred, pd.concat(cands, ignore_index=True), dbg
+        return pred, (pd.concat(cands, ignore_index=True) if cands else pd.DataFrame()), dbg
     return pred

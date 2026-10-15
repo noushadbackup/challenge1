@@ -1,0 +1,1 @@
+{"cmd": "python3 -m uwbfall predict --models /tmp/claude-0/-home-user-challenge1/f892ab69-5d71-5ee6-a35c-b07836a0af8f/scratchpad/b1 --sources dir:/home/user/data_raw/fake_test/streams/test:test --out /home/user/data_raw/audit_out/head/pred_warm_t1.csv", "rc": 0, "wall_s": 55.1, "maxrss_gb": 1.073, "user_s": 34.4, "sys_s": 19.7}

@@ -1,0 +1,13 @@
+# Exact environment the shipped bundles (models/final, models/fallback_physics) were trained and verified with
+# (reports/round2/AUDIT.md). hgb.pkl / clip.pkl / pca.pkl are scikit-learn and LightGBM pickles and need these versions;
+# bit-exact predictions also assume runtime.threads = 2 (bundle config.json).
+# Python 3.13.16. CPU torch: pip install -r requirements-lock.txt --extra-index-url https://download.pytorch.org/whl/cpu
+numpy==2.5.3
+scipy==1.18.1
+pandas==3.0.5
+scikit-learn==1.9.1
+joblib==1.6.0
+threadpoolctl==3.7.0
+torch==2.14.1+cpu
+h5py==3.16.0
+lightgbm==4.7.0

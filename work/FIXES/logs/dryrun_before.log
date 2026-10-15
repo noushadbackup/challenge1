@@ -1,0 +1,66 @@
+mkdir -p /home/user/data_raw/fake_test/streams/test
+for f in /home/user/data_raw/abc2027_uwb_train_v1/streams/val/stream_*.h5; do test -f /home/user/data_raw/fake_test/streams/test/$(basename $f) || cp $f /home/user/data_raw/fake_test/streams/test/; done
+ln -sfn /home/user/data_raw/abc2027_uwb_train_v1/src /home/user/data_raw/fake_test/src
+tr -d '\r' < /home/user/data_raw/abc2027_uwb_train_v1/streams_events.csv | sed 's/^val_/test_/; s/,val_\([0-9][0-9]\)_/,test_\1_/' | awk -F, 'NR==1 || $1 ~ /^test_/' > /home/user/data_raw/fake_test/streams_events_fake.csv
+make -f /home/user/challenge1/Makefile REPO=/home/user/challenge1 predict-test TEST_DIR=/home/user/data_raw/fake_test/streams/test SUB=/home/user/data_raw/fixes_sub/dryrun_before
+make[1]: Entering directory '/home/user/challenge1'
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.verify_bundle /home/user/data_raw/uwbfall_models/final /home/user/challenge1/models/final
+config.json: OK
+meta.json: OK
+pca.pkl: OK
+hgb.pkl: OK
+clip.pkl: OK
+tcn_norm.npz: OK
+tcn_0.pt: OK
+tcn_1.pt: OK
+tcn_2.pt: OK
+drift_ref.json: OK
+BUNDLE CHECK: OK
+mkdir -p /home/user/data_raw/fixes_sub/dryrun_before
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall predict --models /home/user/data_raw/uwbfall_models/final --sources dir:/home/user/data_raw/fake_test/streams/test:test --out /home/user/data_raw/fixes_sub/dryrun_before/submission.csv \
+    --candidates /home/user/data_raw/fixes_sub/dryrun_before/candidates.csv 2>&1 | tee /home/user/data_raw/fixes_sub/dryrun_before/predict.log
+[   11.3s rss=1.08GB] predict test_00: 35 candidates, 31 replay-refined, 11.3 s
+[   21.7s rss=1.10GB] predict test_01: 31 candidates, 29 replay-refined, 10.4 s
+[   32.2s rss=1.11GB] predict test_02: 31 candidates, 29 replay-refined, 10.5 s
+[   40.5s rss=1.12GB] predict test_03: 18 candidates, 17 replay-refined, 8.2 s
+[   42.1s rss=1.12GB] predict test_04: 5 candidates, 5 replay-refined, 1.6 s
+DRIFT MONITORS (5 streams, 2.05 h)
+  OK    events_per_h                58.082  (train ref 55.038; ratio in [0.5, 1.6])
+  OK    junctions_per_h            242.577  (train ref 250.404; ratio in [0.6, 1.6])
+  OK    repeat_share                 0.235  (train ref 0.236; ratio in [0.5, 1.5])
+  OK    near_junction_share          0.782  (train ref 0.841; >= ref - 0.2)
+  OK    raw energy level r0         -3.703  (train ref -3.729; log10 in train range [-3.77, -3.69] +- 1.0)
+  OK    raw energy level r1         -3.464  (train ref -3.461; log10 in train range [-3.47, -3.45] +- 1.0)
+  OK    raw energy level r2         -3.453  (train ref -3.476; log10 in train range [-3.53, -3.43] +- 1.0)
+  OK    psi log_emot/r0              0.009  (train ref 0.017; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r1              0.005  (train ref 0.012; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r2              0.008  (train ref 0.012; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r0             0.003  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r1             0.004  (train ref 0.008; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r2             0.005  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r0              0.000  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r1              0.001  (train ref 0.006; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r2              0.001  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  stream test_00: events/h 69.4, junctions/h 261.3, repeat share 0.235
+  stream test_01: events/h 63.1, junctions/h 256.5, repeat share 0.237
+  stream test_02: events/h 63.3, junctions/h 237.0, repeat share 0.239
+  stream test_03: events/h 36.6, junctions/h 207.4, repeat share 0.237
+  stream test_04: events/h 57.8, junctions/h 289.0, repeat share 0.229
+  -> 0 ALERT(s); no fallback recommended
+{"pred": "/home/user/data_raw/fixes_sub/dryrun_before/submission.csv", "rows": 119, "streams": 5, "wall_s": 43.2, "drift_alerts": 0, "recommend_fallback": false, "drift_json": "/home/user/data_raw/fixes_sub/dryrun_before/submission_drift.json"}
+make -f /home/user/challenge1/Makefile REPO=/home/user/challenge1 check-test
+make[2]: Entering directory '/home/user/challenge1'
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.check_submission /home/user/data_raw/fixes_sub/dryrun_before/submission.csv /home/user/data_raw/fake_test/streams/test test_00,test_01,test_02,test_03,test_04
+/home/user/data_raw/fixes_sub/dryrun_before/submission.csv: 119 rows, 5 streams, official validate_predictions OK
+  test_00:  34 rows,  69.4 events/h,  29.4 min, dur 1.00-4.40 s, score 0.643-0.996
+  test_01:  31 rows,  63.1 events/h,  29.5 min, dur 1.00-4.00 s, score 0.616-0.996
+  test_02:  31 rows,  63.3 events/h,  29.4 min, dur 1.00-3.98 s, score 0.642-0.995
+  test_03:  18 rows,  36.6 events/h,  29.5 min, dur 1.00-3.60 s, score 0.574-0.990
+  test_04:   5 rows,  57.8 events/h,   5.2 min, dur 1.12-2.12 s, score 0.832-0.990
+SUBMISSION CHECK: OK
+make[2]: Leaving directory '/home/user/challenge1'
+make[1]: Leaving directory '/home/user/challenge1'
+
+real	0m53.913s
+user	0m39.515s
+sys	0m15.395s
