@@ -1,5 +1,29 @@
 # Running the full pipeline on your own PC
 
+## Quick start: one command (Windows, everything on drive E:)
+
+Open **Ubuntu (WSL2)** and run:
+
+```bash
+mkdir -p /mnt/e/uwbfall && cd /mnt/e/uwbfall
+git clone -b claude/nice-cori-k0o5eu https://github.com/noushadbackup/challenge1.git   # private repo: gh auth login first
+cd challenge1
+bash run_all.sh cuda --data /mnt/e/uwbfall/data_raw          # GPU;  use "cpu" instead of "cuda" for the CPU run
+```
+
+* `E:\` is `/mnt/e` inside WSL. `--data` also accepts `"E:\uwbfall\data_raw"`.
+* The dataset (8.2 GB zip, 12 GB unpacked), caches, models and the dry-run submission go to `E:\uwbfall\data_raw`.
+  That needs about 25 GB free on E:. The code expects `/home/user/data_raw`, so the script links it there
+  (one `sudo` password prompt the first time).
+* The Python environments go to `~/.venvs/` in the Linux home (about 3 GB on C:). Windows drives do not handle
+  venv symlinks well.
+* WSL reads files on E: more slowly than on its own disk, so feature extraction takes longer than on the Linux home.
+* Add `--srcv` to also run the subject-disjoint CV. Re-running is safe: finished work is reused.
+* At the end it prints a SUMMARY: time per step, the val score (expect about 0.952), and where the final model and the
+  dry-run submission are. Send only that SUMMARY back (or the last 30 lines if a step fails).
+
+The sections below explain the same steps one by one.
+
 Goal: run feature extraction, training, validation and the submission dry run on your own machine, so Claude
 credits are only spent on reading results. Everything below runs on **CPU**. The TCN does not use the GPU yet
 (`uwbfall` has no `runtime.device` option); adding it is a separate, optional step.
@@ -37,12 +61,12 @@ scikit-learn/LightGBM models need those versions. The easiest way to get Python 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh && source ~/.bashrc
 cd /home/user/challenge1
-uv venv -p 3.13 .venv && source .venv/bin/activate
+uv venv -p 3.13 ~/.venvs/uwbfall-cpu && source ~/.venvs/uwbfall-cpu/bin/activate
 uv pip install -r requirements-lock.txt --extra-index-url https://download.pytorch.org/whl/cpu
 uv pip install gdown
 ```
 
-Activate the environment (`source /home/user/challenge1/.venv/bin/activate`) in every new terminal before running `make`.
+Activate the environment (`source ~/.venvs/uwbfall-cpu/bin/activate`) in every new terminal before running `make`.
 
 ## 5. Dataset (8.2 GB)
 
@@ -100,7 +124,7 @@ The CPU lock file pins a CPU build of torch, so make a second environment for th
 
 ```bash
 cd /home/user/challenge1
-uv venv -p 3.13 .venv-gpu && source .venv-gpu/bin/activate
+uv venv -p 3.13 ~/.venvs/uwbfall-gpu && source ~/.venvs/uwbfall-gpu/bin/activate
 grep -v '^torch' requirements-lock.txt > /tmp/req-no-torch.txt
 uv pip install -r /tmp/req-no-torch.txt
 # RTX 50xx (Blackwell, sm_120) needs a CUDA 12.8 or newer build of torch:
@@ -115,7 +139,7 @@ Any CUDA build of 12.8 or later supports sm_120.
 ### Running on the GPU
 
 ```bash
-source /home/user/challenge1/.venv-gpu/bin/activate
+source ~/.venvs/uwbfall-gpu/bin/activate
 make features                         # CPU anyway (feature extraction does not use torch)
 make reproduce-val DEVICE=cuda        # expect val ranking F1 about 0.95; the final `cmp` line FAILS (normal: not bit-identical)
 make train-final   DEVICE=cuda        # GPU-trained final bundle

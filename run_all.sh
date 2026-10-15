@@ -5,20 +5,29 @@
 #   bash run_all.sh cuda       # TCN on the GPU (RTX 50xx: installs a CUDA 12.8 torch build in .venv-gpu)
 #   bash run_all.sh cuda --srcv          # also run the subject-disjoint CV (long: ~1.5-2 h on CPU)
 #   bash run_all.sh cpu --skip-setup     # environment and dataset already in place
+#   bash run_all.sh cuda --data /mnt/e/uwbfall/data_raw   # keep dataset, caches and models on another drive
+#                                                       # (Windows E:\ = /mnt/e in WSL; "E:\uwbfall\data_raw" also works)
 #
 # Safe to re-run: finished steps are cheap (feature cache, existing dataset/venv are reused).
 # Logs: /home/user/data_raw/run_all_logs/<step>.log   Summary at the end.
 set -euo pipefail
 
 DEVICE="${1:-cpu}"; shift || true
-RUN_SRCV=0; SKIP_SETUP=0
-for a in "$@"; do
-  case "$a" in
+RUN_SRCV=0; SKIP_SETUP=0; DATA_DIR=""
+while [ $# -gt 0 ]; do
+  case "$1" in
     --srcv) RUN_SRCV=1 ;;
     --skip-setup) SKIP_SETUP=1 ;;
-    *) echo "unknown option: $a"; exit 1 ;;
+    --data) DATA_DIR="${2:?--data needs a folder}"; shift ;;
+    *) echo "unknown option: $1"; exit 1 ;;
   esac
+  shift
 done
+# Windows path (E:\uwbfall\data_raw or E:/uwbfall/data_raw) -> WSL path (/mnt/e/uwbfall/data_raw)
+if [[ "$DATA_DIR" =~ ^([A-Za-z]):[\\/]?(.*)$ ]]; then
+  drive="${BASH_REMATCH[1],,}"; rest="${BASH_REMATCH[2]//\\//}"
+  DATA_DIR="/mnt/$drive/$rest"
+fi
 case "$DEVICE" in cpu|cuda|auto) ;; *) echo "device must be cpu, cuda or auto (got '$DEVICE')"; exit 1 ;; esac
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -27,7 +36,8 @@ PKG=$DATA/abc2027_uwb_train_v1
 MODELS=$DATA/uwbfall_models
 LOGS=$DATA/run_all_logs
 DRIVE_ID=1gJfL1YtObCs9JBFjPrC8qYq9a7L2kt2u
-if [ "$DEVICE" = cpu ]; then VENV=$REPO/.venv; else VENV=$REPO/.venv-gpu; fi
+# Python environments live in the Linux home (fast; Windows drives do not handle venv symlinks well).
+if [ "$DEVICE" = cpu ]; then VENV=$HOME/.venvs/uwbfall-cpu; else VENV=$HOME/.venvs/uwbfall-gpu; fi
 
 say()  { printf '\n\033[1;34m=== %s ===\033[0m\n' "$*"; }
 die()  { printf '\n\033[1;31mERROR: %s\033[0m\n' "$*"; exit 1; }
@@ -45,12 +55,26 @@ step() {  # step <name> <command...>   runs with a log file, records wall time, 
 
 # ---------------------------------------------------------------- 0. folders and tools
 [ -d /home/user ] || { echo "creating /home/user (needs sudo once)"; sudo mkdir -p /home/user && sudo chown "$USER" /home/user; }
+if [ -n "$DATA_DIR" ]; then
+  # The code expects /home/user/data_raw; point it at the chosen folder with a symlink.
+  mkdir -p "$DATA_DIR" || die "cannot create $DATA_DIR (is the drive mounted? Windows E: is /mnt/e in WSL)"
+  if [ -L "$DATA" ]; then
+    [ "$(readlink -f "$DATA")" = "$(readlink -f "$DATA_DIR")" ] || ln -sfn "$DATA_DIR" "$DATA"
+  elif [ -e "$DATA" ]; then
+    [ -z "$(ls -A "$DATA")" ] && rmdir "$DATA" && ln -s "$DATA_DIR" "$DATA" || \
+      die "$DATA already exists with files; move them into $DATA_DIR and delete $DATA, or run without --data"
+  else
+    ln -s "$DATA_DIR" "$DATA"
+  fi
+  echo "data folder: $DATA -> $(readlink -f "$DATA")"
+fi
 mkdir -p "$DATA" "$MODELS" "$LOGS"
 for t in git make unzip curl; do command -v $t >/dev/null || die "missing '$t' (sudo apt install git make unzip curl)"; done
 
 # ---------------------------------------------------------------- 1. Python environment
 setup_env() {
   command -v uv >/dev/null || { curl -LsSf https://astral.sh/uv/install.sh | sh; export PATH="$HOME/.local/bin:$PATH"; }
+  mkdir -p "$(dirname "$VENV")"
   [ -x "$VENV/bin/python" ] || uv venv -p 3.13 "$VENV"
   # shellcheck disable=SC1091
   source "$VENV/bin/activate"
@@ -89,7 +113,7 @@ fi
 
 # ---------------------------------------------------------------- 2. dataset
 get_data() {
-  local free_gb; free_gb=$(df -Pk "$DATA" | awk 'NR==2 {print int($4/1048576)}')
+  local free_gb; free_gb=$(df -Pk "$(readlink -f "$DATA")" | awk 'NR==2 {print int($4/1048576)}')
   [ "$free_gb" -ge 22 ] || die "only ${free_gb} GB free in $DATA; need about 22 GB for the download + unzip"
   cd "$DATA"
   [ -f abc2027_uwb_train_v1.zip ] || gdown "$DRIVE_ID" -O abc2027_uwb_train_v1.zip
