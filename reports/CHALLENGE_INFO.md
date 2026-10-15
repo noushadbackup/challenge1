@@ -50,10 +50,22 @@ Registration: Google form linked on the challenge site (title = team name; abstr
   (IJABC/Challenge/Position).
 * Prize: 100,000 JPY for the winning team; participation certificate for every team.
 
-## Still not answered publicly (ask the organisers)
+## Submission (team information, 2026-10-15)
 
-1. Within one stream, may frames identical to the immediately preceding frame of the same radar (50 Hz alignment) be
-   dropped before computing features?
-2. May the 0.2 s crossfade junctions detected from a stream's own signal be used as context for detection?
-3. May the package's annotation code (`annotate.py`, `propose_fall`) be run at inference to refine start/end times?
-4. How many result submissions are allowed, and which one counts?
+* Results can be submitted **once**.
+* **Every team** submits its code, not only the top-ranked ones.
+* So the CSV and the code package (`make package`, SUBMISSION.md §7) must come from the same variant and the same
+  shipped model.
+
+## Still open (asked the organisers)
+
+1. Within one stream, may a frame that is bit-identical to the immediately preceding frame of the same radar (50 Hz
+   sample-and-hold) be dropped before processing?
+   * Allowed: submit `final_norep`.
+   * Not allowed, or no answer before the deadline: submit `final_strict` (SR-CV about −0.02, but no rule risk).
+
+Decided by the team (no question needed):
+* junction context;
+* the package annotator at inference;
+* training on train + val;
+* the CSV format, which the organisers will release.

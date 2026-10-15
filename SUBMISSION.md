@@ -185,8 +185,7 @@ moved by 0.001 (same official score). Do not edit `runtime.threads`.
 
 ## 7. Code submission (one time)
 
-The challenge allows one submission. Top-ranked teams must provide code and models for verification. After the test
-CSV is final:
+Results can be submitted once, and every team submits its code. After the test CSV is final:
 
 ```bash
 make package VARIANT=final_norep          # same VARIANT as the submitted CSV
