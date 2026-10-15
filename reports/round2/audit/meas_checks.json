@@ -1,0 +1,1 @@
+{"cmd": "make -C audit_clone REPO=/home/user/data_raw/audit_clone checks", "rc": 0, "wall_s": 34.7, "maxrss_gb": 0.938, "user_s": 18.5, "sys_s": 15.6}

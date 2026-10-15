@@ -1,0 +1,41 @@
+mkdir -p /home/user/data_raw/fake_test/submission
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall predict --models /home/user/data_raw/uwbfall_models/fallback_physics --sources dir:/home/user/data_raw/fake_test/streams/test:test --out /home/user/data_raw/fake_test/submission/submission_fallback.csv \
+    2>&1 | tee /home/user/data_raw/fake_test/submission/predict_fallback.log
+[    6.9s rss=1.03GB] predict test_00: 33 candidates, 27 replay-refined, 6.9 s
+[   12.5s rss=1.08GB] predict test_01: 32 candidates, 29 replay-refined, 5.6 s
+[   18.7s rss=1.10GB] predict test_02: 29 candidates, 25 replay-refined, 6.2 s
+[   24.8s rss=1.11GB] predict test_03: 19 candidates, 15 replay-refined, 6.2 s
+[   25.5s rss=1.11GB] predict test_04: 5 candidates, 4 replay-refined, 0.7 s
+DRIFT MONITORS (5 streams, 2.05 h)
+  OK    events_per_h                56.618  (train ref 53.215; ratio in [0.5, 1.6])
+  OK    junctions_per_h            242.577  (train ref 250.404; ratio in [0.6, 1.6])
+  OK    repeat_share                 0.235  (train ref 0.236; ratio in [0.5, 1.5])
+  OK    near_junction_share          0.776  (train ref 0.849; >= ref - 0.2)
+  OK    raw energy level r0         -3.703  (train ref -3.729; log10 in train range [-3.77, -3.69] +- 1.0)
+  OK    raw energy level r1         -3.464  (train ref -3.461; log10 in train range [-3.47, -3.45] +- 1.0)
+  OK    raw energy level r2         -3.453  (train ref -3.476; log10 in train range [-3.53, -3.43] +- 1.0)
+  OK    psi log_emot/r0              0.009  (train ref 0.017; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r1              0.005  (train ref 0.012; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r2              0.008  (train ref 0.012; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r0             0.003  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r1             0.004  (train ref 0.008; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r2             0.005  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r0              0.000  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r1              0.001  (train ref 0.006; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r2              0.001  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  stream test_00: events/h 67.4, junctions/h 261.3, repeat share 0.235
+  stream test_01: events/h 63.1, junctions/h 256.5, repeat share 0.237
+  stream test_02: events/h 59.3, junctions/h 237.0, repeat share 0.239
+  stream test_03: events/h 36.6, junctions/h 207.4, repeat share 0.237
+  stream test_04: events/h 57.8, junctions/h 289.0, repeat share 0.229
+  -> 0 ALERT(s); no fallback recommended
+{"pred": "/home/user/data_raw/fake_test/submission/submission_fallback.csv", "rows": 116, "streams": 5, "wall_s": 26.9, "drift_alerts": 0, "recommend_fallback": false, "drift_json": "/home/user/data_raw/fake_test/submission/submission_fallback_drift.json"}
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall.tests.check_submission /home/user/data_raw/fake_test/submission/submission_fallback.csv /home/user/data_raw/fake_test/streams/test test_00,test_01,test_02,test_03,test_04
+/home/user/data_raw/fake_test/submission/submission_fallback.csv: 116 rows, 5 streams, official validate_predictions OK
+  test_00:  33 rows,  67.4 events/h,  29.4 min, dur 1.00-3.92 s, score 0.738-0.993
+  test_01:  31 rows,  63.1 events/h,  29.5 min, dur 1.00-3.60 s, score 0.759-0.993
+  test_02:  29 rows,  59.3 events/h,  29.4 min, dur 1.00-4.04 s, score 0.621-0.993
+  test_03:  18 rows,  36.6 events/h,  29.5 min, dur 1.00-3.58 s, score 0.736-0.987
+  test_04:   5 rows,  57.8 events/h,   5.2 min, dur 1.24-2.15 s, score 0.869-0.986
+SUBMISSION CHECK: OK
+[rss.py] rc=0 wall_s=35.2 peak_rss_gb=1.11

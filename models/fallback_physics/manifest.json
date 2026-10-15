@@ -1,0 +1,128 @@
+{
+ "bundle_source": "/home/user/data_raw/uwbfall_models/fallback_physics",
+ "files": {
+  "config.json": {
+   "sha256": "0061665cf78dbeac80e7bac13634f5541200df509ba441cd89428099d2055717",
+   "bytes": 2624
+  },
+  "meta.json": {
+   "sha256": "26fab49a564ecee688999e08995739bd12b062abdb4c07d251c73a0763784bd9",
+   "bytes": 7420
+  },
+  "pca.pkl": {
+   "sha256": "2e0e129d536626db98ea5182eb411faa65d036f5a7d4c902915d5230594f80c7",
+   "bytes": 38458
+  },
+  "hgb.pkl": {
+   "sha256": "ea02be053210c3b9968ea3edf0a5800b330959f8b983b30484604151c697c7cd",
+   "bytes": 1120054
+  },
+  "tcn_norm.npz": {
+   "sha256": "841dcc47f5f59cffe58539531caf3730f0cbf335a6e397739d6dbb5cdf8a9b41",
+   "bytes": 1078
+  },
+  "tcn_0.pt": {
+   "sha256": "c950197eeefa744b4646492a00bb4eedb1a62ff592845935d02b70e3552f60e7",
+   "bytes": 490359
+  },
+  "tcn_1.pt": {
+   "sha256": "a845df7f9299f58b97bd8b7714254663fce40daa6a5ced5480aeb11ebabd4597",
+   "bytes": 490359
+  },
+  "tcn_2.pt": {
+   "sha256": "4704508bbb1da572716cede022ee892698b3f726986ed740a2ca28b5dccd33a0",
+   "bytes": 490359
+  },
+  "drift_ref.json": {
+   "sha256": "0513f6b0c4e00f38daafae550d5006d416f29eadcaceeeebdf841c35523f54e6",
+   "bytes": 6485
+  }
+ },
+ "total_bytes": 2647196,
+ "config_hash": "bea43c2b930bf2d1",
+ "git_rev_at_fit": "b3716b8bfe76afb224d3cc24bb068471b3c3482b",
+ "train_streams": [
+  "train_00",
+  "train_01",
+  "train_02",
+  "train_03",
+  "train_04",
+  "train_05",
+  "train_06",
+  "train_07",
+  "train_08",
+  "train_09",
+  "train_10",
+  "train_11",
+  "train_12",
+  "val_00",
+  "val_01",
+  "val_02",
+  "val_03",
+  "val_04"
+ ],
+ "postproc_operating_point": [
+  0.5,
+  1,
+  0.8,
+  0.6
+ ],
+ "oof": {
+  "detector": {
+   "rank_f1": 0.9109,
+   "f1@0.1/0.3/0.5/0.7": [
+    0.947,
+    0.935,
+    0.851,
+    0.626
+   ],
+   "tp_fp_fn@0.3": [
+    236,
+    16,
+    17
+   ],
+   "fa_per_h@0.3": 1.94,
+   "start_err_med@0.3": 0.2,
+   "mean_tiou@0.3": 0.743
+  },
+  "final": {
+   "rank_f1": 0.92,
+   "f1@0.1/0.3/0.5/0.7": [
+    0.948,
+    0.936,
+    0.876,
+    0.76
+   ],
+   "tp_fp_fn@0.3": [
+    234,
+    13,
+    19
+   ],
+   "fa_per_h@0.3": 1.58,
+   "start_err_med@0.3": 0.04,
+   "mean_tiou@0.3": 0.832
+  }
+ },
+ "env": {
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "sklearn": "1.9.1",
+  "torch": "2.14.1+cpu",
+  "torch_threads": 2
+ },
+ "timings": {
+  "features_s": 24.0,
+  "hgb_s": 25.6,
+  "tcn_s": 790.2,
+  "decode_tune_s": 1.5,
+  "oof_replay_s": 55.6,
+  "total_s": 898.3
+ },
+ "not_shipped": [
+  "oof.npz",
+  "oof_candidates.csv",
+  "oof_final.csv",
+  "train.log"
+ ],
+ "regenerate": "make train-final (python -m uwbfall train --config uwbfall/configs/final.json --train-splits train,val --out <dir>)"
+}

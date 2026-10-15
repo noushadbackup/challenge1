@@ -1,0 +1,1 @@
+{"cmd": "make -C /home/user/data_raw/audit_clone REPO=/home/user/data_raw/audit_clone MODELS=/home/user/data_raw/audit_models SUB=/home/user/data_raw/audit_out/sub features", "rc": 0, "wall_s": 495.8, "maxrss_gb": 1.37, "user_s": 147.1, "sys_s": 127.8}

@@ -1,0 +1,168 @@
+{
+ "current": {
+  "n_streams": 5,
+  "hours": 2.0488333333333335,
+  "events_per_h": 44.415521028227445,
+  "junctions_per_h": 242.08899373627264,
+  "near_junction_share": 0.7252747252747253,
+  "repeat_share": 0.23511336986910486,
+  "per_stream": {
+   "val_00": {
+    "events_per_h": 48.98570116454433,
+    "junctions_per_h": 261.2570728775698,
+    "repeat_share": 0.23521074056855162
+   },
+   "val_01": {
+    "events_per_h": 52.92860293369222,
+    "junctions_per_h": 254.4644371812126,
+    "repeat_share": 0.23657275986473802
+   },
+   "val_02": {
+    "events_per_h": 44.95708641751055,
+    "junctions_per_h": 237.04645565596473,
+    "repeat_share": 0.23852231960401435
+   },
+   "val_03": {
+    "events_per_h": 28.466213315862007,
+    "junctions_per_h": 207.39669701556605,
+    "repeat_share": 0.23655197343153425
+   },
+   "val_04": {
+    "events_per_h": 57.80346820809249,
+    "junctions_per_h": 289.01734104046244,
+    "repeat_share": 0.22870905587668594
+   }
+  },
+  "psi": {
+   "log_emot/r0": 0.015524909542155286,
+   "log_emot/r1": 0.007771871107005646,
+   "log_emot/r2": 0.013466973752798862,
+   "log_ediff/r0": 0.005114276997124783,
+   "log_ediff/r1": 0.006547866002429779,
+   "log_ediff/r2": 0.008799334550473544,
+   "rep_frac/r0": 0.0006602122606977762,
+   "rep_frac/r1": 0.0011666297051631288,
+   "rep_frac/r2": 0.001899135520523733
+  }
+ },
+ "checks": [
+  {
+   "monitor": "events_per_h",
+   "value": 44.415521028227445,
+   "ref": 53.54374581549066,
+   "ratio": 0.8295183751484503,
+   "flag": "OK",
+   "rule": "ratio in [0.5, 1.6]"
+  },
+  {
+   "monitor": "junctions_per_h",
+   "value": 242.08899373627264,
+   "ref": 252.18942515513578,
+   "ratio": 0.959949028740401,
+   "flag": "OK",
+   "rule": "ratio in [0.6, 1.6]"
+  },
+  {
+   "monitor": "repeat_share",
+   "value": 0.23511336986910486,
+   "ref": 0.2360397575014767,
+   "ratio": 0.9960752898487194,
+   "flag": "OK",
+   "rule": "ratio in [0.5, 1.5]"
+  },
+  {
+   "monitor": "near_junction_share",
+   "value": 0.7252747252747253,
+   "ref": 0.8670694864048338,
+   "flag": "OK",
+   "rule": ">= ref - 0.2"
+  },
+  {
+   "monitor": "raw energy level r0",
+   "value": -3.703473369913236,
+   "ref": -3.7531961446041544,
+   "flag": "OK",
+   "rule": "log10 in train range [-3.77, -3.74] +- 1.0"
+  },
+  {
+   "monitor": "raw energy level r1",
+   "value": -3.4635174920605243,
+   "ref": -3.463402769426555,
+   "flag": "OK",
+   "rule": "log10 in train range [-3.47, -3.46] +- 1.0"
+  },
+  {
+   "monitor": "raw energy level r2",
+   "value": -3.453002904931947,
+   "ref": -3.506918910256214,
+   "flag": "OK",
+   "rule": "log10 in train range [-3.53, -3.49] +- 1.0"
+  },
+  {
+   "monitor": "psi log_emot/r0",
+   "value": 0.015524909542155286,
+   "ref": 0.016199552545707104,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi log_emot/r1",
+   "value": 0.007771871107005646,
+   "ref": 0.01039248614911833,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi log_emot/r2",
+   "value": 0.013466973752798862,
+   "ref": 0.010658659413654835,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi log_ediff/r0",
+   "value": 0.005114276997124783,
+   "ref": 0.01279401755552406,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi log_ediff/r1",
+   "value": 0.006547866002429779,
+   "ref": 0.005998235804828971,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi log_ediff/r2",
+   "value": 0.008799334550473544,
+   "ref": 0.010198244937240654,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi rep_frac/r0",
+   "value": 0.0006602122606977762,
+   "ref": 0.007477998239298974,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi rep_frac/r1",
+   "value": 0.0011666297051631288,
+   "ref": 0.006379025151767024,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  },
+  {
+   "monitor": "psi rep_frac/r2",
+   "value": 0.001899135520523733,
+   "ref": 0.008096621335096504,
+   "flag": "OK",
+   "rule": "pooled PSI <= 0.1 OK, <= 0.25 WATCH"
+  }
+ ],
+ "n_alert": 0,
+ "has_reference": true,
+ "recommend_fallback": false
+}

@@ -1,0 +1,35 @@
+[   53.1s rss=1.47GB]   cached features test_00 -> feat_6a3f56898e9320532ec39431.npz
+[   66.9s rss=1.47GB] predict test_00: 35 candidates, 31 replay-refined, 66.9 s
+[  117.0s rss=1.58GB]   cached features test_01 -> feat_a87fd7050c55e5371f1890c0.npz
+[  126.0s rss=1.58GB] predict test_01: 31 candidates, 29 replay-refined, 59.1 s
+[  175.5s rss=1.60GB]   cached features test_02 -> feat_79fcb70069843ad96588a8ef.npz
+[  184.6s rss=1.60GB] predict test_02: 31 candidates, 29 replay-refined, 58.5 s
+[  237.4s rss=1.60GB]   cached features test_03 -> feat_1f1ed0e2871204d64497ce50.npz
+[  244.2s rss=1.60GB] predict test_03: 18 candidates, 17 replay-refined, 59.6 s
+[  250.7s rss=1.60GB]   cached features test_04 -> feat_9bdade07e8793c30604f8a97.npz
+[  252.2s rss=1.60GB] predict test_04: 5 candidates, 5 replay-refined, 8.1 s
+DRIFT MONITORS (5 streams, 2.05 h)
+  OK    events_per_h                58.082  (train ref 55.038; ratio in [0.5, 1.6])
+  OK    junctions_per_h            242.577  (train ref 250.404; ratio in [0.6, 1.6])
+  OK    repeat_share                 0.235  (train ref 0.236; ratio in [0.5, 1.5])
+  OK    near_junction_share          0.782  (train ref 0.841; >= ref - 0.2)
+  OK    raw energy level r0         -3.703  (train ref -3.729; log10 in train range [-3.77, -3.69] +- 1.0)
+  OK    raw energy level r1         -3.464  (train ref -3.461; log10 in train range [-3.47, -3.45] +- 1.0)
+  OK    raw energy level r2         -3.453  (train ref -3.476; log10 in train range [-3.53, -3.43] +- 1.0)
+  OK    psi log_emot/r0              0.009  (train ref 0.017; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r1              0.005  (train ref 0.012; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r2              0.008  (train ref 0.012; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r0             0.003  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r1             0.004  (train ref 0.008; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r2             0.005  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r0              0.000  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r1              0.001  (train ref 0.006; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r2              0.001  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  stream test_00: events/h 69.4, junctions/h 261.3, repeat share 0.235
+  stream test_01: events/h 63.1, junctions/h 256.5, repeat share 0.237
+  stream test_02: events/h 63.3, junctions/h 237.0, repeat share 0.239
+  stream test_03: events/h 36.6, junctions/h 207.4, repeat share 0.237
+  stream test_04: events/h 57.8, junctions/h 289.0, repeat share 0.229
+  -> 0 ALERT(s); no fallback recommended
+{"pred": "/home/user/data_raw/fake_test/submission_r2/submission_split_test.csv", "rows": 119, "streams": 5, "wall_s": 253.8, "drift_alerts": 0, "recommend_fallback": false, "drift_json": "/home/user/data_raw/fake_test/submission_r2/submission_split_test_drift.json"}
+[rss.py] rc=0 wall_s=259.6 peak_rss_gb=1.60

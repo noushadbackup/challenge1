@@ -21,7 +21,7 @@ make checks          # config invariants + drift-monitor sanity (synthetic drift
 make dry-run         # rehearsal: val streams copied as test_00..test_04 under /home/user/data_raw/fake_test
 ```
 
-The dry run passed (section 4).
+The dry run passed: `reports/round2/FINAL.md` §4, logs in `work/FINAL/logs/dryrun_*_r2.log`.
 
 ## 1. Get the test streams
 
@@ -46,7 +46,7 @@ It does the following:
 
 1. `verify-models` checks the sha256 of the FINAL bundle against `models/final/MANIFEST.sha256`.
 2. `python -m uwbfall predict --models $FINAL --sources dir:$TEST_DIR:test --out $SUB/submission.csv`:
-   * extracts features (cold cache: about 15 s per 30-min stream);
+   * extracts features (cold cache: about 50 s per 30-min stream; the dry run took 260 s in total cold);
    * runs HGB + TCN, the clip gate, decode, replay and NMS;
    * runs the **official `validate_predictions`** before the CSV is written;
    * **prints the drift monitors** and writes `$SUB/submission_drift.json`.
@@ -54,11 +54,18 @@ It does the following:
    `stream_id,t_start,t_end,score,t_alarm`, and ids test_00..test_04 with at least one row per stream. It also prints
    per-stream events/h, durations and score ranges.
 
+If `/home/user/data_raw/uwbfall_models/final` is missing or fails `verify-models`, use the repo copy, which carries the same
+sha256: `make predict-test TEST_DIR=... FINAL=/home/user/challenge1/models/final`. If neither is available, run
+`make train-final` (about 15–18 min). It is bit-reproducible: a refit matched 9/10 files exactly, and `meta.json` differs
+only in timings and git rev (FINAL.md §3).
+
 When the test streams are inside the package, the equivalent literal command is
 `python -m uwbfall predict --models /home/user/data_raw/uwbfall_models/final --split test --out <csv>`. In the dry run
-it gave a byte-identical CSV (section 4).
+it gave a byte-identical CSV (`reports/round2/FINAL.md` §4).
 
-**Time / memory:** 78 s wall and 1.64 GB peak RSS for 5 streams (2.05 h) with a cold cache.
+**Time / memory (dry run, 5 streams = 2.05 h, 2 threads):**
+- Cold feature cache and cold page cache: **260 s** wall, 1.60 GB peak RSS. About 50 s per 30-min stream goes to feature extraction.
+- Warm cache: 58 s for the whole `make dry-run`, including the checks.
 
 ## 3. Checks before uploading
 
@@ -102,11 +109,15 @@ streams-level anomaly. Examples: a stream with 0 predictions, or events/h far ou
 - replay with junction-free `loc` crops only;
 - same blend, bands, gate 0.3 and 4 s NMS.
 
-It needs no generator artefact, but it is **weaker** (see `reports/round2/FINAL.md`, fallback section). It is a switch
-for a broken test writer, not an alternative to try.
+It needs no generator artefact, but it is **weaker**:
+- Trained on the 13 train streams, it scores official val **0.9239** (59/1/8 @0.3), against FINAL's 0.9524 (64/2/3).
+- Its train+val training OOF is 0.920, against 0.939 for FINAL.
+
+See `reports/round2/FINAL.md` §5. It is a switch for a broken test writer, not an alternative to try.
 
 ```bash
-make train-fallback          # ~15 min; bundle /home/user/data_raw/uwbfall_models/fallback_physics (prebuilt)
+make train-fallback          # ~15 min; ONLY if the prebuilt bundle is missing: /home/user/data_raw/uwbfall_models/fallback_physics
+                             # (prebuilt; sha256 copy in models/fallback_physics/, check: make verify-fallback)
 make predict-test-fallback TEST_DIR=...   # -> $SUB/submission_fallback.csv (+ checks)
 ```
 
@@ -124,11 +135,11 @@ make predict-test-fallback TEST_DIR=...   # -> $SUB/submission_fallback.csv (+ c
 | target | what | time |
 |---|---|---|
 | `make features` | warm the feature cache for train, val and (if present) test | ~13 min cold |
-| `make train-final` | FINAL bundle from scratch (train+val, `final.json`) | 15 min |
-| `make predict-test` | release-day command (above) | ~1.5 min |
-| `make reproduce-val` | `final.json` on the 13 train streams, val CSV, official score; must be byte-identical to the I1 G7N4 bag-0 val CSV (0.9524) | 15 min + 1 min |
-| `make srcv` | clean SR-CV run of `final.json` (4 folds + official val), then `srcv-table` (final table + promotion rule vs C3) | ~75 min |
-| `make checks`, `make dry-run` | invariants and rehearsal | 1–2 min |
+| `make train-final` | FINAL bundle from scratch (train+val, `final.json`), bit-reproducible | 15–18 min |
+| `make predict-test` | release-day command (above) | 1 min warm, about 4.5 min cold |
+| `make reproduce-val` | `final.json` on the 13 train streams, val CSV, official score; must be byte-identical to the I1 G7N4 bag-0 val CSV (0.9524) | 1 min with the bundle present (`uwbfall_models/final_train13`), else +20 min |
+| `make srcv` | clean SR-CV run of `final.json` (4 folds + official val), then `srcv-table` (final table + promotion rule vs C3) | ~75–110 min on one lane (fold fits take 11–23 min each) |
+| `make checks`, `make dry-run` (runs `make fake-test` first, a 1.6 GB copy of val) | invariants and rehearsal | 1–2 min (+ copy) |
 
 Environment: `PYTHONPATH=/home/user/challenge1:<package>/src`, `OMP_NUM_THREADS=2`. The Makefile sets both.
 torch 2.14.1+cpu and sklearn 1.9.1 were used. TCN bits depend on the thread count and the torch build.

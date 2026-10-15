@@ -1,0 +1,21 @@
+[    1.2s rss=0.42GB] fit: 13 training streams, 359 events, config 204d32de158f1814
+[   58.5s rss=1.05GB] design: X_proto (111268, 64) X_band (111268, 48) positives 3272
+[   58.5s rss=1.05GB] folds: {0: ['train_08', 'train_09', 'train_11'], 1: ['train_00', 'train_03', 'train_06'], 2: ['train_01', 'train_05', 'train_10'], 3: ['train_02', 'train_04', 'train_07', 'train_12']}
+[   97.8s rss=1.05GB] hgb: OOF + final done (39.3 s, n_iter final 300)
+[  254.1s rss=1.05GB] tcn: CV fold 0 done (156 s)
+[  411.3s rss=1.05GB] tcn: CV fold 1 done (313 s)
+[  580.6s rss=1.05GB] tcn: CV fold 2 done (483 s)
+[  744.1s rss=1.05GB] tcn: CV fold 3 done (646 s)
+[  918.9s rss=1.08GB] tcn: CV + final bag done (821.1 s)
+[  941.1s rss=1.48GB] clip: junction threshold 1.0173, train diag {"recall_fall_junctions": 0.9489953632148377, "recall_all_junctions": 0.8607449856733524, "peak_precision": 0.9608723540731238, "peaks_per_min": 4.203364848833447}
+[  964.9s rss=1.50GB] clip: segment classifier on 1572 segments (18 features), subject-grouped OOF AUC fall-vs-rest 0.9719
+[  969.0s rss=1.50GB]   operating point (0.4, 5, 0.8, 0.2) OOF rank F1 0.9405
+[ 1279.9s rss=1.50GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9405, "f1@0.1/0.3/0.5/0.7": [0.962, 0.957, 0.903, 0.622], "tp_fp_fn@0.3": [177, 7, 9], "fa_per_h@0.3": 1.13, "start_err_med@0.3": 0.24, "mean_tiou@0.3": 0.736}, "final": {"rank_f1": 0.9457, "f1@0.1/0.3/0.5/0.7": [0.967, 0.962, 0.908, 0.772], "tp_fp_fn@0.3": [177, 5, 9], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.833}}
+[ 1299.1s rss=1.51GB] drift reference written: /home/user/data_raw/srcv/runs/final_b0/official_train/drift_ref.json (junctions/h 252.2, events/h 55.0, repeat share 0.236)
+[ 1299.1s rss=1.51GB] fit done in 1278.6 s -> /home/user/data_raw/srcv/runs/final_b0/official_train
+[   28.7s rss=1.51GB] predict val_00: 27 candidates, 27 replay-refined, 28.7 s
+[   57.4s rss=1.51GB] predict val_01: 24 candidates, 24 replay-refined, 28.7 s
+[   91.7s rss=1.51GB] predict val_02: 26 candidates, 23 replay-refined, 34.3 s
+[  113.4s rss=1.51GB] predict val_03: 12 candidates, 10 replay-refined, 21.7 s
+[  117.1s rss=1.51GB] predict val_04: 5 candidates, 5 replay-refined, 3.7 s
+[final_b0] official val rank F1 0.9524 tp/fp/fn@0.3 64/2/3

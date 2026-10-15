@@ -1,0 +1,15 @@
+[    1.2s rss=0.42GB] fit: 18 training streams, 478 events, config bea43c2b930bf2d1
+[   26.4s rss=1.28GB] design: X_proto (148145, 25) X_band (148145, 48) positives 4513
+[   26.4s rss=1.28GB] folds: {0: ['train_03', 'val_00', 'val_02', 'val_03'], 1: ['train_01', 'train_02', 'train_04', 'train_12', 'val_01'], 2: ['train_07', 'train_08', 'train_09', 'train_10'], 3: ['train_00', 'train_05', 'train_06', 'train_11', 'val_04']}
+[   52.1s rss=1.28GB] hgb: OOF + final done (25.6 s, n_iter final 300)
+[  207.8s rss=1.28GB] tcn: CV fold 0 done (156 s)
+[  362.0s rss=1.28GB] tcn: CV fold 1 done (310 s)
+[  518.2s rss=1.28GB] tcn: CV fold 2 done (466 s)
+[  680.0s rss=1.28GB] tcn: CV fold 3 done (628 s)
+[  842.3s rss=1.28GB] tcn: CV + final bag done (790.2 s)
+[  843.8s rss=1.28GB]   operating point (0.5, 1, 0.8, 0.6) OOF rank F1 0.9109
+[  899.5s rss=1.28GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9109, "f1@0.1/0.3/0.5/0.7": [0.947, 0.935, 0.851, 0.626], "tp_fp_fn@0.3": [236, 16, 17], "fa_per_h@0.3": 1.94, "start_err_med@0.3": 0.2, "mean_tiou@0.3": 0.743}, "final": {"rank_f1": 0.92, "f1@0.1/0.3/0.5/0.7": [0.948, 0.936, 0.876, 0.76], "tp_fp_fn@0.3": [234, 13, 19], "fa_per_h@0.3": 1.58, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.832}}
+[  945.5s rss=1.82GB] drift reference written: /home/user/data_raw/uwbfall_models/fallback_physics/drift_ref.json (junctions/h 250.4, events/h 53.2, repeat share 0.236)
+[  945.5s rss=1.82GB] fit done in 898.3 s -> /home/user/data_raw/uwbfall_models/fallback_physics
+{"model_dir": "/home/user/data_raw/uwbfall_models/fallback_physics", "wall_s": 945.5}
+[rss.py] rc=0 wall_s=949.8 peak_rss_gb=1.82

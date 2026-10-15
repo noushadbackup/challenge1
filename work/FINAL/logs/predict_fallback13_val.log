@@ -1,0 +1,29 @@
+[    5.8s rss=1.03GB] predict val_00: 24 candidates, 23 replay-refined, 5.8 s
+[   11.3s rss=1.03GB] predict val_01: 26 candidates, 26 replay-refined, 5.6 s
+[   17.6s rss=1.09GB] predict val_02: 22 candidates, 22 replay-refined, 6.3 s
+[   22.8s rss=1.10GB] predict val_03: 14 candidates, 13 replay-refined, 5.2 s
+[   23.7s rss=1.10GB] predict val_04: 5 candidates, 4 replay-refined, 0.8 s
+DRIFT MONITORS (5 streams, 2.05 h)
+  OK    events_per_h                44.416  (train ref 53.544; ratio in [0.5, 1.6])
+  OK    junctions_per_h            242.089  (train ref 252.189; ratio in [0.6, 1.6])
+  OK    repeat_share                 0.235  (train ref 0.236; ratio in [0.5, 1.5])
+  OK    near_junction_share          0.725  (train ref 0.867; >= ref - 0.2)
+  OK    raw energy level r0         -3.703  (train ref -3.753; log10 in train range [-3.77, -3.74] +- 1.0)
+  OK    raw energy level r1         -3.464  (train ref -3.463; log10 in train range [-3.47, -3.46] +- 1.0)
+  OK    raw energy level r2         -3.453  (train ref -3.507; log10 in train range [-3.53, -3.49] +- 1.0)
+  OK    psi log_emot/r0              0.016  (train ref 0.016; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r1              0.008  (train ref 0.010; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_emot/r2              0.013  (train ref 0.011; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r0             0.005  (train ref 0.013; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r1             0.007  (train ref 0.006; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi log_ediff/r2             0.009  (train ref 0.010; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r0              0.001  (train ref 0.007; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r1              0.001  (train ref 0.006; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  OK    psi rep_frac/r2              0.002  (train ref 0.008; pooled PSI <= 0.1 OK, <= 0.25 WATCH)
+  stream val_00: events/h 49.0, junctions/h 261.3, repeat share 0.235
+  stream val_01: events/h 52.9, junctions/h 254.5, repeat share 0.237
+  stream val_02: events/h 45.0, junctions/h 237.0, repeat share 0.239
+  stream val_03: events/h 28.5, junctions/h 207.4, repeat share 0.237
+  stream val_04: events/h 57.8, junctions/h 289.0, repeat share 0.229
+  -> 0 ALERT(s); no fallback recommended
+{"pred": "/home/user/challenge1/work/FINAL/out/val_fallback_train13.csv", "rows": 91, "streams": 5, "wall_s": 25.2, "drift_alerts": 0, "recommend_fallback": false, "drift_json": "/home/user/challenge1/work/FINAL/out/val_fallback_train13_drift.json"}

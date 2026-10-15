@@ -1,0 +1,6 @@
+[   90.1s rss=1.28GB] predict cv1_test_00: 31 candidates, 30 replay-refined, 90.1 s
+[  120.9s rss=1.28GB] predict cv1_test_01: 27 candidates, 23 replay-refined, 30.8 s
+[  155.5s rss=1.28GB] predict cv1_test_02: 33 candidates, 30 replay-refined, 34.7 s
+[  180.8s rss=1.29GB] predict cv1_test_03: 26 candidates, 26 replay-refined, 25.3 s
+[  184.8s rss=1.29GB] predict cv1_test_04: 3 candidates, 2 replay-refined, 3.9 s
+[final_b0] fold 1 (resumed predict): rank F1 0.8725 tp/fp/fn@0.3 60/14/2 (288s)

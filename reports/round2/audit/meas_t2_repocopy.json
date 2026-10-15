@@ -1,0 +1,1 @@
+{"cmd": "env OMP_NUM_THREADS=2 python3 -m uwbfall predict --models /home/user/data_raw/audit_clone/models/final --sources dir:/home/user/data_raw/fake_test/streams/test:test --out /home/user/data_raw/audit_out/pred_t2_repocopy.csv", "rc": 0, "wall_s": 62.0, "maxrss_gb": 1.097, "user_s": 34.5, "sys_s": 9.1}

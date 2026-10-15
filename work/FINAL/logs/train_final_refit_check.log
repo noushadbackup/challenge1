@@ -1,0 +1,18 @@
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 ABC_ROOT=/home/user/data_raw/abc2027_uwb_train_v1 PYTHONPATH=/home/user/challenge1:/home/user/data_raw/abc2027_uwb_train_v1/src python3 -m uwbfall train --config /home/user/challenge1/uwbfall/configs/final.json --train-splits train,val --out /home/user/data_raw/uwbfall_models/final_refit_check
+[    1.8s rss=0.42GB] fit: 18 training streams, 478 events, config 204d32de158f1814
+[   25.0s rss=1.28GB] design: X_proto (148145, 64) X_band (148145, 48) positives 4513
+[   25.1s rss=1.28GB] folds: {0: ['train_03', 'val_00', 'val_02', 'val_03'], 1: ['train_01', 'train_02', 'train_04', 'train_12', 'val_01'], 2: ['train_07', 'train_08', 'train_09', 'train_10'], 3: ['train_00', 'train_05', 'train_06', 'train_11', 'val_04']}
+[   79.1s rss=1.28GB] hgb: OOF + final done (54.0 s, n_iter final 300)
+[  237.5s rss=1.28GB] tcn: CV fold 0 done (158 s)
+[  392.2s rss=1.28GB] tcn: CV fold 1 done (313 s)
+[  548.1s rss=1.28GB] tcn: CV fold 2 done (469 s)
+[  706.3s rss=1.28GB] tcn: CV fold 3 done (627 s)
+[  865.5s rss=1.28GB] tcn: CV + final bag done (786.3 s)
+[  896.7s rss=1.61GB] clip: junction threshold 1.0110, train diag {"recall_fall_junctions": 0.9491916859122402, "recall_all_junctions": 0.8513745704467354, "peak_precision": 0.9592430858806404, "peaks_per_min": 4.173613689290898}
+[  931.9s rss=1.61GB] clip: segment classifier on 2079 segments (18 features), subject-grouped OOF AUC fall-vs-rest 0.9800
+[  933.4s rss=1.61GB]   operating point (0.4, 3, 0.8, 0.6) OOF rank F1 0.9315
+[ 1039.5s rss=1.61GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9315, "f1@0.1/0.3/0.5/0.7": [0.963, 0.955, 0.877, 0.587], "tp_fp_fn@0.3": [244, 14, 9], "fa_per_h@0.3": 1.7, "start_err_med@0.3": 0.25, "mean_tiou@0.3": 0.732}, "final": {"rank_f1": 0.9389, "f1@0.1/0.3/0.5/0.7": [0.968, 0.952, 0.896, 0.773], "tp_fp_fn@0.3": [239, 10, 14], "fa_per_h@0.3": 1.21, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.838}}
+[ 1063.8s rss=1.64GB] drift reference written: /home/user/data_raw/uwbfall_models/final_refit_check/drift_ref.json (junctions/h 250.4, events/h 55.0, repeat share 0.236)
+[ 1063.8s rss=1.64GB] fit done in 1037.7 s -> /home/user/data_raw/uwbfall_models/final_refit_check
+{"model_dir": "/home/user/data_raw/uwbfall_models/final_refit_check", "wall_s": 1063.8}
+[rss.py] rc=0 wall_s=1068.1 peak_rss_gb=1.64

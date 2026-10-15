@@ -1,0 +1,21 @@
+[    5.6s rss=0.42GB] fit: 13 training streams, 358 events, config 204d32de158f1814
+[  104.7s rss=1.09GB] design: X_proto (110954, 64) X_band (110954, 48) positives 3364
+[  104.8s rss=1.09GB] folds: {0: ['cv3_train_01', 'cv3_train_07', 'cv3_train_08'], 1: ['cv3_train_05', 'cv3_train_10', 'cv3_train_11'], 2: ['cv3_train_00', 'cv3_train_03', 'cv3_train_09', 'cv3_train_12'], 3: ['cv3_train_02', 'cv3_train_04', 'cv3_train_06']}
+[  144.2s rss=1.09GB] hgb: OOF + final done (39.4 s, n_iter final 300)
+[  302.6s rss=1.09GB] tcn: CV fold 0 done (158 s)
+[  456.2s rss=1.09GB] tcn: CV fold 1 done (312 s)
+[  610.4s rss=1.09GB] tcn: CV fold 2 done (466 s)
+[  770.4s rss=1.09GB] tcn: CV fold 3 done (626 s)
+[  933.0s rss=1.09GB] tcn: CV + final bag done (788.7 s)
+[  953.6s rss=1.54GB] clip: junction threshold 0.9902, train diag {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8813073394495413, "peak_precision": 0.9641959798994975, "peaks_per_min": 4.304486543973177}
+[  981.7s rss=1.54GB] clip: segment classifier on 1605 segments (18 features), subject-grouped OOF AUC fall-vs-rest 0.9852
+[  983.1s rss=1.54GB]   operating point (0.4, 1, 0.8, 0.2) OOF rank F1 0.9099
+[ 1385.1s rss=1.67GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9099, "f1@0.1/0.3/0.5/0.7": [0.946, 0.935, 0.849, 0.584], "tp_fp_fn@0.3": [173, 10, 14], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.73}, "final": {"rank_f1": 0.9326, "f1@0.1/0.3/0.5/0.7": [0.956, 0.94, 0.902, 0.76], "tp_fp_fn@0.3": [172, 7, 15], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.84}}
+[ 1406.6s rss=1.67GB] drift reference written: /home/user/data_raw/srcv/runs/final_b0/fold_3/drift_ref.json (junctions/h 258.3, events/h 54.8, repeat share 0.236)
+[ 1406.6s rss=1.67GB] fit done in 1379.5 s -> /home/user/data_raw/srcv/runs/final_b0/fold_3
+[   96.2s rss=1.67GB] predict cv3_test_00: 24 candidates, 23 replay-refined, 96.2 s
+[  148.4s rss=1.67GB] predict cv3_test_01: 23 candidates, 21 replay-refined, 52.2 s
+[  196.4s rss=1.67GB] predict cv3_test_02: 31 candidates, 29 replay-refined, 48.0 s
+[  226.0s rss=1.67GB] predict cv3_test_03: 35 candidates, 33 replay-refined, 29.6 s
+[  229.5s rss=1.67GB] predict cv3_test_04: 2 candidates, 2 replay-refined, 3.5 s
+[final_b0] fold 3: rank F1 0.9720 tp/fp/fn@0.3 65/0/1 (1734s)
