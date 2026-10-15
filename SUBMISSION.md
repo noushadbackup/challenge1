@@ -13,6 +13,10 @@ I2 and I3 promoted nothing. Evidence is in `reports/round2/FINAL.md`.
 operating point comes from the bundle's own 4-fold training OOF; val was not used for any choice. A runnable copy with
 sha256 is in `models/final/` (3.7 MB; `MANIFEST.sha256`, `manifest.json`).
 
+> **Rule compliance (organisers' Q2 answer):** submit with `VARIANT=final_norep` unless the organisers confirm that
+> frame-level sample-and-hold statistics are allowed; use `VARIANT=final_strict` if they forbid the replay dedup.
+> Every `make` command below accepts `VARIANT=...`. See `reports/COMPLIANCE.md`.
+
 ## 0. Before release day (already done; re-run only if something changed)
 
 ```bash

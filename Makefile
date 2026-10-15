@@ -14,10 +14,15 @@ REPO     ?= $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 PKG      ?= /home/user/data_raw/abc2027_uwb_train_v1
 TEST_DIR ?= $(PKG)/streams/test
 MODELS   ?= /home/user/data_raw/uwbfall_models
-FINAL    ?= $(MODELS)/final
+# Model variant (rule compliance after the organisers' Q2 answer, see reports/COMPLIANCE.md):
+#   final        FINAL as audited (segment classifier uses within-stream sample-and-hold repeat statistics; replay dedups)
+#   final_norep  no repeat-statistic features (replay still on distinct frames)        SR-CV -0.004
+#   final_strict no repeat-statistic features and replay on all frames (no dedup)      SR-CV -0.023
+VARIANT  ?= final
+FINAL    ?= $(MODELS)/$(VARIANT)
 FALLBACK ?= $(MODELS)/fallback_physics
 SUB      ?= /home/user/data_raw/submission
-CONFIG   ?= $(REPO)/uwbfall/configs/final.json
+CONFIG   ?= $(REPO)/uwbfall/configs/$(VARIANT).json
 FB_CONFIG?= $(REPO)/uwbfall/configs/fallback_physics.json
 SRCV_NAME?= final_b0
 # TCN device: cpu (default; bit-exact with the shipped bundles and their manifests) | cuda | auto.
@@ -37,7 +42,7 @@ train-final:    ## ~20 min (2 threads): FINAL bundle on all 18 labelled streams;
 	$(PY) -m uwbfall train --config $(CONFIG) --train-splits train,val --out $(FINAL)
 
 verify-models:  ## sha256 of the FINAL bundle vs models/final/MANIFEST.sha256 (a refit may differ only in meta timings/git rev)
-	$(PY) -m uwbfall.tests.verify_bundle $(FINAL) $(REPO)/models/final $(if $(filter cpu,$(DEVICE)),,--relaxed)
+	$(PY) -m uwbfall.tests.verify_bundle $(FINAL) $(REPO)/models/$(VARIANT) $(if $(filter cpu,$(DEVICE)),,--relaxed)
 
 predict-test: verify-models   ## release day: predict + official validate_predictions + drift monitors + checks
 	mkdir -p $(SUB)

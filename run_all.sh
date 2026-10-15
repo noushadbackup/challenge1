@@ -5,6 +5,7 @@
 #   bash run_all.sh cuda       # TCN on the GPU (RTX 50xx: installs a CUDA 12.8 torch build in .venv-gpu)
 #   bash run_all.sh cuda --srcv          # also run the subject-disjoint CV (long: ~1.5-2 h on CPU)
 #   bash run_all.sh cpu --skip-setup     # environment and dataset already in place
+#   bash run_all.sh cuda --variant final_norep    # model variant: final | final_norep | final_strict (reports/COMPLIANCE.md)
 #   bash run_all.sh cuda --data /mnt/e/uwbfall/data_raw   # keep dataset, caches and models on another drive
 #                                                       # (Windows E:\ = /mnt/e in WSL; "E:\uwbfall\data_raw" also works)
 #
@@ -13,12 +14,13 @@
 set -euo pipefail
 
 DEVICE="${1:-cpu}"; shift || true
-RUN_SRCV=0; SKIP_SETUP=0; DATA_DIR=""
+RUN_SRCV=0; SKIP_SETUP=0; DATA_DIR=""; VARIANT=final
 while [ $# -gt 0 ]; do
   case "$1" in
     --srcv) RUN_SRCV=1 ;;
     --skip-setup) SKIP_SETUP=1 ;;
     --data) DATA_DIR="${2:?--data needs a folder}"; shift ;;
+    --variant) VARIANT="${2:?--variant needs final, final_norep or final_strict}"; shift ;;
     *) echo "unknown option: $1"; exit 1 ;;
   esac
   shift
@@ -29,6 +31,7 @@ if [[ "$DATA_DIR" =~ ^([A-Za-z]):[\\/]?(.*)$ ]]; then
   DATA_DIR="/mnt/$drive/$rest"
 fi
 case "$DEVICE" in cpu|cuda|auto) ;; *) echo "device must be cpu, cuda or auto (got '$DEVICE')"; exit 1 ;; esac
+case "$VARIANT" in final|final_norep|final_strict) ;; *) echo "variant must be final, final_norep or final_strict"; exit 1 ;; esac
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DATA=/home/user/data_raw
@@ -127,7 +130,7 @@ get_data() {
 if [ ! -f "$PKG/streams/train/stream_12.h5" ]; then step dataset get_data; else echo "dataset already in $PKG"; fi
 
 cd "$REPO"
-MK=(make -f "$REPO/Makefile" REPO="$REPO" DEVICE="$DEVICE")
+MK=(make -f "$REPO/Makefile" REPO="$REPO" DEVICE="$DEVICE" VARIANT="$VARIANT")
 PYENV=(env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
        UWBFALL_DEVICE="$DEVICE" ABC_ROOT="$PKG" PYTHONPATH="$REPO:$PKG/src")
 
@@ -135,15 +138,15 @@ PYENV=(env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLA
 step features "${MK[@]}" features
 
 # ---------------------------------------------------------------- 4. train on train -> score val (official CLI)
-VAL_BUNDLE=$MODELS/final_train13_$DEVICE
-VAL_CSV=$DATA/submission/val_final_train13_$DEVICE.csv
+VAL_BUNDLE=$MODELS/${VARIANT}_train13_$DEVICE
+VAL_CSV=$DATA/submission/val_${VARIANT}_train13_$DEVICE.csv
 mkdir -p "$DATA/submission"
 train_val() {
-  [ -f "$VAL_BUNDLE/meta.json" ] || "${PYENV[@]}" python3 -m uwbfall train --config "$REPO/uwbfall/configs/final.json" \
+  [ -f "$VAL_BUNDLE/meta.json" ] || "${PYENV[@]}" python3 -m uwbfall train --config "$REPO/uwbfall/configs/$VARIANT.json" \
       --train-splits train --out "$VAL_BUNDLE"
   "${PYENV[@]}" python3 -m uwbfall predict --models "$VAL_BUNDLE" --split val --out "$VAL_CSV"
   "${PYENV[@]}" python3 -m uwbfall score --pred "$VAL_CSV" --split val --out "${VAL_CSV%.csv}.json"
-  if [ "$DEVICE" = cpu ]; then
+  if [ "$DEVICE" = cpu ] && [ "$VARIANT" = final ]; then
     if cmp -s "$VAL_CSV" "$REPO/work/I1_clip/preds/uwb_default/G7N4/val.csv"; then
       echo "val CSV byte-identical to the audited result (0.9524)"
     else
@@ -165,13 +168,13 @@ step dry_run "${MK[@]}" dry-run
 if [ $RUN_SRCV = 1 ]; then
   run_srcv() {
     "${PYENV[@]}" python3 -m srcv.build      # fold CSVs under /home/user/data_raw/srcv (no radar data written)
-    "${PYENV[@]}" python3 -m srcv.run_pipeline "local_$DEVICE" --config "$REPO/uwbfall/configs/final.json"
+    "${PYENV[@]}" python3 -m srcv.run_pipeline "local_${VARIANT}_$DEVICE" --config "$REPO/uwbfall/configs/$VARIANT.json"
   }
   step srcv run_srcv
 fi
 
 # ---------------------------------------------------------------- summary
-say "SUMMARY (device: $DEVICE)"
+say "SUMMARY (device: $DEVICE, variant: $VARIANT)"
 printf '%s\n' "${SUMMARY[@]}"
 echo
 echo "Validation score (model trained on the 13 train streams, official evaluator):"
@@ -184,7 +187,7 @@ print(f"  TP/FP/FN @0.3 = {p['tp']}/{p['fp']}/{p['fn']}   FA/h = {p['false_alarm
       f"median start error = {p['start_error_median_abs']:.3f} s")
 EOF
 echo
-echo "Final model (train+val):  $MODELS/final"
+echo "Final model (train+val):  $MODELS/$VARIANT"
 echo "Dry-run submission:       $DATA/fake_test/submission/submission.csv"
 echo "Logs:                     $LOGS"
-echo "Release day:              make predict-test DEVICE=$DEVICE TEST_DIR=/path/to/streams/test   (see SUBMISSION.md)"
+echo "Release day:              make predict-test DEVICE=$DEVICE VARIANT=$VARIANT TEST_DIR=/path/to/streams/test   (see SUBMISSION.md)"
