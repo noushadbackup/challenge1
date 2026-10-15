@@ -260,3 +260,12 @@ A 5-stream test split predicts in about 2-4 min with a cold cache.
 - `uwbfall/`: package (`__init__, __main__, cli, config, paths, sources, extract, features, models, decode, boundary, scoring, pipeline`), `pyproject.toml`, `Makefile`, `configs/{default,integration_repro}.json`.
 - `uwbfall/tests/`: `parity_features.py`, `parity_virtual.py`, `parity_regenerated.py`, `parity_models.py`, `smoke_virtual_fit.py` (fit + predict on virtual sources only).
 - Outside git: `/home/user/data_raw/uwbfall_models/{repro_train13,default_train13}`, `/home/user/data_raw/uwbfall_runs/*.csv|json`, `/home/user/data_raw/uwbfall_cache/`.
+
+
+## GPU
+
+The TCN runs on `cpu` (default, bit-exact with the shipped bundles), `cuda` or `auto`, selected with
+`--device` on any CLI command, `UWBFALL_DEVICE`, or `make ... DEVICE=cuda`. The device is not part of the config,
+so bundle configs and manifests do not change. Trained weights are always saved as CPU tensors, and `meta.json`
+records `env.tcn_device`. GPU runs are not bit-identical to CPU runs. With `DEVICE=cuda`, `make verify-models` uses a
+relaxed check (all files present and the same config). Setup: `LOCAL_GPU.md`.

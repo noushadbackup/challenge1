@@ -20,8 +20,11 @@ SUB      ?= /home/user/data_raw/submission
 CONFIG   ?= $(REPO)/uwbfall/configs/final.json
 FB_CONFIG?= $(REPO)/uwbfall/configs/fallback_physics.json
 SRCV_NAME?= final_b0
+# TCN device: cpu (default; bit-exact with the shipped bundles and their manifests) | cuda | auto.
+# With DEVICE=cuda a retrained bundle is not bit-identical, so verify-models only checks files and the config.
+DEVICE   ?= cpu
 PY        = PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 \
-            ABC_ROOT=$(PKG) PYTHONPATH=$(REPO):$(PKG)/src python3
+            UWBFALL_DEVICE=$(DEVICE) ABC_ROOT=$(PKG) PYTHONPATH=$(REPO):$(PKG)/src python3
 
 .PHONY: features train-final verify-models verify-fallback predict-test check-test predict-test-fallback train-fallback \
         reproduce-val srcv srcv-table checks dry-run fake-test
@@ -34,7 +37,7 @@ train-final:    ## ~20 min (2 threads): FINAL bundle on all 18 labelled streams;
 	$(PY) -m uwbfall train --config $(CONFIG) --train-splits train,val --out $(FINAL)
 
 verify-models:  ## sha256 of the FINAL bundle vs models/final/MANIFEST.sha256 (a refit may differ only in meta timings/git rev)
-	$(PY) -m uwbfall.tests.verify_bundle $(FINAL) $(REPO)/models/final
+	$(PY) -m uwbfall.tests.verify_bundle $(FINAL) $(REPO)/models/final $(if $(filter cpu,$(DEVICE)),,--relaxed)
 
 predict-test: verify-models   ## release day: predict + official validate_predictions + drift monitors + checks
 	mkdir -p $(SUB)

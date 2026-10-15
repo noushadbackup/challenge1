@@ -5,6 +5,8 @@ same seeds give the same weights with the same thread count.
 """
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -30,14 +32,34 @@ def fit_hgb(X: np.ndarray, y: np.ndarray, cfg: dict, w: np.ndarray | None = None
 
 
 # ----------------------------------------------------------------------------- TCN
+def device() -> torch.device:
+    """TCN device from $UWBFALL_DEVICE: cpu (default, bit-exact with the shipped bundles), cuda, or auto
+    (cuda when available). Kept out of the config so bundles and their checksums do not depend on it."""
+    want = os.environ.get("UWBFALL_DEVICE", "cpu").strip().lower() or "cpu"
+    if want not in ("cpu", "cuda", "auto"):
+        raise ValueError(f"UWBFALL_DEVICE must be cpu, cuda or auto, not {want!r}")
+    if want == "cpu" or (want == "auto" and not torch.cuda.is_available()):
+        return torch.device("cpu")
+    if not torch.cuda.is_available():
+        raise RuntimeError("UWBFALL_DEVICE=cuda but torch.cuda.is_available() is False "
+                           "(install a CUDA build of torch, e.g. --index-url https://download.pytorch.org/whl/cu128)")
+    return torch.device("cuda")
+
+
 def setup_torch(cfg: dict):
     """Fix torch threads, deterministic kernels, and cap every native thread pool (OpenMP/BLAS) to
     runtime.threads. Returns the threadpoolctl limiter (keep a reference while working)."""
     from threadpoolctl import threadpool_limits
     torch.set_num_threads(int(cfg["runtime"]["threads"]))
     lim = threadpool_limits(int(cfg["runtime"]["threads"]))
+    dev = device()
+    if dev.type == "cuda":
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")  # required for deterministic cuBLAS
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = bool(cfg["runtime"]["deterministic"])
     if cfg["runtime"]["deterministic"]:
-        torch.use_deterministic_algorithms(True)
+        # CPU: strict (bit-exact). CUDA: deterministic where kernels exist, warn instead of failing otherwise.
+        torch.use_deterministic_algorithms(True, warn_only=dev.type == "cuda")
     return lim
 
 
@@ -109,7 +131,8 @@ def train_tcn(tr_seqs, cfg: dict, seed: int, epochs: int) -> MSTCN:
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
     cin = tr_seqs[0][0].shape[0]
-    model = build_tcn(cin, cfg)
+    dev = device()
+    model = build_tcn(cin, cfg).to(dev)
     opt = torch.optim.AdamW(model.parameters(), lr=t["lr"], weight_decay=t["weight_decay"])
     lens = np.array([s[1].shape[0] for s in tr_seqs], float)
     for _ep in range(epochs):
@@ -124,26 +147,29 @@ def train_tcn(tr_seqs, cfg: dict, seed: int, epochs: int) -> MSTCN:
                 yb.append(y[a : a + t["win"]])
                 if len(tr_seqs[i]) == 3:
                     wb.append(tr_seqs[i][2][a : a + t["win"]])
-            xb = torch.stack(xb)
+            xb = torch.stack(xb).to(dev)
             xb = xb + t["noise"] * torch.randn_like(xb)
             if wb:
                 if len(model.stages) > 1:
                     raise NotImplementedError("loss weights are implemented for the single-stage TCN only")
-                loss = _wloss(model(xb), torch.stack(yb), torch.stack(wb))
+                loss = _wloss(model(xb), torch.stack(yb).to(dev), torch.stack(wb).to(dev))
             else:
-                loss = _loss(model(xb), torch.stack(yb))
+                loss = _loss(model(xb), torch.stack(yb).to(dev))
             opt.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
-    return model
+    return model.cpu()  # bundles always hold CPU weights
 
 
 @torch.no_grad()
 def predict_seq(model: MSTCN, X: np.ndarray) -> np.ndarray:
     """X: (n, C) standardised float32 for ONE stream -> (n,) float32 probabilities."""
     model.eval()
-    return torch.sigmoid(model(torch.from_numpy(X.T.copy()).unsqueeze(0))[-1][0]).numpy().astype(np.float32)
+    dev = device()
+    model.to(dev)
+    x = torch.from_numpy(X.T.copy()).unsqueeze(0).to(dev)
+    return torch.sigmoid(model(x)[-1][0]).cpu().numpy().astype(np.float32)
 
 
 def standardise(X: np.ndarray, mu: np.ndarray, sd: np.ndarray, clip: float) -> np.ndarray:

@@ -1,6 +1,9 @@
 """Verify a model bundle against a shipped sha256 manifest, tolerating a legitimate refit.
 
-    python3 -m uwbfall.tests.verify_bundle <bundle_dir> <shipped_dir>      (e.g. models/final)
+    python3 -m uwbfall.tests.verify_bundle <bundle_dir> <shipped_dir> [--relaxed]     (e.g. models/final)
+
+--relaxed (used by `make ... DEVICE=cuda`): a GPU-trained bundle cannot be bit-identical, so only check that every
+manifest file exists and that the bundle was trained with the same config (config.json hash).
 
 Every file listed in <shipped_dir>/MANIFEST.sha256 must exist in <bundle_dir> with the same sha256, except
 meta.json. meta.json must either match exactly, or differ from <shipped_dir>/meta.json only in fields that
@@ -16,9 +19,22 @@ from pathlib import Path
 VOLATILE = {"timings", "peak_rss_gb", "git_rev", "env"}
 
 
-def main(bundle: str, shipped: str) -> int:
+def main(bundle: str, shipped: str, relaxed: bool = False) -> int:
     b, s = Path(bundle), Path(shipped)
     bad = 0
+    if relaxed:
+        for line in (s / "MANIFEST.sha256").read_text().splitlines():
+            if line.strip():
+                name = line.split(None, 1)[1].strip().lstrip("*")
+                if not (b / name).exists():
+                    print(f"{name}: MISSING")
+                    bad += 1
+        same_cfg = json.loads((b / "config.json").read_text()) == json.loads((s / "config.json").read_text())
+        if not same_cfg:
+            print("config.json: FAILED (bundle trained with a different config)")
+            bad += 1
+        print("BUNDLE CHECK (relaxed, non-CPU device):", "OK" if not bad else f"FAILED ({bad})")
+        return 0 if not bad else 2
     for line in (s / "MANIFEST.sha256").read_text().splitlines():
         if not line.strip():
             continue
@@ -44,4 +60,4 @@ def main(bundle: str, shipped: str) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1], sys.argv[2]))
+    sys.exit(main(sys.argv[1], sys.argv[2], relaxed="--relaxed" in sys.argv[3:]))

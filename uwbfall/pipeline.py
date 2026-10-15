@@ -33,7 +33,7 @@ from .config import check_implemented, config_hash, load_config
 from .decode import decode_streams, events_df, to_events, tune
 from .extract import EXTRACTOR_VERSION, get_features
 from .features import block_labels, design, fit_pca, hgb_design, ignore_clip_mask, stream_blocks
-from .models import build_tcn, fit_hgb, predict_seq, seqs, setup_torch, standardise, train_tcn
+from .models import build_tcn, device, fit_hgb, predict_seq, seqs, setup_torch, standardise, train_tcn
 from .scoring import gt_records, score_inproc, summary
 from .sources import StreamSource, events_for
 
@@ -226,7 +226,8 @@ def _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in,
                                                  "segclf_features": clip_state["features"]}, "timings": {**timings, "total_s": round(time.time() - t_start, 1)},
         "peak_rss_gb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 2),
         "env": {"python": platform.python_version(), "numpy": np.__version__, "sklearn": sklearn.__version__,
-                "torch": torch.__version__, "torch_threads": torch.get_num_threads()},
+                "torch": torch.__version__, "torch_threads": torch.get_num_threads(),
+                "tcn_device": str(device())},
     }
     with open(out / "pca.pkl", "wb") as f:
         pickle.dump(pca, f)

@@ -89,8 +89,49 @@ Full runbook: `SUBMISSION.md`.
 Do not paste whole logs. Send only the final score line(s) that `make reproduce-val` / `make srcv` print, any
 error message, and the wall time. That is enough for the next decision and costs very few credits.
 
-## GPU (optional, later)
+## GPU (RTX 5060 Ti)
 
-The RTX 5060 Ti would mainly speed up the TCN part (about 15 of the ~20 min training). Using it needs a code change
-(`runtime.device = "cuda"`) and PyTorch with CUDA 12.8 (`--index-url https://download.pytorch.org/whl/cu128`).
-GPU results are not bit-identical to the CPU ones, so keep the CPU setup above for the official submission.
+`uwbfall` can run the TCN on the GPU: add `DEVICE=cuda` to any `make` command, or `--device cuda` to any
+`python -m uwbfall ...` command (`DEVICE=auto` uses the GPU when available). The default stays `cpu`.
+
+### Separate GPU environment
+
+The CPU lock file pins a CPU build of torch, so make a second environment for the GPU:
+
+```bash
+cd /home/user/challenge1
+uv venv -p 3.13 .venv-gpu && source .venv-gpu/bin/activate
+grep -v '^torch' requirements-lock.txt > /tmp/req-no-torch.txt
+uv pip install -r /tmp/req-no-torch.txt
+# RTX 50xx (Blackwell, sm_120) needs a CUDA 12.8 or newer build of torch:
+uv pip install torch --index-url https://download.pytorch.org/whl/cu128
+python -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0), torch.cuda.get_arch_list())"
+# expect True, 'NVIDIA GeForce RTX 5060 Ti', and 'sm_120' in the list
+```
+
+If `cu128` has no wheel for the current torch version, use the newest CUDA index listed on pytorch.org (cu129, cu130 ...).
+Any CUDA build of 12.8 or later supports sm_120.
+
+### Running on the GPU
+
+```bash
+source /home/user/challenge1/.venv-gpu/bin/activate
+make features                         # CPU anyway (feature extraction does not use torch)
+make reproduce-val DEVICE=cuda        # expect val ranking F1 about 0.95; the final `cmp` line FAILS (normal: not bit-identical)
+make train-final   DEVICE=cuda        # GPU-trained final bundle
+make srcv          DEVICE=cuda        # subject-disjoint CV, much faster than on CPU
+make predict-test  DEVICE=cuda TEST_DIR=/path/to/streams/test
+```
+
+Notes:
+* **Not bit-identical.** GPU results differ from CPU in the last digits, and after training the weights differ
+  slightly too. A val score within about ±0.02 of 0.952 is normal (TCN seed noise alone is about ±0.01).
+* **`make reproduce-val` reuses an existing bundle.** If `/home/user/data_raw/uwbfall_models/final_train13` already
+  exists (for example from a CPU run), delete that folder first to really retrain on the GPU.
+* **Bundle check.** With `DEVICE=cuda`, `verify-models` only checks that the files exist and that the config is the
+  final one (`BUNDLE CHECK (relaxed, non-CPU device)`). The strict sha256 check is for the audited CPU bundle.
+* **Official submission.** The audited, bit-reproducible path is CPU (`models/final`, `make predict-test` without
+  DEVICE). Use the GPU for experiments and speed. If you submit from a GPU-trained bundle, keep that bundle and its
+  `meta.json`; it records `env.tcn_device`.
+* **Speed.** Only the TCN uses the GPU. That is about 15 of the ~20 min of a training run. Feature extraction, HGB
+  and the annotator replay stay on the CPU.

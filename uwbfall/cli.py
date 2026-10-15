@@ -11,6 +11,9 @@
   python -m uwbfall score   --pred <csv> --split val [--out <json>]
   python -m uwbfall extract --sources train,val,test          (warm the feature cache)
 
+Every command accepts --device cpu|cuda|auto for the TCN (or set UWBFALL_DEVICE). cpu is the default and is
+bit-exact with the shipped bundles; cuda (e.g. an RTX 50xx with a cu128 torch build) is faster but not bit-identical.
+
 Source specs (--train-splits / --sources): comma-separated items, each a package split name
 (train | val | test), dir:<folder>[:<prefix>] or comp:<composition.csv>[:<events.csv>] (virtual streams).
 """
@@ -210,7 +213,14 @@ def main(argv=None) -> int:
     x.add_argument("--sources", required=True)
     x.add_argument("--config", default=None)
     x.set_defaults(fn=_cmd_extract)
+    for sp in sub.choices.values():
+        sp.add_argument("--device", choices=["cpu", "cuda", "auto"], default=None,
+                        help="TCN device (default: $UWBFALL_DEVICE or cpu). cpu is bit-exact with the shipped bundles; "
+                             "cuda is faster but not bit-identical")
     a = ap.parse_args(argv)
+    if a.device:
+        import os
+        os.environ["UWBFALL_DEVICE"] = a.device
     return a.fn(a)
 
 
