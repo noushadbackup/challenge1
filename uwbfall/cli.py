@@ -4,6 +4,8 @@
   python -m uwbfall predict --models <model_dir> --split val|test --out <csv>
   python -m uwbfall retune  --models <model_dir> --config cfg.json --train-splits train --out <new_model_dir>
                             (post-model stages only: clip stage, operating point, NMS; no HGB/TCN refit)
+  python -m uwbfall hitattach --models <model_dir> --hit <hit.pkl> [--tau 0.46|none] --out <new_model_dir>
+                            (W5 event hit model as score column + threshold; not promoted, see reports/round2/I3.md)
   python -m uwbfall score   --pred <csv> --split val [--out <json>]
   python -m uwbfall extract --sources train,val,test          (warm the feature cache)
 
@@ -89,6 +91,20 @@ def _cmd_retune(a) -> int:
     return 0
 
 
+def _cmd_hitattach(a) -> int:
+    import pickle
+
+    from .pipeline import attach_hit
+
+    with open(a.hit, "rb") as f:
+        state = pickle.load(f)
+    if a.tau is not None:
+        state["tau"] = None if a.tau.lower() == "none" else float(a.tau)
+    out = attach_hit(a.models, state, a.out)
+    print(json.dumps({"model_dir": str(Path(out).resolve()), "tau": state["tau"]}))
+    return 0
+
+
 def _cmd_score(a) -> int:
     from .scoring import official_cli, summary
 
@@ -146,6 +162,13 @@ def main(argv=None) -> int:
     r.add_argument("--events", default=None)
     r.add_argument("--out", required=True)
     r.set_defaults(fn=_cmd_retune)
+    h = sub.add_parser("hitattach", help="W5 (I3, not promoted): copy a bundle and attach an event hit model "
+                                         "(score column) + threshold, from work/I3_score/fit_hit.py")
+    h.add_argument("--models", required=True)
+    h.add_argument("--hit", required=True, help="pickle {model: hitmodel.HitModel, tau, meta}")
+    h.add_argument("--tau", default=None, help="override the stored threshold (float or 'none')")
+    h.add_argument("--out", required=True)
+    h.set_defaults(fn=_cmd_hitattach)
     s = sub.add_parser("score", help="official evaluator CLI (--ignore-flagged)")
     s.add_argument("--pred", required=True)
     s.add_argument("--split", default="val")

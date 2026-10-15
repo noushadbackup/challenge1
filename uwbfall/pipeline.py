@@ -305,6 +305,8 @@ def retune(bundle, train_sources: list[StreamSource], events: pd.DataFrame | Non
         raw["clip"] = {"segclf": {"enabled": False}, "gate": "none"}
     base = load_config(raw)
     cfg = load_config(_deep(base, overrides))
+    # a hit model (W5) is fitted on candidates of the old operating point: drop it (re-attach with hitattach)
+    cfg["score"].update({"hit_model": None, "threshold": None})
     check_implemented(cfg)
     if cfg["hgb"]["postfall_class"] != base["hgb"]["postfall_class"]:
         raise ValueError("hgb.postfall_class needs a refit")
