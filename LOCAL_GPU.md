@@ -102,7 +102,7 @@ last digits of the TCN can differ. A score within about ±0.01 of the expected v
 
 ```bash
 # put the 5 test files as stream_00.h5 ... stream_04.h5 in a folder named "test"
-make predict-test TEST_DIR=/path/to/streams/test
+make predict-test VARIANT=final_norep TEST_DIR=/path/to/streams/test     # CPU, shipped models/final_norep
 # -> /home/user/data_raw/submission/submission.csv  (+ official validation, drift monitors, checks)
 # only if the drift monitors raise an alert:
 make predict-test-fallback TEST_DIR=/path/to/streams/test
@@ -147,8 +147,10 @@ make features                         # CPU anyway (feature extraction does not 
 make reproduce-val DEVICE=cuda        # expect val ranking F1 about 0.95; the final `cmp` line FAILS (normal: not bit-identical)
 make train-final   DEVICE=cuda        # GPU-trained final bundle
 make srcv          DEVICE=cuda        # subject-disjoint CV, much faster than on CPU
-make predict-test  DEVICE=cuda TEST_DIR=/path/to/streams/test
 ```
+
+Release day: predict on the **CPU** with the shipped model (bit-reproducible, which matters for the one-time code
+verification): `make predict-test VARIANT=final_norep TEST_DIR=/path/to/streams/test`, then `make package` (SUBMISSION.md §7).
 
 Notes:
 * **Not bit-identical.** GPU results differ from CPU in the last digits, and after training the weights differ
@@ -157,8 +159,8 @@ Notes:
   exists (for example from a CPU run), delete that folder first to really retrain on the GPU.
 * **Bundle check.** With `DEVICE=cuda`, `verify-models` only checks that the files exist and that the config is the
   final one (`BUNDLE CHECK (relaxed, non-CPU device)`). The strict sha256 check is for the audited CPU bundle.
-* **Official submission.** The audited, bit-reproducible path is CPU (`models/final`, `make predict-test` without
-  DEVICE). Use the GPU for experiments and speed. If you submit from a GPU-trained bundle, keep that bundle and its
-  `meta.json`; it records `env.tcn_device`.
+* **Official submission.** `make predict-test` always uses the shipped CPU-trained bundle `models/<VARIANT>`. Run it
+  without `DEVICE` (CPU), so the organisers can reproduce the CSV bit for bit from the code package. The GPU is for
+  retraining and experiments.
 * **Speed.** Only the TCN uses the GPU. That is about 15 of the ~20 min of a training run. Feature extraction, HGB
   and the annotator replay stay on the CPU.

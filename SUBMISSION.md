@@ -9,13 +9,18 @@
 
 I2 and I3 promoted nothing. Evidence is in `reports/round2/FINAL.md`.
 
-**Model:** `/home/user/data_raw/uwbfall_models/final`. It is trained on all 18 labelled streams (train + val). The
-operating point comes from the bundle's own 4-fold training OOF; val was not used for any choice. A runnable copy with
-sha256 is in `models/final/` (3.7 MB; `MANIFEST.sha256`, `manifest.json`).
+**Model:** the shipped bundle `models/<VARIANT>/` (sha256 in `MANIFEST.sha256`). It is trained on all 18 labelled
+streams (train + val). The operating point comes from the bundle's own 4-fold training OOF; val was not used for any
+choice. `make predict-test` uses this shipped copy (`BUNDLE`), on CPU, so the submitted CSV can be reproduced bit for
+bit from the code package. A local retrain (`make train-final`, written to `/home/user/data_raw/uwbfall_models/<VARIANT>`)
+is only a reproducibility check (`make verify-models`).
 
-> **Rule compliance (organisers' Q2 answer):** submit with `VARIANT=final_norep` unless the organisers confirm that
-> frame-level sample-and-hold statistics are allowed; use `VARIANT=final_strict` if they forbid the replay dedup.
-> Every `make` command below accepts `VARIANT=...`. See `reports/COMPLIANCE.md`.
+> **Variant (rule compliance, organisers' Q2 answer):** the default is `VARIANT=final_norep`. Use
+> `VARIANT=final_strict` if the organisers forbid the replay dedup, and `VARIANT=final` only if they allow
+> sample-and-hold statistics as features. Every `make` command below accepts `VARIANT=...`. See `reports/COMPLIANCE.md`.
+>
+> **One shot:** results and code can be submitted once. Run on CPU (no `DEVICE=`), use one variant for both the CSV
+> and the code package (section 7), and do not retrain between the two.
 
 ## 0. Before release day (already done; re-run only if something changed)
 
@@ -51,15 +56,14 @@ Each shape must be `(3, T, 368)`.
 
 ```bash
 cd /home/user/challenge1
-make predict-test TEST_DIR=/path/to/streams/test        # SUB defaults to /home/user/data_raw/submission
+make predict-test VARIANT=final_norep TEST_DIR=/path/to/streams/test   # CPU; SUB defaults to /home/user/data_raw/submission
 ```
 
 It does the following:
 
-1. `verify-models` (`uwbfall.tests.verify_bundle`) checks the sha256 of every FINAL bundle file against
-   `models/final/MANIFEST.sha256`. `meta.json` may differ only in timings, peak RSS and git rev (a legitimate refit), and its
-   operating point `postproc` must match.
-2. `python -m uwbfall predict --models $FINAL --sources dir:$TEST_DIR:test --out $SUB/submission.csv`:
+1. `verify-bundle` (`uwbfall.tests.verify_bundle`) checks the sha256 of every file of `models/<VARIANT>/` against its
+   `MANIFEST.sha256`.
+2. `python -m uwbfall predict --models models/<VARIANT> --sources dir:$TEST_DIR:test --out $SUB/submission.csv`:
    * extracts features (cold cache: about 25–50 s per 30-min stream; 2.5–4.5 min in total cold for 5 streams);
    * runs HGB + TCN, the clip gate, decode, replay and NMS;
    * runs the **official `validate_predictions`** before the CSV is written;
@@ -69,15 +73,13 @@ It does the following:
    10 min or more. A shorter remainder stream with no rows is only a WARN (FIXES.md X2). It also prints
    per-stream events/h, durations and score ranges.
 
-If `/home/user/data_raw/uwbfall_models/final` is missing or fails `verify-models`, use the repo copy, which carries the same
-sha256: `make predict-test TEST_DIR=... FINAL=/home/user/challenge1/models/final`. If neither is available, run
-`make train-final` (about 22 min; the audit measured 1312 s), then `make predict-test` as above. It is bit-reproducible: a from-scratch refit
-matched 9/10 files exactly, `meta.json` differs only in timings and git rev, and `verify-models` accepts it
-(AUDIT.md §1).
+To predict with another bundle (for example a local retrain), pass `BUNDLE=<folder>`. With `DEVICE=cpu` it must
+still match the shipped manifest; a GPU-trained bundle needs `DEVICE=cuda` (relaxed check) and is not bit-reproducible,
+so it is not recommended for the submission.
 
 When the test streams are inside the package, the equivalent literal command is
-`python -m uwbfall predict --models /home/user/data_raw/uwbfall_models/final --split test --out <csv>`. In the dry run
-it gave a byte-identical CSV (`reports/round2/FINAL.md` §4).
+`python -m uwbfall predict --models models/<VARIANT> --split test --out <csv>`. In the dry run it gave a byte-identical
+CSV (`reports/round2/FINAL.md` §4).
 
 **Time / memory (dry run, 5 streams = 2.05 h, 2 threads):**
 - Cold feature cache and cold page cache: **143–260 s** wall depending on machine load (integrator 260 s; audit 143 s and
@@ -180,3 +182,27 @@ moved by 0.001 (same official score). Do not edit `runtime.threads`.
 - Disclose in the method description: several features use the published stream generator's structure (0.2 s crossfade
   junction statistics, sample-and-hold repeat share, a segment classifier gating on P(fall clip)). The package documents
   that construction. The physics-only fallback does not depend on it.
+
+## 7. Code submission (one time)
+
+The challenge allows one submission. Top-ranked teams must provide code and models for verification. After the test
+CSV is final:
+
+```bash
+make package VARIANT=final_norep          # same VARIANT as the submitted CSV
+# -> dist/uwbfall_final_norep_code.zip  (+ its sha256 printed)
+```
+
+The zip holds `uwbfall/` (runtime code, configs, checks), `models/<VARIANT>/` and the fallback, `Makefile`,
+`run_all.sh`, `requirements-lock.txt`, a README for the organisers (`tools/PACKAGE_README.md`), `VERSION` (git rev)
+and `SHA256SUMS`. If `$SUB/submission.csv` exists, it is included under `results/` with its drift report and log.
+Development material (`work/`, `srcv/`, `analysis/`, `reports/`, parity tests) is left out; nothing in the package
+imports it.
+
+Before sending, test it once from a fresh folder:
+
+```bash
+mkdir -p /tmp/pkgtest && cd /tmp/pkgtest && unzip -q <repo>/dist/uwbfall_final_norep_code.zip && cd uwbfall_final_norep_code
+sha256sum -c --quiet SHA256SUMS && make checks && make predict-test TEST_DIR=/path/to/streams/test SUB=/tmp/pkgtest/sub
+cmp /tmp/pkgtest/sub/submission.csv results/submission.csv && echo "package reproduces the submitted CSV"
+```

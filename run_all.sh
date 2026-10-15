@@ -5,7 +5,7 @@
 #   bash run_all.sh cuda       # TCN on the GPU (RTX 50xx: installs a CUDA 12.8 torch build in .venv-gpu)
 #   bash run_all.sh cuda --srcv          # also run the subject-disjoint CV (long: ~1.5-2 h on CPU)
 #   bash run_all.sh cpu --skip-setup     # environment and dataset already in place
-#   bash run_all.sh cuda --variant final_norep    # model variant: final | final_norep | final_strict (reports/COMPLIANCE.md)
+#   bash run_all.sh cuda --variant final_strict   # model variant: final_norep (default) | final_strict | final
 #   bash run_all.sh cuda --data /mnt/e/uwbfall/data_raw   # keep dataset, caches and models on another drive
 #                                                       # (Windows E:\ = /mnt/e in WSL; "E:\uwbfall\data_raw" also works)
 #
@@ -14,7 +14,7 @@
 set -euo pipefail
 
 DEVICE="${1:-cpu}"; shift || true
-RUN_SRCV=0; SKIP_SETUP=0; DATA_DIR=""; VARIANT=final
+RUN_SRCV=0; SKIP_SETUP=0; DATA_DIR=""; VARIANT=final_norep
 while [ $# -gt 0 ]; do
   case "$1" in
     --srcv) RUN_SRCV=1 ;;
@@ -146,7 +146,7 @@ train_val() {
       --train-splits train --out "$VAL_BUNDLE"
   "${PYENV[@]}" python3 -m uwbfall predict --models "$VAL_BUNDLE" --split val --out "$VAL_CSV"
   "${PYENV[@]}" python3 -m uwbfall score --pred "$VAL_CSV" --split val --out "${VAL_CSV%.csv}.json"
-  if [ "$DEVICE" = cpu ] && [ "$VARIANT" = final ]; then
+  if [ "$DEVICE" = cpu ] && [ "$VARIANT" = final ] && [ -f "$REPO/work/I1_clip/preds/uwb_default/G7N4/val.csv" ]; then
     if cmp -s "$VAL_CSV" "$REPO/work/I1_clip/preds/uwb_default/G7N4/val.csv"; then
       echo "val CSV byte-identical to the audited result (0.9524)"
     else
@@ -165,7 +165,9 @@ step checks "${MK[@]}" checks
 step dry_run "${MK[@]}" dry-run
 
 # ---------------------------------------------------------------- 7. optional SR-CV
-if [ $RUN_SRCV = 1 ]; then
+if [ $RUN_SRCV = 1 ] && [ ! -d "$REPO/srcv" ]; then
+  echo "--srcv skipped: srcv/ is not part of this package (development checkout only)"
+elif [ $RUN_SRCV = 1 ]; then
   run_srcv() {
     "${PYENV[@]}" python3 -m srcv.build      # fold CSVs under /home/user/data_raw/srcv (no radar data written)
     "${PYENV[@]}" python3 -m srcv.run_pipeline "local_${VARIANT}_$DEVICE" --config "$REPO/uwbfall/configs/$VARIANT.json"
@@ -182,12 +184,13 @@ python3 - "${VAL_CSV%.csv}.json" <<'EOF'
 import json, sys
 r = json.load(open(sys.argv[1]))
 p = r["primary"]
-print(f"  ranking F1 = {r['ranking_score']['f1_mean']:.4f}   (expected ~0.952 on CPU; GPU within about +-0.02)")
+print(f"  ranking F1 = {r['ranking_score']['f1_mean']:.4f}   (CPU reference: see README / SUBMISSION.md; GPU within about +-0.02)")
 print(f"  TP/FP/FN @0.3 = {p['tp']}/{p['fp']}/{p['fn']}   FA/h = {p['false_alarms_per_hour']:.2f}   "
       f"median start error = {p['start_error_median_abs']:.3f} s")
 EOF
 echo
-echo "Final model (train+val):  $MODELS/$VARIANT"
-echo "Dry-run submission:       $DATA/fake_test/submission/submission.csv"
-echo "Logs:                     $LOGS"
-echo "Release day:              make predict-test DEVICE=$DEVICE VARIANT=$VARIANT TEST_DIR=/path/to/streams/test   (see SUBMISSION.md)"
+echo "Retrained model (train+val): $MODELS/$VARIANT   (verify step compares it with the shipped models/$VARIANT)"
+echo "Dry-run submission:          $DATA/fake_test/submission/submission.csv   (made with the shipped models/$VARIANT)"
+echo "Logs:                        $LOGS"
+echo "Release day (CPU, shipped model, bit-reproducible):"
+echo "  make predict-test VARIANT=$VARIANT TEST_DIR=/path/to/streams/test   (see SUBMISSION.md)"
