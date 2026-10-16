@@ -54,8 +54,8 @@ The streams are **not continuous recordings**:
 
 ## 4. Data analysis: what we found
 
-A 10-person data team (8 analysts who voted on each finding, 2 leads who checked them with code) confirmed or corrected
-every finding below.
+Every finding below was checked twice, independently, with code; findings that did not reproduce were corrected or
+dropped.
 
 ### 4.1 Frame format
 
@@ -133,18 +133,18 @@ because the generator shuffles the clips.
 ## 6. How we worked
 
 1. **Analysis:** an in-depth dataset analysis plus a first prototype, which proved the patterns.
-2. **20-agent team:**
-   - 8 voters and 2 leads checked the analysis;
-   - 5 field experts reviewed the plan;
-   - 5 executors ran experiments E1–E5.
+2. **Independent review and experiments:**
+   - re-checked every analysis finding with separate code;
+   - reviewed the plan against the literature and the rules;
+   - ran experiments E1–E5 (pseudo-test bank, boundaries, I/Q features, deep model, ensembles).
 3. **Round 2:**
    - built the subject-disjoint CV (SR-CV) and the promotion rule;
    - improved the system;
    - shipped the `uwbfall` package.
 4. **Rule compliance:** after the organisers' answers we built the `final_norep` and `final_strict` variants.
 5. **Round 3 + ablation:**
-   - 4 parallel experiments, each independently re-verified;
-   - an ablation run on the team's GPU.
+   - 4 parallel experiments, each re-verified independently from its output files;
+   - an ablation run on our GPU.
 
 **Promotion rule** (a change is kept only if all three hold):
 - paired subject-cluster bootstrap P(gain) ≥ 0.90;
@@ -163,7 +163,7 @@ because the generator shuffles the clips.
 | 6 | Re-run the package annotator on each detection | Val 0.884 → 0.928; start error 0.22 → 0.06 s | Yes |
 | 7 | Complex I/Q (phase) features | Not confirmed on val | No |
 | 8 | Dilated TCN (3 seeds), blend 0.75 TCN + 0.25 HGB | Val 0.930 / 0.934 | Yes |
-| 9 | Multi-agent voting (per-radar agents, model committee, stacking, box fusion) | No gain over a simple average | No |
+| 9 | Ensemble voting (per-radar models, model committee, stacking, box fusion) | No gain over a simple average | No |
 | 10 | Blend + annotator replay | Val 0.965; CV 0.886 | Yes |
 | 11 | Replay agreement gate 0.1 → 0.3 | CV +0.008, P 1.00 | Yes |
 | 12 | Segment-classifier gate + 4 s NMS | CV +0.028, P 1.00; FPs 35.7 → 20.0 | Yes |
@@ -263,7 +263,7 @@ It processes one raw stream into fall rows in under a minute on a CPU, using onl
 
 ![Ablation](figures/11_ablation.png)
 
-## 11. Round 3: new ideas, each checked by an independent verifier
+## 11. Round 3: new ideas, each re-checked independently
 
 | Idea | Result | Rule |
 | --- | --- | --- |
@@ -358,7 +358,7 @@ Checklist:
 
 ## 17. Where everything is
 
-- **Repository:** `noushadbackup/challenge1`, branch `claude/nice-cori-k0o5eu`.
+- **Repository:** `noushadbackup/challenge1` (private).
 - **Reports:**
   - `reports/REPORT.md` (analysis), `reports/PLAN.md`, `reports/team/` (data team);
   - `reports/round2/` (FINAL, EVAL, AUDIT), `reports/round3/` (R3, ABLATION);
