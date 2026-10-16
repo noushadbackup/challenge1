@@ -1,0 +1,10 @@
+   clip: junction threshold 1.0823, train diag {"recall_fall_junctions": 0.9499217527386542, "recall_all_junctions": 0.8703917050691244, "peak_precision": 0.9754045307443365, "peaks_per_min": 4.176390553337959}
+   clip: segment classifier on 1558 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9129
+fold_0 train done 112 s
+[   15.7s rss=1.30GB] predict cv0_test_00: 23 candidates, 22 replay-refined, 15.7 s
+[   26.5s rss=1.30GB] predict cv0_test_01: 32 candidates, 29 replay-refined, 10.8 s
+[   38.0s rss=1.30GB] predict cv0_test_02: 37 candidates, 35 replay-refined, 11.5 s
+[   49.4s rss=1.30GB] predict cv0_test_03: 26 candidates, 24 replay-refined, 11.3 s
+[   51.0s rss=1.30GB] predict cv0_test_04: 6 candidates, 6 replay-refined, 1.7 s
+  fold_0 test rows byte-identical to base: True
+fold_0 test done 164 s

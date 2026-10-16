@@ -1,0 +1,86 @@
+  fold_0 train cv0_train_00: 1 intervals
+  fold_0 train cv0_train_01: 1 intervals
+  fold_0 train cv0_train_02: 4 intervals
+  fold_0 train cv0_train_03: 1 intervals
+  fold_0 train cv0_train_04: 4 intervals
+  fold_0 train cv0_train_05: 5 intervals
+  fold_0 train cv0_train_06: 1 intervals
+  fold_0 train cv0_train_07: 1 intervals
+  fold_0 train cv0_train_08: 2 intervals
+  fold_0 train cv0_train_10: 9 intervals
+  fold_0 train cv0_train_11: 3 intervals
+  fold_0 train cv0_train_12: 2 intervals
+fold_0 train done 32 s
+  fold_0 test cv0_test_01: 2 intervals
+  fold_0 test cv0_test_02: 3 intervals
+fold_0 test done 5 s
+  fold_1 train cv1_train_00: 4 intervals
+  fold_1 train cv1_train_01: 1 intervals
+  fold_1 train cv1_train_02: 1 intervals
+  fold_1 train cv1_train_03: 2 intervals
+  fold_1 train cv1_train_04: 1 intervals
+  fold_1 train cv1_train_05: 1 intervals
+  fold_1 train cv1_train_06: 3 intervals
+  fold_1 train cv1_train_07: 5 intervals
+  fold_1 train cv1_train_08: 3 intervals
+  fold_1 train cv1_train_09: 4 intervals
+  fold_1 train cv1_train_10: 2 intervals
+  fold_1 train cv1_train_11: 3 intervals
+  fold_1 train cv1_train_12: 2 intervals
+fold_1 train done 33 s
+  fold_1 test cv1_test_00: 8 intervals
+  fold_1 test cv1_test_01: 1 intervals
+  fold_1 test cv1_test_02: 5 intervals
+  fold_1 test cv1_test_03: 1 intervals
+fold_1 test done 13 s
+  fold_2 train cv2_train_00: 2 intervals
+  fold_2 train cv2_train_01: 7 intervals
+  fold_2 train cv2_train_02: 9 intervals
+  fold_2 train cv2_train_03: 3 intervals
+  fold_2 train cv2_train_04: 1 intervals
+  fold_2 train cv2_train_06: 5 intervals
+  fold_2 train cv2_train_07: 4 intervals
+  fold_2 train cv2_train_08: 1 intervals
+  fold_2 train cv2_train_09: 3 intervals
+  fold_2 train cv2_train_10: 4 intervals
+  fold_2 train cv2_train_11: 4 intervals
+  fold_2 train cv2_train_12: 1 intervals
+fold_2 train done 30 s
+  fold_2 test cv2_test_00: 3 intervals
+  fold_2 test cv2_test_01: 2 intervals
+  fold_2 test cv2_test_02: 4 intervals
+  fold_2 test cv2_test_03: 1 intervals
+fold_2 test done 9 s
+  fold_3 train cv3_train_00: 2 intervals
+  fold_3 train cv3_train_01: 4 intervals
+  fold_3 train cv3_train_02: 4 intervals
+  fold_3 train cv3_train_03: 4 intervals
+  fold_3 train cv3_train_06: 6 intervals
+  fold_3 train cv3_train_07: 2 intervals
+  fold_3 train cv3_train_08: 1 intervals
+  fold_3 train cv3_train_09: 3 intervals
+  fold_3 train cv3_train_10: 3 intervals
+  fold_3 train cv3_train_11: 1 intervals
+  fold_3 train cv3_train_12: 5 intervals
+fold_3 train done 29 s
+  fold_3 test cv3_test_00: 3 intervals
+  fold_3 test cv3_test_01: 3 intervals
+  fold_3 test cv3_test_02: 2 intervals
+  fold_3 test cv3_test_03: 7 intervals
+fold_3 test done 10 s
+  official_train train train_00: 6 intervals
+  official_train train train_01: 2 intervals
+  official_train train train_03: 2 intervals
+  official_train train train_05: 4 intervals
+  official_train train train_06: 4 intervals
+  official_train train train_08: 3 intervals
+  official_train train train_09: 7 intervals
+  official_train train train_10: 2 intervals
+  official_train train train_11: 3 intervals
+official_train train done 40 s
+  official_train test val_00: 4 intervals
+  official_train test val_01: 2 intervals
+  official_train test val_02: 3 intervals
+  official_train test val_03: 1 intervals
+  official_train test val_04: 2 intervals
+official_train test done 20 s

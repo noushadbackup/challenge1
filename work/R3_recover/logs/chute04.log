@@ -1,0 +1,19 @@
+fall segments by type: n, share well-segmented, gate median, share gate<0.3 (well-seg / mis-seg)
+  Chute01: n=458 seg_ok=0.82  gate_med ok=0.980 bad=0.241  low-gate ok=0.175 bad=0.556
+  Chute02: n=457 seg_ok=0.81  gate_med ok=0.984 bad=0.575  low-gate ok=0.186 bad=0.442
+  Chute03: n=473 seg_ok=0.78  gate_med ok=0.961 bad=0.539  low-gate ok=0.213 bad=0.422
+  Chute04: n=485 seg_ok=0.73  gate_med ok=0.820 bad=0.200  low-gate ok=0.317 bad=0.553
+
+well-segmented fall segments: feature medians by type (and Chute04 split by gate)
+              len_s  j_left  j_right  static_ab_max  st5_max  st10_max  st10_p90  diff_max  diff_p90  diff_mean
+Chute01        12.4   1.665    1.697         -0.144   -0.132     0.004    -0.146     2.733     2.209      0.848
+Chute02        12.0   1.563    1.686         -0.154   -0.118     0.009    -0.150     2.668     2.042      0.799
+Chute03        12.0   1.677    1.686         -0.208   -0.132     0.002    -0.166     2.801     2.039      0.848
+Chute04        11.8   1.625    1.695         -0.378   -0.157     0.010    -0.171     2.373     1.973      0.820
+C04 gate<.3    11.6   1.644    1.651         -0.589   -0.262    -0.035    -0.246     2.030     1.606      0.585
+C04 gate>=.3   11.8   1.617    1.718         -0.248   -0.095     0.036    -0.142     2.586     2.080      0.875
+ADL segs       12.6   1.518    1.516         -0.797   -0.288    -0.066    -0.338     1.439     0.947      0.359
+
+raw (ungated) blend max in fall segments, Chute04 low-gate vs ADL segments with gate<.3:
+  C04 low-gate rawmax quantiles [0.497 0.689 0.83  0.95  0.984]
+  ADL low-gate rawmax quantiles [0.    0.005 0.021 0.513 0.991] n 5628

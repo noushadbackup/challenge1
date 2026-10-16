@@ -1,0 +1,36 @@
+[sec] fold_0: train base 0.9526 best delta +0.0000 chosen None -> 0 rows added
+[sec] fold_1: train base 0.9312 best delta +0.0000 chosen None -> 0 rows added
+[sec] fold_2: train base 0.9589 best delta +0.0027 chosen {'tau': np.float64(0.7), 'thr2': np.float64(0.1), 'min_d2': np.float64(0.2), 'nms': np.float64(4.0), 'mode': 'seg'} -> 3 rows added
+[sec] fold_3: train base 0.9319 best delta +0.0068 chosen {'tau': np.float64(0.3), 'thr2': np.float64(0.1), 'min_d2': np.float64(0.4), 'nms': np.float64(4.0), 'mode': 'seg'} -> 3 rows added
+[sec] official_train: train base 0.9410 best delta +0.0060 chosen {'tau': np.float64(0.3), 'thr2': np.float64(0.1), 'min_d2': np.float64(0.8), 'nms': np.float64(4.0), 'mode': 'rep'} -> 11 rows added
+[sec] pooled 0.9142 [240, 24, 13] delta +0.0003 CI [-0.0056992191096624425, 0.0057605814570910845] P 0.538 folds 1 val 0.9373->0.9383 promote False
+[amax] fold_0: train base 0.9526 best delta +0.0000 chosen None -> 0 rows added
+[amax] fold_1: train base 0.9312 best delta +0.0000 chosen None -> 0 rows added
+[amax] fold_2: train base 0.9589 best delta +0.0027 chosen {'tau': np.float64(0.7), 'pmin': np.float64(0.1), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'seg'} -> 3 rows added
+[amax] fold_3: train base 0.9319 best delta +0.0068 chosen {'tau': np.float64(0.3), 'pmin': np.float64(0.15), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'seg'} -> 3 rows added
+[amax] official_train: train base 0.9410 best delta +0.0032 chosen {'tau': np.float64(0.3), 'pmin': np.float64(0.2), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'det'} -> 9 rows added
+[amax] pooled 0.9142 [240, 24, 13] delta +0.0003 CI [-0.0056992191096624425, 0.0057605814570910845] P 0.538 folds 1 val 0.9373->0.9383 promote False
+[raw] fold_0: train base 0.9526 best delta +0.0000 chosen None -> 0 rows added
+[raw] fold_1: train base 0.9312 best delta +0.0000 chosen None -> 0 rows added
+[raw] fold_2: train base 0.9589 best delta +0.0000 chosen None -> 0 rows added
+[raw] fold_3: train base 0.9319 best delta +0.0000 chosen None -> 0 rows added
+[raw] official_train: train base 0.9410 best delta +0.0086 chosen {'tau_lo': np.float64(0.3), 'thr_r': np.float64(0.4), 'min_d2': np.float64(0.8), 'nms': np.float64(4.0), 'mode': 'seg'} -> 2 rows added
+[raw] pooled 0.9139 [239, 23, 14] delta +0.0000 CI [0.0, 0.0] P 0.000 folds 0 val 0.9373->0.9453 promote False
+[sec_rep] fold_0: train base 0.9526 best delta +0.0000 chosen None -> 0 rows added
+[sec_rep] fold_1: train base 0.9312 best delta +0.0000 chosen None -> 0 rows added
+[sec_rep] fold_2: train base 0.9589 best delta +0.0000 chosen None -> 0 rows added
+[sec_rep] fold_3: train base 0.9319 best delta +0.0043 chosen {'tau': np.float64(0.3), 'thr2': np.float64(0.1), 'min_d2': np.float64(0.4), 'nms': np.float64(4.0), 'mode': 'rep'} -> 3 rows added
+[sec_rep] official_train: train base 0.9410 best delta +0.0060 chosen {'tau': np.float64(0.3), 'thr2': np.float64(0.1), 'min_d2': np.float64(0.8), 'nms': np.float64(4.0), 'mode': 'rep'} -> 11 rows added
+[sec_rep] pooled 0.9121 [239, 24, 14] delta -0.0018 CI [-0.006655918755607493, 0.0] P 0.000 folds 0 val 0.9373->0.9383 promote False
+[amax_rep] fold_0: train base 0.9526 best delta +0.0000 chosen None -> 0 rows added
+[amax_rep] fold_1: train base 0.9312 best delta +0.0000 chosen None -> 0 rows added
+[amax_rep] fold_2: train base 0.9589 best delta +0.0010 chosen {'tau': np.float64(0.7), 'pmin': np.float64(0.1), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'rep'} -> 3 rows added
+[amax_rep] fold_3: train base 0.9319 best delta +0.0057 chosen {'tau': np.float64(0.3), 'pmin': np.float64(0.15), 'frac': np.float64(0.7), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'rep'} -> 3 rows added
+[amax_rep] official_train: train base 0.9410 best delta +0.0032 chosen {'tau': np.float64(0.3), 'pmin': np.float64(0.2), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'rep'} -> 9 rows added
+[amax_rep] pooled 0.9142 [240, 24, 13] delta +0.0003 CI [-0.005572807064816046, 0.005931477973859069] P 0.543 folds 1 val 0.9373->0.9383 promote False
+[amax_seg] fold_0: train base 0.9526 best delta +0.0000 chosen None -> 0 rows added
+[amax_seg] fold_1: train base 0.9312 best delta +0.0000 chosen None -> 0 rows added
+[amax_seg] fold_2: train base 0.9589 best delta +0.0027 chosen {'tau': np.float64(0.7), 'pmin': np.float64(0.1), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'seg'} -> 3 rows added
+[amax_seg] fold_3: train base 0.9319 best delta +0.0068 chosen {'tau': np.float64(0.3), 'pmin': np.float64(0.15), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'seg'} -> 3 rows added
+[amax_seg] official_train: train base 0.9410 best delta +0.0003 chosen {'tau': np.float64(0.5), 'pmin': np.float64(0.2), 'frac': np.float64(0.5), 'nms': np.float64(4.0), 'dmin': np.float64(1.0), 'mode': 'seg'} -> 8 rows added
+[amax_seg] pooled 0.9142 [240, 24, 13] delta +0.0003 CI [-0.0056992191096624425, 0.0057605814570910845] P 0.538 folds 1 val 0.9373->0.9383 promote False
