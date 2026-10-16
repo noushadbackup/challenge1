@@ -1,0 +1,18 @@
+[    1.2s rss=0.43GB] retune /home/user/data_raw/r3/boundary/bags/bag1_src/fold_0 -> /home/user/data_raw/r3/boundary/bags/bag1/fold_0: overrides {}, config 57d24819cc312f3f
+[   40.8s rss=1.15GB] clip: junction threshold 1.0823, train diag {"recall_fall_junctions": 0.9499217527386542, "recall_all_junctions": 0.8703917050691244, "peak_precision": 0.9754045307443365, "peaks_per_min": 4.176390553337959}
+[   63.2s rss=1.19GB] clip: segment classifier on 1558 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9129
+[   75.4s rss=1.19GB]   operating point (0.3, 5, 0.8, 0.2) OOF rank F1 0.9434
+[  148.5s rss=1.35GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9434, "f1@0.1/0.3/0.5/0.7": [0.982, 0.961, 0.888, 0.533], "tp_fp_fn@0.3": [184, 8, 7], "fa_per_h@0.3": 1.3, "start_err_med@0.3": 0.31, "mean_tiou@0.3": 0.707}, "final": {"rank_f1": 0.9551, "f1@0.1/0.3/0.5/0.7": [0.982, 0.96, 0.923, 0.776], "tp_fp_fn@0.3": [182, 6, 9], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.839}}
+[  167.5s rss=1.35GB] drift reference written: /home/user/data_raw/r3/boundary/bags/bag1/fold_0/drift_ref.json (junctions/h 250.6, events/h 56.6, repeat share 0.237)
+[  167.5s rss=1.35GB] fit done in 147.4 s -> /home/user/data_raw/r3/boundary/bags/bag1/fold_0
+[bag1] fold_0 retuned
+[    0.0s rss=1.35GB] retune /home/user/data_raw/r3/boundary/bags/bag1_src/fold_1 -> /home/user/data_raw/r3/boundary/bags/bag1/fold_1: overrides {}, config 57d24819cc312f3f
+[   35.0s rss=1.35GB] clip: junction threshold 0.9681, train diag {"recall_fall_junctions": 0.9496062992125984, "recall_all_junctions": 0.8677829099307159, "peak_precision": 0.946969696969697, "peaks_per_min": 4.268544634676535}
+[   55.2s rss=1.35GB] clip: segment classifier on 1597 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9283
+[   61.2s rss=1.35GB]   operating point (0.3, 5, 0.8, 0.2) OOF rank F1 0.9326
+[  132.1s rss=1.39GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9326, "f1@0.1/0.3/0.5/0.7": [0.971, 0.95, 0.877, 0.472], "tp_fp_fn@0.3": [181, 9, 10], "fa_per_h@0.3": 1.46, "start_err_med@0.3": 0.32, "mean_tiou@0.3": 0.697}, "final": {"rank_f1": 0.9284, "f1@0.1/0.3/0.5/0.7": [0.953, 0.932, 0.901, 0.764], "tp_fp_fn@0.3": [178, 13, 13], "fa_per_h@0.3": 2.1, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.845}}
+[  146.2s rss=1.39GB] drift reference written: /home/user/data_raw/r3/boundary/bags/bag1/fold_1/drift_ref.json (junctions/h 256.1, events/h 55.5, repeat share 0.237)
+[  146.2s rss=1.39GB] fit done in 132.1 s -> /home/user/data_raw/r3/boundary/bags/bag1/fold_1
+[bag1] fold_1 retuned
+[    0.0s rss=1.39GB] retune /home/user/data_raw/r3/boundary/bags/bag1_src/fold_2 -> /home/user/data_raw/r3/boundary/bags/bag1/fold_2: overrides {}, config 57d24819cc312f3f
+[   34.6s rss=1.39GB] clip: junction threshold 1.0026, train diag {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8789625360230547, "peak_precision": 0.949375, "peaks_per_min": 4.311041655439995}

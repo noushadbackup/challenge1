@@ -1,0 +1,8 @@
+[fold_1] train OOF: 352 cands, reproduces oof_final: True (77 s)
+[fold_1] test: 121 cands, reproduces base CSV: True (36 s)
+[fold_2] train OOF: 360 cands, reproduces oof_final: True (74 s)
+[fold_2] test: 89 cands, reproduces base CSV: True (27 s)
+[fold_3] train OOF: 345 cands, reproduces oof_final: True (72 s)
+[fold_3] test: 115 cands, reproduces base CSV: True (37 s)
+[val] train OOF: 339 cands, reproduces oof_final: True (84 s)
+[val] test: 93 cands, reproduces base CSV: True (41 s)

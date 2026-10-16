@@ -1,0 +1,29 @@
+08:57:42 [fold_0] inputs 13 streams, C=143, 191 falls (20 s)
+/home/user/challenge1/work/R3_boundary/bmodel.py:131: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  run = 0.95 * run + 0.05 * float(loss) if st else float(loss)
+08:57:54   step 100/400 loss 3.884
+08:58:04   step 200/400 loss 3.101
+08:58:14   step 300/400 loss 2.874
+08:58:24   step 400/400 loss 2.799
+08:58:24 [fold_0] inner fold 0 done
+08:58:34   step 100/400 loss 3.641
+08:58:43   step 200/400 loss 3.032
+08:58:53   step 300/400 loss 2.823
+08:59:03   step 400/400 loss 2.758
+08:59:03 [fold_0] inner fold 1 done
+08:59:12   step 100/400 loss 3.890
+08:59:22   step 200/400 loss 3.131
+08:59:32   step 300/400 loss 2.882
+08:59:41   step 400/400 loss 2.830
+08:59:41 [fold_0] inner fold 2 done
+08:59:51   step 100/400 loss 3.781
+09:00:01   step 200/400 loss 3.092
+09:00:11   step 300/400 loss 2.884
+09:00:21   step 400/400 loss 2.823
+09:00:21 [fold_0] inner fold 3 done
+09:00:31   step 100/400 loss 3.924
+09:00:40   step 200/400 loss 3.202
+09:00:50   step 300/400 loss 2.967
+09:01:00   step 400/400 loss 2.875
+09:01:05 [fold_0] done (224 s)

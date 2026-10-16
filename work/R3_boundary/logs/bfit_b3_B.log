@@ -1,0 +1,55 @@
+09:27:55 [fold_1] inputs 13 streams, C=173, 359 falls (16 s)
+/home/user/challenge1/work/R3_boundary/bmodel.py:136: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  run = 0.95 * run + 0.05 * float(loss) if st else float(loss)
+09:28:06   step 100/800 loss 4.124
+09:28:16   step 200/800 loss 3.310
+09:28:26   step 300/800 loss 2.959
+09:28:36   step 400/800 loss 2.821
+09:28:45   step 500/800 loss 2.740
+09:28:55   step 600/800 loss 2.687
+09:29:05   step 700/800 loss 2.661
+09:29:15   step 800/800 loss 2.658
+09:29:25   step 100/800 loss 4.200
+09:29:34   step 200/800 loss 3.354
+09:29:44   step 300/800 loss 2.981
+09:29:53   step 400/800 loss 2.850
+09:30:03   step 500/800 loss 2.743
+09:30:13   step 600/800 loss 2.690
+09:30:23   step 700/800 loss 2.663
+09:30:34   step 800/800 loss 2.664
+09:30:50   step 100/800 loss 4.183
+09:31:00   step 200/800 loss 3.305
+09:31:11   step 300/800 loss 2.960
+09:31:22   step 400/800 loss 2.817
+09:31:31   step 500/800 loss 2.757
+09:31:42   step 600/800 loss 2.689
+09:31:51   step 700/800 loss 2.666
+09:32:01   step 800/800 loss 2.650
+09:32:01 [fold_1] inner fold 0 done
+09:32:11   step 100/800 loss 4.241
+09:32:22   step 200/800 loss 3.344
+09:32:32   step 300/800 loss 3.015
+09:32:42   step 400/800 loss 2.852
+09:32:52   step 500/800 loss 2.762
+09:33:01   step 600/800 loss 2.711
+09:33:11   step 700/800 loss 2.682
+09:33:21   step 800/800 loss 2.672
+09:33:31   step 100/800 loss 4.219
+09:33:41   step 200/800 loss 3.318
+09:33:51   step 300/800 loss 2.971
+09:34:01   step 400/800 loss 2.839
+09:34:11   step 500/800 loss 2.753
+09:34:21   step 600/800 loss 2.706
+09:34:30   step 700/800 loss 2.681
+09:34:40   step 800/800 loss 2.670
+09:34:51   step 100/800 loss 4.137
+09:35:00   step 200/800 loss 3.375
+09:35:10   step 300/800 loss 2.988
+09:35:20   step 400/800 loss 2.849
+09:35:30   step 500/800 loss 2.768
+09:35:40   step 600/800 loss 2.692
+09:35:51   step 700/800 loss 2.671
+09:36:00   step 800/800 loss 2.668
+09:36:01 [fold_1] inner fold 1 done
+09:36:11   step 100/800 loss 4.234
