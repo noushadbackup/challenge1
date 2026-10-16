@@ -1,0 +1,35 @@
+[fold_3      0s] inner fold 0: train on 10 streams
+/home/user/challenge1/work/R3_tal/tal.py:206: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  log(f"  step {it + 1}/{steps} loss {loss.item():.4f} (cls {float(lc) / ema_pos:.3f} reg "
+[fold_3     32s]   step 200/1000 loss 0.4116 (cls 0.183 reg 0.212 aux 0.034) 31s
+[fold_3     65s]   step 400/1000 loss 0.4346 (cls 0.215 reg 0.202 aux 0.036) 64s
+[fold_3     98s]   step 600/1000 loss 0.3087 (cls 0.145 reg 0.151 aux 0.026) 97s
+[fold_3    131s]   step 800/1000 loss 0.0760 (cls 0.028 reg 0.043 aux 0.010) 130s
+[fold_3    165s]   step 1000/1000 loss 0.1844 (cls 0.064 reg 0.114 aux 0.014) 164s
+[fold_3    165s] inner fold 1: train on 10 streams
+[fold_3    198s]   step 200/1000 loss 0.3439 (cls 0.164 reg 0.168 aux 0.024) 33s
+[fold_3    231s]   step 400/1000 loss 0.2940 (cls 0.130 reg 0.152 aux 0.023) 66s
+[fold_3    266s]   step 600/1000 loss 0.1977 (cls 0.089 reg 0.099 aux 0.019) 100s
+[fold_3    297s]   step 800/1000 loss 0.2510 (cls 0.125 reg 0.114 aux 0.024) 132s
+[fold_3    328s]   step 1000/1000 loss 0.1912 (cls 0.072 reg 0.105 aux 0.028) 163s
+[fold_3    328s] inner fold 2: train on 9 streams
+[fold_3    359s]   step 200/1000 loss 0.5982 (cls 0.267 reg 0.309 aux 0.044) 30s
+[fold_3    392s]   step 400/1000 loss 0.1778 (cls 0.088 reg 0.082 aux 0.016) 64s
+[fold_3    425s]   step 600/1000 loss 0.2408 (cls 0.115 reg 0.115 aux 0.021) 96s
+[fold_3    457s]   step 800/1000 loss 0.1854 (cls 0.078 reg 0.094 aux 0.027) 128s
+[fold_3    489s]   step 1000/1000 loss 0.2783 (cls 0.134 reg 0.130 aux 0.029) 161s
+[fold_3    490s] inner fold 3: train on 10 streams
+[fold_3    524s]   step 200/1000 loss 0.1799 (cls 0.085 reg 0.086 aux 0.017) 35s
+[fold_3    558s]   step 400/1000 loss 0.3876 (cls 0.168 reg 0.195 aux 0.049) 68s
+[fold_3    589s]   step 600/1000 loss 0.2072 (cls 0.091 reg 0.109 aux 0.015) 100s
+[fold_3    622s]   step 800/1000 loss 0.2311 (cls 0.106 reg 0.113 aux 0.026) 132s
+[fold_3    656s]   step 1000/1000 loss 0.1762 (cls 0.080 reg 0.082 aux 0.029) 166s
+[fold_3    656s] OOF done
+[fold_3    656s] final model on all training streams
+[fold_3    688s]   step 200/1000 loss 0.6176 (cls 0.265 reg 0.325 aux 0.055) 32s
+[fold_3    720s]   step 400/1000 loss 0.2122 (cls 0.108 reg 0.093 aux 0.023) 64s
+[fold_3    753s]   step 600/1000 loss 0.3025 (cls 0.154 reg 0.136 aux 0.027) 97s
+[fold_3    784s]   step 800/1000 loss 0.2296 (cls 0.104 reg 0.114 aux 0.024) 128s
+[fold_3    817s]   step 1000/1000 loss 0.2386 (cls 0.108 reg 0.121 aux 0.020) 161s
+[fold_3    818s] test done

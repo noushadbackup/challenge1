@@ -1,0 +1,29 @@
+fold0 inner fold 0: train 430 (pos 276), test 140
+  ep 0 loss 0.5101 14s
+  ep 1 loss 0.3410 14s
+  ep 2 loss 0.2118 14s
+  ep 3 loss 0.1624 13s
+  ep 4 loss 0.1408 13s
+  ep 5 loss 0.0881 14s
+fold0 inner fold 1: train 429 (pos 279), test 141
+  ep 0 loss 0.4589 14s
+  ep 1 loss 0.3449 14s
+  ep 2 loss 0.2092 13s
+  ep 3 loss 0.1395 15s
+  ep 4 loss 0.1062 13s
+  ep 5 loss 0.0784 13s
+fold0 inner fold 2: train 425 (pos 258), test 145
+  ep 0 loss 0.5535 13s
+  ep 1 loss 0.3753 13s
+  ep 2 loss 0.2520 14s
+  ep 3 loss 0.1751 14s
+  ep 4 loss 0.1152 14s
+  ep 5 loss 0.0903 14s
+fold0 inner fold 3: train 426 (pos 261), test 144
+  ep 0 loss 0.5177 14s
+  ep 1 loss 0.3301 14s
+  ep 2 loss 0.2109 13s
+  ep 3 loss 0.1506 14s
+  ep 4 loss 0.1071 15s
+  ep 5 loss 0.0826 13s
+done /home/user/challenge1/work/R3_verify/probs/r18hard/fold0_inner_s0.csv 336s

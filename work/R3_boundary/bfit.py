@@ -42,6 +42,7 @@ def main():
     ap.add_argument("--seeds", type=int, default=1)
     ap.add_argument("--all-falls", action="store_true", help="also train on flagged falls (bounds are annotator outputs)")
     ap.add_argument("--fine2", action="store_true")
+    ap.add_argument("--final-only", action="store_true", help="reuse an existing train.npz (inner OOF) and only fit the final model")
     a = ap.parse_args()
     torch.set_num_threads(1)
     t = "val" if a.target == "val" else int(a.target)
@@ -66,13 +67,16 @@ def main():
     kw = dict(steps=a.steps, sigma=a.sigma, h=a.h)
     # inner OOF on the training streams
     oof = {}
-    for k, held in meta["folds"].items():
+    if a.final_only and (out / "train.npz").exists():
+        log(f"[{tname(t)}] reusing inner OOF {out / 'train.npz'}")
+    for k, held in ({} if a.final_only and (out / "train.npz").exists() else meta["folds"]).items():
         tr = [data[s] for s in data if s not in held]
         ms = [train_bnet(tr, seed=a.seed + 10 * int(k) + 100 * j, log=log, **kw) for j in range(a.seeds)]
         for s in held:
             oof[s] = np.mean([predict_logits(m, data[s][0]) for m in ms], 0).astype(np.float16)
         log(f"[{tname(t)}] inner fold {k} done")
-    np.savez_compressed(out / "train.npz", **oof)
+    if oof:
+        np.savez_compressed(out / "train.npz", **oof)
     if a.oof_only:
         return
     ms = [train_bnet(list(data.values()), seed=a.seed + 1000 + 100 * j, log=log, **kw) for j in range(a.seeds)]

@@ -1,0 +1,15 @@
+fold_0 {'oof_rank_f1': 0.8234280792420328, 'tau': 0.35, 'gap': 4}
+fold_1 {'oof_rank_f1': 0.900947459086994, 'tau': 0.4, 'gap': 4}
+fold_2 {'oof_rank_f1': 0.9094017094017094, 'tau': 0.35, 'gap': 4}
+fold_3 {'oof_rank_f1': 0.8917525773195877, 'tau': 0.35, 'gap': 2}
+official_train {'oof_rank_f1': 0.9203849518810149, 'tau': 0.4, 'gap': -1}
+bavg fold_0 {'oof_base': 0.9526315789473684, 'oof_best': 0.9578947368421051, 'params': (0.1, 0.3, 0.0)}
+bavg fold_1 {'oof_base': 0.9312445604873804, 'oof_best': 0.9312445604873804, 'params': (0.0, 0.3, 0.0)}
+bavg fold_2 {'oof_base': 0.9588801399825022, 'oof_best': 0.9623797025371829, 'params': (0.5, 0.3, 0.0)}
+bavg fold_3 {'oof_base': 0.9318801089918257, 'oof_best': 0.9336966394187103, 'params': (0.1, 0.7, 0.0)}
+bavg official_train {'oof_base': 0.940962761126249, 'oof_best': 0.9427792915531334, 'params': (0.1, 0.3, 0.0)}
+tgate fold_0 {'oof_base': 0.9526315789473684, 'oof_best': 0.9526315789473684, 'params': (0.0, 1.0, 0.0)}
+tgate fold_1 {'oof_base': 0.9312445604873804, 'oof_best': 0.9312445604873804, 'params': (0.0, 1.0, 0.0)}
+tgate fold_2 {'oof_base': 0.9588801399825022, 'oof_best': 0.9614035087719298, 'params': (0.0, 1.0, 0.1)}
+tgate fold_3 {'oof_base': 0.9318801089918257, 'oof_best': 0.9318801089918257, 'params': (0.0, 1.0, 0.0)}
+tgate official_train {'oof_base': 0.940962761126249, 'oof_best': 0.940962761126249, 'params': (0.0, 1.0, 0.0)}

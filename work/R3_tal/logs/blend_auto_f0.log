@@ -1,0 +1,13 @@
+[    1.1s rss=0.43GB] retune /home/user/data_raw/r3/tal/bundles/v1_blend_auto/fold_0_src -> /home/user/data_raw/r3/tal/bundles/v1_blend_auto/fold_0: overrides {}, config 25fe83d844067b53
+[   42.8s rss=1.20GB] clip: junction threshold 1.0823, train diag {"recall_fall_junctions": 0.9499217527386542, "recall_all_junctions": 0.8703917050691244, "peak_precision": 0.9754045307443365, "peaks_per_min": 4.176390553337959}
+[   63.9s rss=1.22GB] clip: segment classifier on 1558 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9129
+[   64.8s rss=1.22GB]   operating point (0.3, 5, 0.8, 0.2) OOF rank F1 0.9529
+[  132.8s rss=1.35GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9529, "f1@0.1/0.3/0.5/0.7": [0.99, 0.969, 0.901, 0.565], "tp_fp_fn@0.3": [185, 6, 6], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.729}, "final": {"rank_f1": 0.9526, "f1@0.1/0.3/0.5/0.7": [0.979, 0.958, 0.921, 0.763], "tp_fp_fn@0.3": [182, 7, 9], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.836}}
+[  150.7s rss=1.35GB] drift reference written: /home/user/data_raw/r3/tal/bundles/v1_blend_auto/fold_0/drift_ref.json (junctions/h 250.6, events/h 56.3, repeat share 0.237)
+[  150.7s rss=1.35GB] fit done in 131.8 s -> /home/user/data_raw/r3/tal/bundles/v1_blend_auto/fold_0
+[   10.3s rss=1.35GB] predict cv0_test_00: 23 candidates, 22 replay-refined, 10.3 s
+[   21.1s rss=1.35GB] predict cv0_test_01: 32 candidates, 30 replay-refined, 10.8 s
+[   32.7s rss=1.35GB] predict cv0_test_02: 37 candidates, 36 replay-refined, 11.6 s
+[   42.0s rss=1.35GB] predict cv0_test_03: 27 candidates, 26 replay-refined, 9.3 s
+[   44.1s rss=1.35GB] predict cv0_test_04: 6 candidates, 6 replay-refined, 2.1 s
+fold_0 {"member": "cov", "lam": 0.3, "op": [0.3, 5, 0.8, 0.2], "oof": {"detector": {"rank_f1": 0.9529, "f1@0.1/0.3/0.5/0.7": [0.99, 0.969, 0.901, 0.565], "tp_fp_fn@0.3": [185, 6, 6], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.729}, "final": {"rank_f1": 0.9526, "f1@0.1/0.3/0.5/0.7": [0.979, 0.958, 0.921, 0.763], "tp_fp_fn@0.3": [182, 7, 9], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.836}}}

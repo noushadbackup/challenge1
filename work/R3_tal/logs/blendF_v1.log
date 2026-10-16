@@ -1,0 +1,75 @@
+official_train base 0.9395 {'rank_f1': 0.941, 'f1@0.1/0.3/0.5/0.7': [0.965, 0.959, 0.899, 0.774], 'tp_fp_fn@0.3': [176, 5, 10], 'fa_per_h@0.3': 0.81, 'start_err_med@0.3': 0.035, 'mean_tiou@0.3': 0.834}
+official_train pmax_0.15 0.9379 {'rank_f1': 0.9391, 'f1@0.1/0.3/0.5/0.7': [0.968, 0.962, 0.887, 0.774], 'tp_fp_fn@0.3': [179, 7, 7], 'fa_per_h@0.3': 1.13, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.83}
+official_train pmax_0.3 0.9436 {'rank_f1': 0.9498, 'f1@0.1/0.3/0.5/0.7': [0.973, 0.968, 0.909, 0.79], 'tp_fp_fn@0.3': [180, 6, 6], 'fa_per_h@0.3': 0.97, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.84}
+official_train pmax_0.45 0.9461 {'rank_f1': 0.9524, 'f1@0.1/0.3/0.5/0.7': [0.976, 0.97, 0.911, 0.782], 'tp_fp_fn@0.3': [180, 5, 6], 'fa_per_h@0.3': 0.81, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.838}
+official_train aux_0.15 0.9351 {'rank_f1': 0.9417, 'f1@0.1/0.3/0.5/0.7': [0.967, 0.962, 0.896, 0.787], 'tp_fp_fn@0.3': [176, 4, 10], 'fa_per_h@0.3': 0.65, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.837}
+official_train aux_0.3 0.9386 {'rank_f1': 0.9498, 'f1@0.1/0.3/0.5/0.7': [0.978, 0.968, 0.903, 0.774], 'tp_fp_fn@0.3': [180, 6, 6], 'fa_per_h@0.3': 0.97, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.831}
+official_train aux_0.45 0.9308 {'rank_f1': 0.9402, 'f1@0.1/0.3/0.5/0.7': [0.962, 0.957, 0.902, 0.788], 'tp_fp_fn@0.3': [176, 6, 10], 'fa_per_h@0.3': 0.97, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.838}
+official_train cov_0.15 0.9408 {'rank_f1': 0.9419, 'f1@0.1/0.3/0.5/0.7': [0.971, 0.965, 0.89, 0.772], 'tp_fp_fn@0.3': [180, 7, 6], 'fa_per_h@0.3': 1.13, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.831}
+official_train cov_0.3 0.9428 {'rank_f1': 0.9437, 'f1@0.1/0.3/0.5/0.7': [0.971, 0.965, 0.895, 0.772], 'tp_fp_fn@0.3': [180, 7, 6], 'fa_per_h@0.3': 1.13, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.833}
+official_train cov_0.45 0.9428 {'rank_f1': 0.9444, 'f1@0.1/0.3/0.5/0.7': [0.973, 0.968, 0.892, 0.769], 'tp_fp_fn@0.3': [180, 6, 6], 'fa_per_h@0.3': 0.97, 'start_err_med@0.3': 0.04, 'mean_tiou@0.3': 0.83}
+[    1.4s rss=0.43GB] retune /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_0_src -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_0: overrides {}, config 25fe83d844067b53
+[   40.6s rss=1.16GB] clip: junction threshold 1.0823, train diag {"recall_fall_junctions": 0.9499217527386542, "recall_all_junctions": 0.8703917050691244, "peak_precision": 0.9754045307443365, "peaks_per_min": 4.176390553337959}
+[   71.9s rss=1.18GB] clip: segment classifier on 1558 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9129
+[   72.7s rss=1.18GB]   operating point (0.3, 5, 0.8, 0.2) OOF rank F1 0.9494
+[  147.1s rss=1.35GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9494, "f1@0.1/0.3/0.5/0.7": [0.99, 0.974, 0.885, 0.576], "tp_fp_fn@0.3": [186, 5, 5], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.28, "mean_tiou@0.3": 0.722}, "final": {"rank_f1": 0.9561, "f1@0.1/0.3/0.5/0.7": [0.989, 0.963, 0.916, 0.763], "tp_fp_fn@0.3": [183, 6, 8], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.835}}
+[  168.1s rss=1.35GB] drift reference written: /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_0/drift_ref.json (junctions/h 250.6, events/h 56.3, repeat share 0.237)
+[  168.1s rss=1.35GB] fit done in 145.8 s -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_0
+[    8.8s rss=1.36GB] predict cv0_test_00: 23 candidates, 21 replay-refined, 8.8 s
+[   20.3s rss=1.36GB] predict cv0_test_01: 32 candidates, 30 replay-refined, 11.4 s
+[   29.6s rss=1.36GB] predict cv0_test_02: 36 candidates, 36 replay-refined, 9.4 s
+[   38.7s rss=1.36GB] predict cv0_test_03: 27 candidates, 26 replay-refined, 9.1 s
+[   40.2s rss=1.36GB] predict cv0_test_04: 6 candidates, 6 replay-refined, 1.5 s
+fold_0 {"member": "pmax", "lam": 0.3, "op": [0.3, 5, 0.8, 0.2], "oof": {"detector": {"rank_f1": 0.9494, "f1@0.1/0.3/0.5/0.7": [0.99, 0.974, 0.885, 0.576], "tp_fp_fn@0.3": [186, 5, 5], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.28, "mean_tiou@0.3": 0.722}, "final": {"rank_f1": 0.9561, "f1@0.1/0.3/0.5/0.7": [0.989, 0.963, 0.916, 0.763], "tp_fp_fn@0.3": [183, 6, 8], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.835}}}
+[    0.0s rss=1.36GB] retune /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_1_src -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_1: overrides {}, config 25fe83d844067b53
+[   36.1s rss=1.36GB] clip: junction threshold 0.9681, train diag {"recall_fall_junctions": 0.9496062992125984, "recall_all_junctions": 0.8677829099307159, "peak_precision": 0.946969696969697, "peaks_per_min": 4.268544634676535}
+[   56.5s rss=1.36GB] clip: segment classifier on 1597 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9283
+[   57.6s rss=1.36GB]   operating point (0.4, 1, 0.8, 0.2) OOF rank F1 0.9274
+[  127.1s rss=1.48GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9274, "f1@0.1/0.3/0.5/0.7": [0.945, 0.94, 0.898, 0.688], "tp_fp_fn@0.3": [179, 11, 12], "fa_per_h@0.3": 1.78, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.766}, "final": {"rank_f1": 0.9394, "f1@0.1/0.3/0.5/0.7": [0.957, 0.947, 0.914, 0.797], "tp_fp_fn@0.3": [177, 6, 14], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.847}}
+[  145.6s rss=1.48GB] drift reference written: /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_1/drift_ref.json (junctions/h 256.1, events/h 53.8, repeat share 0.237)
+[  145.6s rss=1.48GB] fit done in 127.0 s -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_1
+[   11.7s rss=1.48GB] predict cv1_test_00: 28 candidates, 27 replay-refined, 11.7 s
+[   20.2s rss=1.48GB] predict cv1_test_01: 26 candidates, 21 replay-refined, 8.5 s
+[   28.6s rss=1.48GB] predict cv1_test_02: 35 candidates, 32 replay-refined, 8.4 s
+[   37.3s rss=1.48GB] predict cv1_test_03: 23 candidates, 22 replay-refined, 8.6 s
+[   37.9s rss=1.48GB] predict cv1_test_04: 1 candidates, 1 replay-refined, 0.7 s
+fold_1 {"member": "cov", "lam": 0.3, "op": [0.4, 1, 0.8, 0.2], "oof": {"detector": {"rank_f1": 0.9274, "f1@0.1/0.3/0.5/0.7": [0.945, 0.94, 0.898, 0.688], "tp_fp_fn@0.3": [179, 11, 12], "fa_per_h@0.3": 1.78, "start_err_med@0.3": 0.18, "mean_tiou@0.3": 0.766}, "final": {"rank_f1": 0.9394, "f1@0.1/0.3/0.5/0.7": [0.957, 0.947, 0.914, 0.797], "tp_fp_fn@0.3": [177, 6, 14], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.03, "mean_tiou@0.3": 0.847}}}
+[    0.0s rss=1.48GB] retune /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_2_src -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_2: overrides {}, config 25fe83d844067b53
+[   34.0s rss=1.48GB] clip: junction threshold 1.0026, train diag {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8789625360230547, "peak_precision": 0.949375, "peaks_per_min": 4.311041655439995}
+[   59.1s rss=1.48GB] clip: segment classifier on 1613 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9346
+[   59.9s rss=1.48GB]   operating point (0.3, 3, 0.8, 0.2) OOF rank F1 0.9382
+[  133.0s rss=1.48GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9382, "f1@0.1/0.3/0.5/0.7": [0.982, 0.971, 0.862, 0.559], "tp_fp_fn@0.3": [186, 7, 4], "fa_per_h@0.3": 1.13, "start_err_med@0.3": 0.27, "mean_tiou@0.3": 0.714}, "final": {"rank_f1": 0.9596, "f1@0.1/0.3/0.5/0.7": [0.984, 0.968, 0.926, 0.753], "tp_fp_fn@0.3": [184, 6, 6], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.05, "mean_tiou@0.3": 0.829}}
+[  151.7s rss=1.48GB] drift reference written: /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_2/drift_ref.json (junctions/h 258.6, events/h 57.2, repeat share 0.240)
+[  151.7s rss=1.48GB] fit done in 133.0 s -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_2
+[    8.3s rss=1.48GB] predict cv2_test_00: 18 candidates, 16 replay-refined, 8.3 s
+[   15.1s rss=1.48GB] predict cv2_test_01: 23 candidates, 22 replay-refined, 6.8 s
+[   23.3s rss=1.48GB] predict cv2_test_02: 19 candidates, 16 replay-refined, 8.2 s
+[   29.5s rss=1.48GB] predict cv2_test_03: 18 candidates, 18 replay-refined, 6.3 s
+[   30.9s rss=1.48GB] predict cv2_test_04: 6 candidates, 6 replay-refined, 1.3 s
+fold_2 {"member": "pmax", "lam": 0.15, "op": [0.3, 3, 0.8, 0.2], "oof": {"detector": {"rank_f1": 0.9382, "f1@0.1/0.3/0.5/0.7": [0.982, 0.971, 0.862, 0.559], "tp_fp_fn@0.3": [186, 7, 4], "fa_per_h@0.3": 1.13, "start_err_med@0.3": 0.27, "mean_tiou@0.3": 0.714}, "final": {"rank_f1": 0.9596, "f1@0.1/0.3/0.5/0.7": [0.984, 0.968, 0.926, 0.753], "tp_fp_fn@0.3": [184, 6, 6], "fa_per_h@0.3": 0.97, "start_err_med@0.3": 0.05, "mean_tiou@0.3": 0.829}}}
+[    0.0s rss=1.48GB] retune /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_3_src -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_3: overrides {}, config 25fe83d844067b53
+[   38.9s rss=1.48GB] clip: junction threshold 0.9902, train diag {"recall_fall_junctions": 0.9485981308411215, "recall_all_junctions": 0.8813073394495413, "peak_precision": 0.9641959798994975, "peaks_per_min": 4.304486543973177}
+[   63.1s rss=1.48GB] clip: segment classifier on 1605 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9515
+[   64.1s rss=1.48GB]   operating point (0.4, 1, 0.8, 0.2) OOF rank F1 0.9124
+[  131.4s rss=1.48GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9124, "f1@0.1/0.3/0.5/0.7": [0.949, 0.938, 0.851, 0.596], "tp_fp_fn@0.3": [173, 9, 14], "fa_per_h@0.3": 1.46, "start_err_med@0.3": 0.24, "mean_tiou@0.3": 0.734}, "final": {"rank_f1": 0.9344, "f1@0.1/0.3/0.5/0.7": [0.956, 0.94, 0.907, 0.781], "tp_fp_fn@0.3": [172, 7, 15], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.849}}
+[  150.4s rss=1.48GB] drift reference written: /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_3/drift_ref.json (junctions/h 258.3, events/h 54.3, repeat share 0.236)
+[  150.4s rss=1.48GB] fit done in 131.4 s -> /home/user/data_raw/r3/tal/bundles/v1_blendF/fold_3
+[    7.1s rss=1.48GB] predict cv3_test_00: 23 candidates, 21 replay-refined, 7.1 s
+[   14.4s rss=1.48GB] predict cv3_test_01: 21 candidates, 20 replay-refined, 7.3 s
+[   21.8s rss=1.48GB] predict cv3_test_02: 28 candidates, 27 replay-refined, 7.4 s
+[   29.5s rss=1.48GB] predict cv3_test_03: 35 candidates, 33 replay-refined, 7.7 s
+[   30.3s rss=1.48GB] predict cv3_test_04: 2 candidates, 2 replay-refined, 0.8 s
+fold_3 {"member": "pmax", "lam": 0.15, "op": [0.4, 1, 0.8, 0.2], "oof": {"detector": {"rank_f1": 0.9124, "f1@0.1/0.3/0.5/0.7": [0.949, 0.938, 0.851, 0.596], "tp_fp_fn@0.3": [173, 9, 14], "fa_per_h@0.3": 1.46, "start_err_med@0.3": 0.24, "mean_tiou@0.3": 0.734}, "final": {"rank_f1": 0.9344, "f1@0.1/0.3/0.5/0.7": [0.956, 0.94, 0.907, 0.781], "tp_fp_fn@0.3": [172, 7, 15], "fa_per_h@0.3": 1.14, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.849}}}
+[    0.0s rss=1.48GB] retune /home/user/data_raw/r3/tal/bundles/v1_blendF/official_train_src -> /home/user/data_raw/r3/tal/bundles/v1_blendF/official_train: overrides {}, config 25fe83d844067b53
+[   34.6s rss=1.48GB] clip: junction threshold 1.0173, train diag {"recall_fall_junctions": 0.9489953632148377, "recall_all_junctions": 0.8607449856733524, "peak_precision": 0.9608723540731238, "peaks_per_min": 4.203364848833447}
+[   57.8s rss=1.48GB] clip: segment classifier on 1572 segments (13 features), subject-grouped OOF AUC fall-vs-rest 0.9094
+[   58.8s rss=1.48GB]   operating point (0.3, 5, 0.8, 0.2) OOF rank F1 0.9461
+[  128.2s rss=1.48GB] train OOF (in-process official evaluator): {"detector": {"rank_f1": 0.9461, "f1@0.1/0.3/0.5/0.7": [0.966, 0.96, 0.912, 0.605], "tp_fp_fn@0.3": [181, 10, 5], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.734}, "final": {"rank_f1": 0.9524, "f1@0.1/0.3/0.5/0.7": [0.976, 0.97, 0.911, 0.782], "tp_fp_fn@0.3": [180, 5, 6], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.838}}
+[  149.4s rss=1.48GB] drift reference written: /home/user/data_raw/r3/tal/bundles/v1_blendF/official_train/drift_ref.json (junctions/h 252.2, events/h 56.1, repeat share 0.236)
+[  149.4s rss=1.48GB] fit done in 128.2 s -> /home/user/data_raw/r3/tal/bundles/v1_blendF/official_train
+[    8.4s rss=1.48GB] predict val_00: 28 candidates, 27 replay-refined, 8.4 s
+[   17.6s rss=1.48GB] predict val_01: 26 candidates, 25 replay-refined, 9.2 s
+[   25.9s rss=1.48GB] predict val_02: 25 candidates, 23 replay-refined, 8.3 s
+[   32.7s rss=1.48GB] predict val_03: 12 candidates, 10 replay-refined, 6.8 s
+[   33.9s rss=1.48GB] predict val_04: 5 candidates, 5 replay-refined, 1.2 s
+official_train {"member": "pmax", "lam": 0.45, "op": [0.3, 5, 0.8, 0.2], "oof": {"detector": {"rank_f1": 0.9461, "f1@0.1/0.3/0.5/0.7": [0.966, 0.96, 0.912, 0.605], "tp_fp_fn@0.3": [181, 10, 5], "fa_per_h@0.3": 1.62, "start_err_med@0.3": 0.26, "mean_tiou@0.3": 0.734}, "final": {"rank_f1": 0.9524, "f1@0.1/0.3/0.5/0.7": [0.976, 0.97, 0.911, 0.782], "tp_fp_fn@0.3": [180, 5, 6], "fa_per_h@0.3": 0.81, "start_err_med@0.3": 0.04, "mean_tiou@0.3": 0.838}}}

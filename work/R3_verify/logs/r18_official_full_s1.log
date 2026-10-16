@@ -1,0 +1,8 @@
+official full: train 891 (pos 349), test 93
+  ep 0 loss 0.6774 55s
+  ep 1 loss 0.3544 49s
+  ep 2 loss 0.2477 55s
+  ep 3 loss 0.1233 54s
+  ep 4 loss 0.0871 56s
+  ep 5 loss 0.0799 56s
+done /home/user/challenge1/work/R3_verify/probs/r18/official_full_s1.csv 328s

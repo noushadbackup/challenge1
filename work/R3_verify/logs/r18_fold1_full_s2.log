@@ -1,0 +1,8 @@
+fold1 full: train 897 (pos 343), test 119
+  ep 0 loss 0.7238 29s
+  ep 1 loss 0.3724 29s
+  ep 2 loss 0.3148 30s
+  ep 3 loss 0.1647 29s
+  ep 4 loss 0.1182 27s
+  ep 5 loss 0.0878 28s
+done /home/user/challenge1/work/R3_verify/probs/r18/fold1_full_s2.csv 175s
