@@ -119,8 +119,11 @@ def tiou(a0, a1, b0, b1):
     return np.where(u > 0, i / np.where(u > 0, u, 1), 0.0)
 
 
-def refine(D: pd.DataFrame, b: dict):
-    """Port of E2 s3_select.refine: refined (t_start, t_end) arrays and the replaced mask."""
+def refine(D: pd.DataFrame, b: dict, blend=None):
+    """Port of E2 s3_select.refine: refined (t_start, t_end) arrays and the replaced mask.
+
+    blend = (ws, we) (boundary.det_blend, R3 "boundary"): for replay-refined candidates, move the start/end towards
+    the detector bounds, s = (1-ws)*s_replay + ws*s_det (end likewise), then re-apply the duration floor."""
     s0, e0 = D.t_start.values.astype(float), D.t_end.values.astype(float)
     S = np.vstack([D[f"{c}_s"].values for c in b["crops"]]).astype(float)
     E = np.vstack([D[f"{c}_e"].values for c in b["crops"]]).astype(float)
@@ -144,6 +147,11 @@ def refine(D: pd.DataFrame, b: dict):
     s = np.where(use, rs + b.get("ds", 0.0), s0 + b.get("pds", 0.0))
     e = np.where(use, re_ + b.get("de", 0.0), e0 + b.get("pde", 0.0))
     e = np.maximum(e, s + b.get("dmin", 0.0))
+    if blend is not None and (blend[0] > 0 or blend[1] > 0):
+        ws, we = float(blend[0]), float(blend[1])
+        s = np.where(use, (1 - ws) * s + ws * s0, s)
+        e = np.where(use, (1 - we) * e + we * e0, e)
+        e = np.maximum(e, s + b.get("dmin", 0.0))
     return s, e, use
 
 

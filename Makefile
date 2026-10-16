@@ -44,7 +44,7 @@ PY        = PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBL
             UWBFALL_DEVICE=$(DEVICE) UWBFALL_CACHE=$(DATA)/uwbfall_cache ABC_ROOT=$(PKG) PYTHONPATH=$(REPO):$(PKG)/src python3
 
 .PHONY: features train-final verify-models verify-bundle verify-fallback predict-test check-test predict-test-fallback \
-        train-fallback reproduce-val srcv srcv-table checks dry-run fake-test package ablation ablation-table
+        train-fallback reproduce-val srcv srcv-table checks dry-run fake-test package ablation ablation-table confirm confirm-table
 
 features:       ## warm the feature cache (content-hashed; safe to re-run)
 	$(PY) -m uwbfall extract --sources train,val
@@ -132,3 +132,10 @@ ablation:       ## paper ablation of final_norep on SR-CV (resumable; BAGS=3 for
 
 ablation-table: ## rebuild the ablation table from finished runs
 	$(PY) $(REPO)/tools/ablation.py --bags $(BAGS) --table
+
+confirm:        ## round-3 candidates (no range bands, boundary blend) vs final_norep on 3 fresh TCN seed sets
+	@test -d $(REPO)/srcv || { echo "srcv/ is not part of this package (development checkout only)"; exit 1; }
+	$(PY) $(REPO)/tools/confirm.py 2>&1 | tee -a $(DATA)/confirm.log
+
+confirm-table:  ## rebuild the confirmation table from finished runs
+	$(PY) $(REPO)/tools/confirm.py --table

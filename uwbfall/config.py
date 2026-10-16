@@ -150,9 +150,20 @@ NOT_IMPLEMENTED = {
 }
 
 
+# Optional keys: accepted in a user config but absent from DEFAULT_CONFIG, so that configs which do not use them
+# resolve (and hash, and write config.json) exactly as before.
+#   boundary.det_blend       (R3 "boundary", reports/round3): blend replay bounds with detector bounds on agreeing
+#                            candidates, start/end weights chosen on the training OOF; read with b.get(..., False)
+#   boundary.det_blend_grid  candidate weights for that choice (default [0, 0.1, ..., 0.5])
+OPTIONAL_KEYS = {"boundary.det_blend", "boundary.det_blend_grid"}
+
+
 def _merge(base: dict, over: dict, path: str = "") -> dict:
     out = copy.deepcopy(base)
     for k, v in over.items():
+        if k not in base and path + k in OPTIONAL_KEYS:
+            out[k] = copy.deepcopy(v)
+            continue
         if k not in base:
             raise KeyError(f"unknown config key {path + k!r}")
         if isinstance(base[k], dict) and isinstance(v, dict) and k != "grid":

@@ -208,10 +208,17 @@ def _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in,
                         oof_hgb=oof_hgb if oof_hgb is not None else np.zeros(0),
                         oof_tcn=oof_tcn if oof_tcn is not None else np.zeros(0), oof_blend=oof)
     cand.to_csv(out / "oof_candidates.csv", index=False)
+    blend_meta = None
     if cfg["report"]["oof_replay"] and cfg["boundary"]["method"] == "replay":
         t0 = time.time()
-        final = _boundaries(sources, cand, cfg, durations, log)
-        final = _nms(final, cfg, clip_state["peaks"] if clip_state else {})
+        peaks = clip_state["peaks"] if clip_state else {}
+        if cfg["boundary"].get("det_blend", False):
+            Ds = _boundaries(sources, cand, cfg, durations, log, keep_tables=True)
+            blend_meta = _choose_blend(Ds, cfg, durations, gt, peaks, log)
+            final = _blend_rows(Ds, cfg, durations, blend_meta["chosen"])
+        else:
+            final = _boundaries(sources, cand, cfg, durations, log)
+        final = _nms(final, cfg, peaks)
         final.to_csv(out / "oof_final.csv", index=False)
         oof_report["final"] = summary(score_inproc(final, gt, durations))
         timings["oof_replay_s"] = round(time.time() - t0, 1)
@@ -221,6 +228,7 @@ def _finish(out, cfg, log, sources, ev, sid, y, fold, oof_hgb, oof_tcn, clip_in,
         "uwbfall_version": __version__, "git_rev": _git_rev(), "extractor_version": EXTRACTOR_VERSION,
         "config_hash": config_hash(cfg), **base_meta,
         "postproc": list(g), "oof_rank_f1_tuned": oof_rank, "oof": oof_report,
+        **({"boundary_blend": blend_meta["chosen"], "boundary_blend_table": blend_meta["table"]} if blend_meta else {}),
         "decode_grid_table": table,
         "clip": None if clip_state is None else {"junction_thr": clip_state["thr"], "junction_diag": clip_state["diag"],
                                                  "segclf_features": clip_state["features"]}, "timings": {**timings, "total_s": round(time.time() - t_start, 1)},
@@ -461,9 +469,10 @@ def stream_probs(B: dict, F: dict) -> tuple[np.ndarray, dict]:
     return p, parts
 
 
-def _boundaries(sources, cand: pd.DataFrame, cfg: dict, durations: dict, log) -> pd.DataFrame:
-    """Replay boundaries for candidate rows of several sources (one source in memory at a time)."""
-    out = []
+def _boundaries(sources, cand: pd.DataFrame, cfg: dict, durations: dict, log, keep_tables: bool = False):
+    """Replay boundaries for candidate rows of several sources (one source in memory at a time).
+    keep_tables=True returns the per-stream replay tables instead of the rows (boundary.det_blend selection)."""
+    out, tables = [], []
     for s in sorted(sources, key=lambda s: s.sid):
         c = cand[cand.stream_id == s.sid]
         if not len(c):
@@ -471,9 +480,39 @@ def _boundaries(sources, cand: pd.DataFrame, cfg: dict, durations: dict, log) ->
         F = get_features(s, cfg)
         D = replay_stream(s, F["prof_02"], c.reset_index(drop=True), cfg)
         s.release()
+        if keep_tables:
+            tables.append(D)
+            continue
         a, e, _use = refine(D, cfg["boundary"])
         out.append(to_preds(D, a, e, durations))
+    if keep_tables:
+        return tables
     return pd.concat(out, ignore_index=True) if out else cand.iloc[:0]
+
+
+def _blend_rows(tables, cfg: dict, durations: dict, blend) -> pd.DataFrame:
+    out = []
+    for D in tables:
+        a, e, _use = refine(D, cfg["boundary"], blend)
+        out.append(to_preds(D, a, e, durations))
+    return pd.concat(out, ignore_index=True) if out else pd.DataFrame(columns=["stream_id", "t_start", "t_end",
+                                                                                  "score", "t_alarm"])
+
+
+def _choose_blend(tables, cfg: dict, durations: dict, gt, peaks: dict, log) -> dict:
+    """boundary.det_blend: (ws, we) maximising the official rank F1 of the training-OOF final rows (replay + blend +
+    NMS); ties go to the smaller ws + we, then the smaller ws (R3 "boundary", wdet_cv)."""
+    grid = [float(x) for x in cfg["boundary"].get("det_blend_grid", [0.0, 0.1, 0.2, 0.3, 0.4, 0.5])]
+    pairs = sorted(((ws, we) for ws in grid for we in grid), key=lambda p: (round(p[0] + p[1], 6), p[0]))
+    best, table = None, []
+    for ws, we in pairs:
+        rows = _nms(_blend_rows(tables, cfg, durations, (ws, we)), cfg, peaks)
+        r = float(summary(score_inproc(rows, gt, durations))["rank_f1"])
+        table.append([ws, we, r])
+        if best is None or r > best[2] + 1e-12:
+            best = (ws, we, r)
+    log(f"boundary det_blend: chosen (ws, we) = ({best[0]}, {best[1]}), training-OOF rank F1 {best[2]:.4f}")
+    return {"chosen": [best[0], best[1]], "table": table}
 
 
 # Streams shorter than this get no rows (FIXES.md X1). The feature code needs >= 2 s (10 blocks of 0.2 s) and crashed
@@ -509,7 +548,10 @@ def predict(bundle, sources: list[StreamSource], log=None, return_debug: bool = 
         c = events_df(to_events(s.sid, p, *g))
         if cfg["boundary"]["method"] == "replay" and len(c):
             D = replay_stream(s, F["prof_02"], c, cfg)
-            a, e, use = refine(D, cfg["boundary"])
+            blend = B["meta"].get("boundary_blend") if cfg["boundary"].get("det_blend", False) else None
+            if cfg["boundary"].get("det_blend", False) and blend is None:
+                raise ValueError("boundary.det_blend is on but the bundle has no boundary_blend (refit or retune it)")
+            a, e, use = refine(D, cfg["boundary"], blend)
             if B.get("hit") is not None:   # W5 (I3): event hit model replaces the score before the final NMS
                 X = HM.candidate_features(D, cfg["boundary"], {s.sid: p}, {s.sid: parts},
                                           {s.sid: parts["peaks"]} if parts.get("peaks") is not None else {})
