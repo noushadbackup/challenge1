@@ -44,7 +44,7 @@ PY        = PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBL
             UWBFALL_DEVICE=$(DEVICE) UWBFALL_CACHE=$(DATA)/uwbfall_cache ABC_ROOT=$(PKG) PYTHONPATH=$(REPO):$(PKG)/src python3
 
 .PHONY: features train-final verify-models verify-bundle verify-fallback predict-test check-test predict-test-fallback \
-        train-fallback reproduce-val srcv srcv-table checks dry-run fake-test package
+        train-fallback reproduce-val srcv srcv-table checks dry-run fake-test package ablation ablation-table
 
 features:       ## warm the feature cache (content-hashed; safe to re-run)
 	$(PY) -m uwbfall extract --sources train,val
@@ -124,3 +124,11 @@ dry-run: fake-test   ## release-day rehearsal: val streams copied as test_00..04
 
 package:        ## dist/uwbfall_<VARIANT>_code.zip: code + shipped model + runbook (+ $(SUB)/submission.csv if present)
 	VARIANT=$(VARIANT) SUB=$(SUB) bash $(REPO)/tools/make_package.sh
+
+BAGS ?= 1
+ablation:       ## paper ablation of final_norep on SR-CV (resumable; BAGS=3 for 3 TCN seed sets) -> srcv/results/ablation/
+	@test -d $(REPO)/srcv || { echo "srcv/ is not part of this package (development checkout only)"; exit 1; }
+	$(PY) $(REPO)/tools/ablation.py --bags $(BAGS) 2>&1 | tee -a $(DATA)/ablation.log
+
+ablation-table: ## rebuild the ablation table from finished runs
+	$(PY) $(REPO)/tools/ablation.py --bags $(BAGS) --table
