@@ -1,6 +1,6 @@
 # Sir er sathe call: A to Z (Banglish)
 
-Status: 2026-10-17. Shob number repo r report theke (`notion_export/UWB-FallTrack Challenge - A to Z.md`).
+Status: 2026-10-17 (round 4 sesh). Shob number repo r report theke (`notion_export/UWB-FallTrack Challenge - A to Z.md`).
 
 ---
 
@@ -150,14 +150,15 @@ CPU te ek stream er jonno ek minute er kom lage, shudhu open-source library (sci
 - Range band bad: prothome +0.009, fresh seed e −0.011, mane noise chilo.
 - **Cross-stream ADL duplicate mask: rule bhange, tai kokhono use kori nai.**
 
-## 11. Round 4 (ekhon cholche)
+## 11. Round 4 (sesh)
 
-- Fresh seed (6–8) e test:
-  - 9 TCN seed: +0.006, P 0.871 → pass na.
-  - **Chute04 segment feature** (chair theke fall er jonno segment classifier e 6 ta feature beshi): +0.005, P 0.906,
-    3/4 fold, val same, false alarm 26.0 → 22.7 → **rule pass, kintu boundary te**.
-- Tai ar ekta check: 6 ta seed set eksathe (3–8). Pass korle submission `final_norep_x` e jabe, na hole `final_norep`
-  thakbe. Dui khetrei test e boro farak hobe na (±0.005).
+- 9 TCN seed (3 er bodole): +0.006, P 0.87 → pass na.
+- **Chute04 segment feature** (chair theke fall er jonno segment classifier e 6 ta feature beshi):
+  - seed set 6–8 e +0.005, P 0.906, 3/4 fold → boundary te pass;
+  - tai 6 ta seed set (3–8) eksathe check korsi: +0.0024, P 0.84, 2/4 fold → **pass na**.
+- **Decision: kono change nai, `final_norep` ei submission.** Mane amra rule mene cholchi, luck e asha "win" nicchi na.
+- Sir ke bolar moto line: "Notun idea gula amra fresh seed e abar test kori. Ekta idea 3 seed e pass korsilo, 6 seed e
+  korenai, tai rakhini."
 
 ## 12. Rule compliance (sir eta niye proshno korte paren)
 

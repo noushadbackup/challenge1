@@ -1,8 +1,8 @@
 # UWB-FallTrack Challenge (ABC 2027): A to Z
 
 Status as of 2026-10-17: the submission system `final_norep` scores **0.937 on validation and 0.914 on subject-disjoint
-cross-validation**, against **0.315** for the official baseline. The code package is built and tested. Round 3 and its
-fresh-seed confirmation found no change worth making, so the system is frozen for the test data (Oct 20).
+cross-validation**, against **0.315** for the official baseline. The code package is built and tested. Rounds 3 and 4 and
+their fresh-seed confirmations found no change worth making, so the system is frozen for the test data (Oct 20).
 
 ![Score progression](figures/10_score_progression.png)
 
@@ -145,6 +145,7 @@ because the generator shuffles the clips.
 5. **Round 3 + ablation:**
    - 4 parallel experiments, each re-verified independently from its output files;
    - an ablation run on our GPU.
+6. **Round 4:** 9 TCN seeds and Chute04 segment features, confirmed on fresh seed sets on our GPU.
 
 **Promotion rule** (a change is kept only if all three hold):
 - paired subject-cluster bootstrap P(gain) ≥ 0.90;
@@ -179,6 +180,8 @@ because the generator shuffles the clips.
 | 22 | R3: image verifier, ImageNet ResNet-18 on range-time images | +0.013 but 1/4 folds | No |
 | 23 | R3: ActionFormer-style TAL member | Not finished | - |
 | 24 | Ablation: remove the 48 range-band channels | +0.009 first, then −0.011 on fresh seeds (noise) | No |
+| 25 | R4: 9 TCN seeds instead of 3 | +0.006, P 0.87 | No |
+| 26 | R4: Chute04 segment features (6 extra segment-classifier features) | +0.005, P 0.91 on 3 seed sets; +0.002, P 0.84, 2/4 folds on 6 | No |
 
 ## 8. The final system
 
@@ -289,6 +292,21 @@ byte, and the shipped configs and models are unchanged.
 - The band result was seed noise.
 - The blend is consistently slightly positive, but it fails the fold rule and worsens the start-error tie-break.
 
+## 11b. Round 4: 9 TCN seeds and Chute04 segment features
+
+Both ideas came from the round-3 error analysis. Falls from a chair (Chute04) are missed most often, because their
+motion burst and static change are weaker, so 6 extra segment-classifier features target them.
+
+| Variant | Seed sets | SR-CV | Delta [95% CI] | P(gain) | Folds improved | Passes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 9 TCN seeds | 6–8 | 0.9140 vs 0.9080 | +0.0060 [−0.0040, +0.0176] | 0.87 | 3/4 | no |
+| Chute04 features | 6–8 | 0.9132 vs 0.9080 | +0.0052 [−0.0016, +0.0144] | 0.91 | 3/4 | yes (at the margin) |
+| both | 6–8 | 0.9127 vs 0.9080 | +0.0047 [−0.0060, +0.0166] | 0.79 | 3/4 | no |
+| **Chute04 features** | **3–8 pooled** | **0.9138 vs 0.9115** | **+0.0024 [−0.0016, +0.0077]** | **0.84** | **2/4** | **no** |
+
+**Decision: no change; `final_norep` stays the submission.** The Chute04 pass on seed sets 6–8 did not hold on seed
+sets 3–5, so it was mostly noise. Its CPU refit (`final_norep_x`) scores 0.944 on val against 0.937, within val noise.
+
 ## 12. Problems we hit and how we solved them
 
 | Problem | Fix |
@@ -303,6 +321,7 @@ byte, and the shipped configs and models are unchanged.
 | GPU models not bit-identical | Submission runs on CPU with the shipped model |
 | Re-tuned compliance models failed the sha256 check | Replaced with clean CPU retrains (byte-identical predictions) |
 | A failed prediction could leave an old CSV | Old outputs deleted; pipeline stops on any error |
+| Re-tuning a 9-seed model lost seeds 5–8 | `retune` now copies every TCN seed file |
 
 ## 13. Rule compliance
 
@@ -346,6 +365,7 @@ Checklist:
 - [ ] Confirm team registration before Oct 27
 - [ ] Get the written answer to Q3 and pick the variant
 - [x] Run `make confirm DEVICE=cuda` and decide on the round-3 changes (no change)
+- [x] Round 4 confirmation, `SUITE=r4` and `SUITE=r4x` (no change)
 - [ ] Download the test streams (Oct 20) into a folder named `test`
 - [ ] `make predict-test`: `SUBMISSION CHECK: OK`, 0–1 drift alerts
 - [ ] `make package` and test the zip once from a fresh folder
@@ -370,7 +390,7 @@ Checklist:
 - **Repository:** `noushadbackup/challenge1` (private).
 - **Reports:**
   - `reports/REPORT.md` (analysis), `reports/PLAN.md`, `reports/team/` (data team);
-  - `reports/round2/` (FINAL, EVAL, AUDIT), `reports/round3/` (R3, ABLATION);
+  - `reports/round2/` (FINAL, EVAL, AUDIT), `reports/round3/` (R3, ABLATION), `reports/round4/R4.md`;
   - `reports/COMPLIANCE.md`, `reports/CHALLENGE_INFO.md`.
 - **Runbooks:** `SUBMISSION.md` (release day), `LOCAL_GPU.md` (running on the PC).
 - **Code and models:** `uwbfall/` (pipeline), `models/` (shipped models with sha256), `dist/` (code packages).
