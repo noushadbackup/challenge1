@@ -178,6 +178,8 @@ def main() -> None:
     bags = int(a[a.index("--bags") + 1]) if "--bags" in a else 1
     only = a[a.index("--only") + 1].split(",") if "--only" in a else None
     if "--table" not in a:
+        from _preflight import check
+        check()
         if not (C.DATA / "fold_0").exists():
             sh([sys.executable, "-m", "srcv.build"])
         for b in range(bags):

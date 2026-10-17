@@ -175,6 +175,8 @@ def main() -> None:
     a = sys.argv[1:]
     _suite(a[a.index("--suite") + 1] if "--suite" in a else "r3")
     if "--table" not in a:
+        from _preflight import check
+        check()
         if not (C.DATA / "fold_0").exists():
             sh([sys.executable, "-m", "srcv.build"])
         for b in BAGS:
