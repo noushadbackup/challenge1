@@ -121,8 +121,11 @@ def repeat_flags(e_diff: np.ndarray) -> np.ndarray:
     return np.r_[False, np.all(e_diff[:, 1:] == 0, axis=0)]
 
 
-def segment_table(F: dict, base: pd.DataFrame, fp: np.ndarray, stat: np.ndarray, segs: np.ndarray) -> pd.DataFrame:
-    """One row per segment. base = stream_blocks(...)['base'] (prototype block features), fp = PCA scores (n, k)."""
+def segment_table(F: dict, base: pd.DataFrame, fp: np.ndarray, stat: np.ndarray, segs: np.ndarray,
+                  extra: bool = False) -> pd.DataFrame:
+    """One row per segment. base = stream_blocks(...)['base'] (prototype block features), fp = PCA scores (n, k).
+    extra=True (segclf feature set "phys+x", round 4) adds x_* columns aimed at weak falls such as falling from a
+    chair: per-radar peak motion, burstiness, static change local to the motion peak and stillness after it."""
     p = F["prof_02"].astype(np.float32) / 1e3
     z = p[..., :184] + 1j * p[..., 184:]                         # (3, n, 184)
     norm = np.median(np.linalg.norm(z, axis=2), axis=1) + 1e-12   # (3,)
@@ -151,6 +154,20 @@ def segment_table(F: dict, base: pd.DataFrame, fp: np.ndarray, stat: np.ndarray,
         fm = fp[a:b].mean(0)
         for i, v in enumerate(fm):
             r[f"fpm{i}"] = v
+        if extra:
+            seg = dm[inner]
+            ip = inner.start + int(np.argmax(seg))   # block of the segment's motion peak (inner is absolute)
+            for k in range(3):
+                r[f"x_diff_r{k}_max"] = base[f"diff_r{k}"].values[inner].max()
+            r["x_diff_burst"] = seg.max() - np.median(seg)
+            lo0, lo1, hi0, hi1 = max(a, ip - 10), max(a, ip - 5), min(b, ip + 5), min(b, ip + 10)
+            if lo1 > lo0 and hi1 > hi0:
+                dpk = np.linalg.norm(z[:, lo0:lo1].mean(1) - z[:, hi0:hi1].mean(1), axis=1) / norm
+                r["x_static_pk"] = np.log10(dpk.max() + 1e-6)
+            else:
+                r["x_static_pk"] = np.nan
+            post = dm[min(b, ip + 5):min(b, ip + 15)]
+            r["x_post_still"] = post.mean() - np.median(seg) if len(post) else np.nan
         rows.append(r)
     return pd.DataFrame(rows)
 
@@ -184,7 +201,8 @@ def feature_set(feats: list[str], name: str) -> list[str]:
     rep = [f for f in feats if f.startswith("rep_")]
     return {"all": feats, "nofp": [f for f in feats if f not in fp], "norep": [f for f in feats if f not in rep],
             "phys": [f for f in feats if f not in fp and f not in rep],
-            "phys+sp3": [f for f in feats if f not in fp and (f not in rep or f == "rep_sp3")]}[name]
+            "phys+sp3": [f for f in feats if f not in fp and (f not in rep or f == "rep_sp3")],
+            "phys+x": [f for f in feats if f not in fp and f not in rep]}[name]   # x_* columns exist only then
 
 
 def stream_segments(F: dict, base: pd.DataFrame, fp: np.ndarray, thr: float, cfg: dict):
@@ -193,7 +211,8 @@ def stream_segments(F: dict, base: pd.DataFrame, fp: np.ndarray, thr: float, cfg
     stat = junction_stat(F["prof_02"], c["junction_W"])
     pk = junction_peaks(stat, thr, c["junction_min_sep_s"])
     segs = segments_from_peaks(len(stat), pk)
-    return segs, segment_table(F, base, fp, stat, segs), pk * STEP, stat
+    extra = c["segclf"].get("features", "").endswith("+x")
+    return segs, segment_table(F, base, fp, stat, segs, extra=extra), pk * STEP, stat
 
 
 def lgbm_segclf(cfg: dict):

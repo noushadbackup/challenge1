@@ -1,7 +1,13 @@
 """Confirmation run for the round-3 candidates on FRESH TCN seeds (never used for any selection).
 
-    make confirm DEVICE=cuda            # 3 fresh seed sets (TCN seed_offset 30000, 40000, 50000)
-    make confirm-table                  # only rebuild the table
+    make confirm DEVICE=cuda            # round-3 suite: 3 fresh seed sets (TCN seed_offset 30000, 40000, 50000)
+    make confirm DEVICE=cuda SUITE=r4   # round-4 suite: 9 TCN seeds, Chute04 segment features (seed sets 6, 7, 8)
+    make confirm-table [SUITE=r4]       # only rebuild the table
+
+Round-4 suite (SUITE=r4), each vs base on seed sets 6-8:
+    seeds9        tcn.seeds = 9 (average 9 TCN members instead of 3: less seed noise)
+    chute         clip.segclf.features = "phys+x" (extra segment features for weak falls such as Chute04)
+    seeds9_chute  both
 
 Candidates, each compared with the base on the same seeds (paired subject-cluster bootstrap):
     base       final_norep (the submitted system)
@@ -27,14 +33,32 @@ import srcv  # noqa: E402
 from srcv import core as C  # noqa: E402
 
 BASE_CFG = json.loads((REPO / "uwbfall/configs/final_norep.json").read_text())
-BAGS = (3, 4, 5)                                  # seed_offset = 10000 * bag; bags 0-2 were used by the ablation
-REFIT = {"base": {}, "no_bands": {"features": {"use_bands": False}}}
-RETUNE = {"wdet": ("base", {"boundary": {"det_blend": True}}),
-          "nb_wdet": ("no_bands", {"boundary": {"det_blend": True}})}
-LABEL = {"base": "final_norep (submitted)", "no_bands": "no range bands", "wdet": "boundary blend",
-         "nb_wdet": "no range bands + boundary blend"}
+SUITES = {
+    "r3": dict(bags=(3, 4, 5), prefix="cf", out="confirm",   # seed_offset = 10000 * bag; bags 0-2: the ablation
+               refit={"base": {}, "no_bands": {"features": {"use_bands": False}}},
+               retune={"wdet": ("base", {"boundary": {"det_blend": True}}),
+                       "nb_wdet": ("no_bands", {"boundary": {"det_blend": True}})},
+               label={"base": "final_norep (submitted)", "no_bands": "no range bands", "wdet": "boundary blend",
+                      "nb_wdet": "no range bands + boundary blend"}),
+    "r4": dict(bags=(6, 7, 8), prefix="c4", out="confirm_r4",
+               refit={"base": {}, "seeds9": {"tcn": {"seeds": 9}}},
+               retune={"chute": ("base", {"clip": {"segclf": {"features": "phys+x"}}}),
+                       "seeds9_chute": ("seeds9", {"clip": {"segclf": {"features": "phys+x"}}})},
+               label={"base": "final_norep (submitted)", "seeds9": "9 TCN seeds",
+                      "chute": "Chute04 segment features", "seeds9_chute": "9 TCN seeds + Chute04 features"}),
+}
+SUITE = "r3"
 RES = REPO / "srcv/results"
-OUT = RES / "confirm"
+
+
+def _suite(name_: str) -> None:
+    global SUITE, BAGS, REFIT, RETUNE, LABEL, OUT
+    SUITE = name_
+    S_ = SUITES[name_]
+    BAGS, REFIT, RETUNE, LABEL, OUT = S_["bags"], S_["refit"], S_["retune"], S_["label"], RES / S_["out"]
+
+
+_suite("r3")
 
 
 def merge(a: dict, b: dict) -> dict:
@@ -45,7 +69,7 @@ def merge(a: dict, b: dict) -> dict:
 
 
 def name(v: str, bag: int) -> str:
-    return f"cf_{v}_b{bag}"
+    return f"{SUITES[SUITE]['prefix']}_{v}_b{bag}"
 
 
 def done(n: str) -> bool:
@@ -129,8 +153,8 @@ def table() -> None:
                                            "val_ok", "promote")})
         rows.append(row)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "confirm.json").write_text(json.dumps({"bags": BAGS, "rows": rows}, indent=1, default=float))
-    lines = [f"# Confirmation on fresh TCN seeds (bags {', '.join(map(str, BAGS))}; SR-CV, 253 evaluable falls)", "",
+    (OUT / f"{OUT.name}.json").write_text(json.dumps({"bags": BAGS, "rows": rows}, indent=1, default=float))
+    lines = [f"# Confirmation, suite {SUITE}, on fresh TCN seeds (bags {', '.join(map(str, BAGS))}; SR-CV, 253 evaluable falls)", "",
              "Each candidate vs the base on the same seeds. Rule: P >= 0.90, >= 3/4 folds improve, val >= base - 0.02.",
              "", "| Variant | SR-CV rank F1 | Delta [95% CI] | P(gain) | Folds improved | Val | F1@0.5 | FP@0.3 | "
              "Median start err (s) | Passes |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
@@ -142,13 +166,15 @@ def table() -> None:
             p, f, ok = f"{r['p_delta_gt_0']:.3f}", f"{r['n_folds_improved']}/4", "yes" if r["promote"] else "no"
         lines.append(f"| {r['label']} | {r['cv']:.4f} | {d} | {p} | {f} | {r['val']:.4f} | {r['f1@0.5']:.3f} | "
                      f"{r['fp@0.3']:.1f} | {r['start_med']:.2f} | {ok} |")
-    (OUT / "confirm.md").write_text("\n".join(lines) + "\n")
+    (OUT / f"{OUT.name}.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
-    print(f"\nwritten: {OUT / 'confirm.md'}")
+    print(f"\nwritten: {OUT / (OUT.name + '.md')}")
 
 
 def main() -> None:
-    if "--table" not in sys.argv[1:]:
+    a = sys.argv[1:]
+    _suite(a[a.index("--suite") + 1] if "--suite" in a else "r3")
+    if "--table" not in a:
         if not (C.DATA / "fold_0").exists():
             sh([sys.executable, "-m", "srcv.build"])
         for b in BAGS:

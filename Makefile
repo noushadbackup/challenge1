@@ -133,9 +133,10 @@ ablation:       ## paper ablation of final_norep on SR-CV (resumable; BAGS=3 for
 ablation-table: ## rebuild the ablation table from finished runs
 	$(PY) $(REPO)/tools/ablation.py --bags $(BAGS) --table
 
-confirm:        ## round-3 candidates (no range bands, boundary blend) vs final_norep on 3 fresh TCN seed sets
+SUITE ?= r3
+confirm:        ## round-3 candidates (SUITE=r4: 9 TCN seeds, Chute04 features) (no range bands, boundary blend) vs final_norep on 3 fresh TCN seed sets
 	@test -d $(REPO)/srcv || { echo "srcv/ is not part of this package (development checkout only)"; exit 1; }
-	$(PY) $(REPO)/tools/confirm.py 2>&1 | tee -a $(DATA)/confirm.log
+	$(PY) $(REPO)/tools/confirm.py --suite $(SUITE) 2>&1 | tee -a $(DATA)/confirm_$(SUITE).log
 
 confirm-table:  ## rebuild the confirmation table from finished runs
-	$(PY) $(REPO)/tools/confirm.py --table
+	$(PY) $(REPO)/tools/confirm.py --suite $(SUITE) --table
