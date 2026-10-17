@@ -298,7 +298,7 @@ def _fit_clip(clip_in, comps, cfg, log):
 
 
 RETUNE_SECTIONS = ("clip", "decode", "boundary", "report")
-MODEL_FILES = ("pca.pkl", "hgb.pkl", "tcn_norm.npz", "tcn_0.pt", "tcn_1.pt", "tcn_2.pt", "tcn_3.pt", "tcn_4.pt")
+MODEL_FILES = ("pca.pkl", "hgb.pkl", "tcn_norm.npz")  # plus every tcn_<seed>.pt (any number of seeds)
 
 
 def retune(bundle, train_sources: list[StreamSource], events: pd.DataFrame | None, overrides: dict, out_dir,
@@ -329,7 +329,7 @@ def retune(bundle, train_sources: list[StreamSource], events: pd.DataFrame | Non
     log = log or _logger(out / "train.log")
     _lim = setup_torch(cfg)  # noqa: F841
     t_start = time.time()
-    for f in MODEL_FILES:
+    for f in [*MODEL_FILES, *sorted(q.name for q in src.glob("tcn_*.pt"))]:
         if (src / f).exists():
             shutil.copy(src / f, out / f)
     meta0 = json.loads((src / "meta.json").read_text())
