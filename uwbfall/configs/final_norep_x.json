@@ -1,0 +1,52 @@
+{
+ "hgb": {
+  "enabled": true,
+  "early_stopping": false,
+  "postfall_class": false
+ },
+ "tcn": {
+  "enabled": true,
+  "epochs": 8,
+  "seeds": 3,
+  "cv_seed_base": 100,
+  "final_seed_base": 1000,
+  "seed_offset": 0
+ },
+ "blend": {
+  "w_tcn": 0.75
+ },
+ "decode": {
+  "fixed": null,
+  "one_event_per_clip": "time",
+  "nms_gap_s": 4.0
+ },
+ "clip": {
+  "junction_W": 5,
+  "junction_recall": 0.95,
+  "junction_min_sep_s": 1.0,
+  "segclf": {
+   "enabled": true,
+   "features": "phys+x",
+   "oof_groups": "subject"
+  },
+  "gate": "mult",
+  "gate_floor": 0.7
+ },
+ "boundary": {
+  "method": "replay",
+  "crops": [
+   "loc2_3d",
+   "loc2_5d",
+   "det2_3d",
+   "det2_5d",
+   "detq2_3d",
+   "detq2_5d"
+  ],
+  "gate": 0.3,
+  "min_ok": 1,
+  "dmin": 1.0
+ },
+ "transductive": {
+  "adl_duplicate_mask": false
+ }
+}

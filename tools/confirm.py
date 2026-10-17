@@ -8,6 +8,8 @@ Round-4 suite (SUITE=r4), each vs base on seed sets 6-8:
     seeds9        tcn.seeds = 9 (average 9 TCN members instead of 3: less seed noise)
     chute         clip.segclf.features = "phys+x" (extra segment features for weak falls such as Chute04)
     seeds9_chute  both
+Suite r4x (SUITE=r4x): chute vs base on 6 seed sets (3-8); bags 3-5 re-use the r3 base runs, so only the
+chute re-tunes of bags 3-5 run (about 30 min).
 
 Candidates, each compared with the base on the same seeds (paired subject-cluster bootstrap):
     base       final_norep (the submitted system)
@@ -46,6 +48,11 @@ SUITES = {
                        "seeds9_chute": ("seeds9", {"clip": {"segclf": {"features": "phys+x"}}})},
                label={"base": "final_norep (submitted)", "seeds9": "9 TCN seeds",
                       "chute": "Chute04 segment features", "seeds9_chute": "9 TCN seeds + Chute04 features"}),
+    # r4x: the r4 winner on 6 seed sets. Bags 3-5 re-use the r3 base runs (cf_base_b*), bags 6-8 the r4 runs.
+    "r4x": dict(bags=(3, 4, 5, 6, 7, 8), prefix="c4", out="confirm_r4x", base_prefix={3: "cf", 4: "cf", 5: "cf"},
+                refit={"base": {}},
+                retune={"chute": ("base", {"clip": {"segclf": {"features": "phys+x"}}})},
+                label={"base": "final_norep (submitted)", "chute": "Chute04 segment features"}),
 }
 SUITE = "r3"
 RES = REPO / "srcv/results"
@@ -69,7 +76,9 @@ def merge(a: dict, b: dict) -> dict:
 
 
 def name(v: str, bag: int) -> str:
-    return f"{SUITES[SUITE]['prefix']}_{v}_b{bag}"
+    S_ = SUITES[SUITE]
+    pre = S_.get("base_prefix", {}).get(bag, S_["prefix"]) if v == "base" else S_["prefix"]
+    return f"{pre}_{v}_b{bag}"
 
 
 def done(n: str) -> bool:
