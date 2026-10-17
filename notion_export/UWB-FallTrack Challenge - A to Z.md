@@ -1,8 +1,8 @@
 # UWB-FallTrack Challenge (ABC 2027): A to Z
 
-Status as of 2026-10-16: the submission system `final_norep` scores **0.937 on validation and 0.914 on subject-disjoint
-cross-validation**, against **0.315** for the official baseline. The code package is built and tested. Two improvements
-from round 3 are being confirmed on fresh seeds before the test data arrives on Oct 20.
+Status as of 2026-10-17: the submission system `final_norep` scores **0.937 on validation and 0.914 on subject-disjoint
+cross-validation**, against **0.315** for the official baseline. The code package is built and tested. Round 3 and its
+fresh-seed confirmation found no change worth making, so the system is frozen for the test data (Oct 20).
 
 ![Score progression](figures/10_score_progression.png)
 
@@ -174,11 +174,11 @@ because the generator shuffles the clips.
 | 17 | Cross-stream ADL duplicate mask | Breaks the rules | Never used |
 | 18 | Rule-safe variants | −0.004 / −0.023 | Options |
 | 19 | R3: recover missed falls in likely fall clips | +0.0003 | No |
-| 20 | R3: replay/detector boundary blend | +0.006 (3 seed sets), P 0.99 | Being confirmed |
+| 20 | R3: replay/detector boundary blend | +0.006 on two independent seed groups, but only 2/4 folds on fresh seeds | No (optional setting) |
 | 21 | R3: TriDet-style learned boundary head | Worse than replay | No |
 | 22 | R3: image verifier, ImageNet ResNet-18 on range-time images | +0.013 but 1/4 folds | No |
 | 23 | R3: ActionFormer-style TAL member | Not finished | - |
-| 24 | Ablation: remove the 48 range-band channels | +0.009, P 0.99 | Being confirmed |
+| 24 | Ablation: remove the 48 range-band channels | +0.009 first, then −0.011 on fresh seeds (noise) | No |
 
 ## 8. The final system
 
@@ -276,9 +276,18 @@ It processes one raw stream into fall rows in under a minute on a CPU, using onl
 The boundary blend is now an optional `uwbfall` setting, `boundary.det_blend`. It reproduces the experiment byte for
 byte, and the shipped configs and models are unchanged.
 
-**Next:** the two passing changes (no range bands, boundary blend) are re-tested on **fresh TCN seeds** with
-`make confirm DEVICE=cuda`, so that the choice is not luck among about 25 ideas. A change is adopted only if it passes
-again.
+**Confirmation on fresh TCN seeds** (`make confirm DEVICE=cuda`, seed sets never used for selection):
+
+| Variant | SR-CV | Delta [95% CI] | P(gain) | Folds improved | Passes |
+| --- | --- | --- | --- | --- | --- |
+| final_norep (submitted) | 0.9150 | - | - | - | - |
+| no range bands | 0.9039 | −0.0112 [−0.0403, +0.0100] | 0.23 | 2/4 | no |
+| boundary blend | 0.9212 | +0.0062 [−0.0000, +0.0126] | 0.97 | 2/4 | no |
+| both | 0.9075 | −0.0076 [−0.0382, +0.0159] | 0.33 | 2/4 | no |
+
+**Decision: no change; `final_norep` stays the submission.**
+- The band result was seed noise.
+- The blend is consistently slightly positive, but it fails the fold rule and worsens the start-error tie-break.
 
 ## 12. Problems we hit and how we solved them
 
@@ -336,7 +345,7 @@ Checklist:
 
 - [ ] Confirm team registration before Oct 27
 - [ ] Get the written answer to Q3 and pick the variant
-- [ ] Run `make confirm DEVICE=cuda` and decide on the round-3 changes
+- [x] Run `make confirm DEVICE=cuda` and decide on the round-3 changes (no change)
 - [ ] Download the test streams (Oct 20) into a folder named `test`
 - [ ] `make predict-test`: `SUBMISSION CHECK: OK`, 0–1 drift alerts
 - [ ] `make package` and test the zip once from a fresh folder
