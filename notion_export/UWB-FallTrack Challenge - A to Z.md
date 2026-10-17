@@ -331,6 +331,13 @@ sets 3–5, so it was mostly noise. Its CPU refit (`final_norep_x`) scores 0.944
 | **`final_norep`** | No | Yes (asked) | 0.914 | 0.937 |
 | `final_strict` | No | No | 0.896 | 0.937 |
 
+**Decision after Q3** (the organisers left the replay dedup to us): submit `final_norep`.
+- The dedup compares a frame only with the frame right before it on the same radar, to undo the 50 Hz
+  sample-and-hold. It does not look for repeated portions of activity, which is what Q2 forbids.
+- It is worth about +0.018 on SR-CV (4/4 folds); val is the same with or without it (0.937).
+- It is disclosed in the code package README and will be described in the paper. `final_strict` stays shipped and
+  verified as the zero-risk alternative.
+
 These hold in every variant:
 - each test stream is processed on its own;
 - no cross-stream or repeated-content matching;
@@ -345,7 +352,7 @@ These hold in every variant:
 | Q1 | Same generator and settings for test? | Yes; only the seed and participants differ | Kept the CV as the test proxy |
 | Q2 | May we use repeated content? | No matching within or across streams or with train/val; process each stream on its own | Cross-stream mask off; built `final_norep` and `final_strict` |
 | – | Submissions and code | Results once; code from every team | One variant for both CSV and code |
-| Q3 | Within one stream, may we drop a frame identical to the previous frame of the same radar? | **Waiting** (Ma'am → challenge chair, written answer requested) | Allowed → `final_norep`; not allowed or no answer → `final_strict` |
+| Q3 | Within one stream, may we drop a frame identical to the previous frame of the same radar? | "It's a competition, so you have to decide by yourself" | Kept `final_norep`, with the step disclosed in the code README and the paper (section 13) |
 
 ## 15. Submission plan
 
@@ -363,7 +370,7 @@ make package VARIANT=final_norep                                       # same va
 Checklist:
 
 - [ ] Confirm team registration before Oct 27
-- [ ] Get the written answer to Q3 and pick the variant
+- [x] Get the answer to Q3 and pick the variant (`final_norep`, see section 13)
 - [x] Run `make confirm DEVICE=cuda` and decide on the round-3 changes (no change)
 - [x] Round 4 confirmation, `SUITE=r4` and `SUITE=r4x` (no change)
 - [ ] Download the test streams (Oct 20) into a folder named `test`

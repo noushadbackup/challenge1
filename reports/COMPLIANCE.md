@@ -1,4 +1,4 @@
-# Rule compliance after the organisers' answers (Q1, Q2)
+# Rule compliance after the organisers' answers (Q1, Q2, Q3)
 
 ## What the organisers said
 
@@ -8,6 +8,25 @@
 * **Q2:** identifying repeated content is **not allowed**. That means matching, comparing or aligning content across
   test streams, within a test stream, or with train/val segments, "in order to detect repeated portions". Each test
   stream must be processed independently, and falls must be detected from the signal itself.
+
+* **Q3** (the replay dedup, question (a) of the follow-up below): "It's a competition, so you have to decide by
+  yourself." No permission and no prohibition.
+
+## Decision after Q3: submit `final_norep`
+
+* What the dedup does: inside one stream, before the annotator replay, a frame that is bit-identical to the
+  immediately preceding frame of the **same radar** is dropped. This undoes the 50 Hz sample-and-hold and gives the
+  radar's true frame sequence (about 37 Hz).
+* Why we consider it compliant with Q2: Q2 forbids matching content "in order to detect repeated portions". The dedup
+  never looks for repeated activity, never compares beyond the previous frame, and never looks across streams or at
+  train/val. It is ordinary sensor preprocessing.
+* What it is worth: +0.018 on SR-CV [+0.007, +0.030], 4/4 folds (the `final_nodedup` row below). Val is 0.937 with
+  or without it.
+* Risk control: the step is disclosed in the package README (`tools/PACKAGE_README.md`, "Data and rules") and will be
+  described in the paper. The organisers' Q3 reply is kept as evidence that we asked. `final_strict` (no dedup) stays
+  shipped and verified; switching costs one command.
+* Not used: the sample-and-hold statistics as features (`final`), because they act as a recording-session
+  fingerprint and sit closest to the wording of Q2.
 
 ## What our system does
 

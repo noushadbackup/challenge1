@@ -168,13 +168,21 @@ CPU te ek stream er jonno ek minute er kom lage, shudhu open-source library (sci
 | **`final_norep`** (submission) | Na | Ha (permission chaoa hoyeche) | 0.914 | 0.937 |
 | `final_strict` (backup) | Na | Na | 0.896 | 0.937 |
 
+**Q3 er por decision: `final_norep` submit korbo.**
+- Dedup ta shudhu same radar er **thik ager frame** er sathe mile dekhe; 50 Hz sample-and-hold ta undo kore. Eta kono
+  repeated activity khoje na, tai Q2 je jinish nishiddho korse (repeated portion detect kora) seta na.
+- Labh: CV te +0.018, 4/4 fold e. Val e dedup thakuk ba na thakuk 0.937.
+- Risk komano: code package er README te likha ase, paper e o likhbo, ar organiser er Q3 reply ta proof hishebe
+  rakhbo. `final_strict` ready, ek command e switch kora jay.
+
 Shob variant e: protita stream alada, kono cross-stream matching nai, shudhu package data, LIARA recording nai, shudhu
 open-source library.
 
 Organiser er answer:
 - Q1: test same generator ar setting e, shudhu seed ar participant alada → tai CV ke test proxy dhorsi.
 - Q2: kono repeated content matching chalbe na, protita stream alada → cross-stream mask off.
-- **Q3 (pending, Ma'am er maddhome):** ek stream er bhitore same radar er ager frame er hubohu copy drop kora jabe kina.
+- **Q3:** ek stream er bhitore same radar er ager frame er hubohu copy drop kora jabe kina. Answer: "It's a competition,
+  so you have to decide by yourself." → amra `final_norep` rakhsi (niche decision dekhun).
   Ha hole `final_norep`, na hole ba answer na ashle `final_strict`.
 
 ## 13. Release day plan
@@ -203,14 +211,15 @@ make package VARIANT=final_norep
   subject e 0.91 realistic; related work e eta-i top level.
 - **"Overfit kina?"** Na: training OOF 0.941, val 0.937, ar unseen subject CV 0.914.
 - **"Test e koto ashbe?"** 0.90–0.91 expect korchi.
-- **"Rule bhangar risk?"** Q2 answer onujayi cross-stream kichu nai. Q3 er answer er upor variant thik korbo; backup
+- **"Rule bhangar risk?"** Q2 answer onujayi cross-stream kichu nai. Q3 te organiser decision amader upor chhere dise;
+  amra dedup rakhsi ar README/paper e khule bolsi. Backup
   `final_strict` ready.
 - **"GPU lage?"** Na, submission CPU te, shipped model diye, sha256 check kore.
-- **"Ekhon baki ki?"** Registration confirm (Oct 27 er aage), Q3 er written answer, Oct 20 e test predict, Nov 3 er
+- **"Ekhon baki ki?"** Registration confirm (Oct 27 er aage), Oct 20 e test predict, Nov 3 er
   moddhe submit, Nov 10 er moddhe paper.
 
 ## 16. Sir er kache ja chaibo
 
-1. Q3 er written answer ta challenge chair theke ana.
+1. Q3 decision (`final_norep`) e sir er OK.
 2. Registration confirm kora (Oct 27 er aage).
 3. Paper er author order ar ke workshop e present korbe.

@@ -15,9 +15,9 @@ choice. `make predict-test` uses this shipped copy (`BUNDLE`), on CPU, so the su
 bit from the code package. A local retrain (`make train-final`, written to `/home/user/data_raw/uwbfall_models/<VARIANT>`)
 is only a reproducibility check (`make verify-models`).
 
-> **Variant (rule compliance, organisers' Q2 answer):** the default is `VARIANT=final_norep`. Use
-> `VARIANT=final_strict` if the organisers forbid the replay dedup, and `VARIANT=final` only if they allow
-> sample-and-hold statistics as features. Every `make` command below accepts `VARIANT=...`. See `reports/COMPLIANCE.md`.
+> **Variant (rule compliance, organisers' Q2 and Q3 answers):** submit `VARIANT=final_norep`. On Q3 the organisers
+> left the replay dedup to us, and we keep it (decision in `reports/COMPLIANCE.md`). `VARIANT=final_strict` is the
+> zero-risk alternative without the dedup; `VARIANT=final` is not used. Every `make` command below accepts `VARIANT=...`. See `reports/COMPLIANCE.md`.
 >
 > **One shot:** results and code can be submitted once. Run on CPU (no `DEVICE=`), use one variant for both the CSV
 > and the code package (section 7), and do not retrain between the two.
